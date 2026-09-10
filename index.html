@@ -644,6 +644,114 @@
       color: #FFFFFF;
       box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
     }
+
+    /* Game Difficulty System Controls & Badges */
+    .diff-selector-card {
+      background: rgba(30, 41, 59, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 10px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .diff-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 2px;
+    }
+    .diff-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .diff-info-desc {
+      font-size: 10px;
+      font-weight: 700;
+      color: #38BDF8;
+      letter-spacing: 0.3px;
+    }
+    .diff-btn-group {
+      display: flex;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 9999px;
+      padding: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 4px;
+      box-sizing: border-box;
+    }
+    .diff-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-radius: 9999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #94A3B8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .diff-btn:hover:not(.active) {
+      color: #F8FAFC;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .diff-btn.active.diff-easy {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.45);
+    }
+    .diff-btn.active.diff-medium {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.45);
+    }
+    .diff-btn.active.diff-hard {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.45);
+    }
+    .diff-hud-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.6);
+      text-transform: uppercase;
+    }
+    .diff-hud-pill.easy {
+      color: #34D399;
+      border-color: rgba(52, 211, 153, 0.35);
+    }
+    .diff-hud-pill.medium {
+      color: #60A5FA;
+      border-color: rgba(96, 165, 250, 0.35);
+    }
+    .diff-hud-pill.hard {
+      color: #F87171;
+      border-color: rgba(248, 113, 113, 0.35);
+    }
     .hs-switch-btn:hover:not(.active) {
       color: #E2E8F0;
       background: rgba(255, 255, 255, 0.06);
@@ -1525,6 +1633,138 @@
       font-size: 11px;
       color: #64748B;
     }
+    .consent-legal-link {
+      color: #38BDF8;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 700;
+      transition: color 0.15s ease;
+      display: inline-block;
+    }
+    .consent-legal-link:hover, .consent-legal-link:active {
+      color: #7DD3FC;
+    }
+
+    /* Inner Scrollable Privacy Policy & Terms Reader Modal */
+    #privacyReaderModal {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1050;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    #privacyReaderModal.active {
+      display: flex;
+    }
+    .privacy-reader-card {
+      background: #FFFFFF;
+      color: #0F172A;
+      border-radius: 18px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      width: 95%;
+      max-width: 600px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-sizing: border-box;
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .privacy-reader-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #F8FAFC;
+      border-bottom: 1px solid #E2E8F0;
+      flex-shrink: 0;
+    }
+    .privacy-reader-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .privacy-reader-close-btn {
+      background: #E2E8F0;
+      color: #1E293B;
+      border: none;
+      border-radius: 9999px;
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .privacy-reader-close-btn:hover {
+      background: #CBD5E1;
+      color: #0F172A;
+    }
+    .privacy-reader-content {
+      padding: 12px 16px;
+      overflow-y: auto;
+      max-height: 70vh;
+      -webkit-overflow-scrolling: touch;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #334155;
+      flex: 1;
+      text-align: left;
+    }
+    .privacy-reader-content h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0F172A;
+      margin: 14px 0 6px 0;
+    }
+    .privacy-reader-content h3:first-child {
+      margin-top: 0;
+    }
+    .privacy-reader-content p {
+      margin: 0 0 10px 0;
+    }
+    .privacy-reader-content ul {
+      margin: 0 0 12px 18px;
+      padding: 0;
+    }
+    .privacy-reader-content li {
+      margin-bottom: 4px;
+    }
+    .privacy-reader-footer {
+      padding: 12px 20px;
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      display: flex;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .privacy-reader-back-btn {
+      background: #0284C7;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 9px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+      transition: background 0.15s ease;
+    }
+    .privacy-reader-back-btn:hover {
+      background: #0369A1;
+    }
     .streak-card {
       background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
       border: 1px solid rgba(255, 255, 255, 0.18);
@@ -2278,6 +2518,135 @@
       justify-content: center;
     }
 
+    /* First-Time Gameplay Session Double Jump Tutorial Overlay */
+    #tutorialOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 55;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    #tutorialOverlay.active {
+      display: flex;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .tutorial-card {
+      background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 22px;
+      padding: 18px 24px;
+      max-width: 520px;
+      width: 95%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.25);
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      color: #F8FAFC;
+      box-sizing: border-box;
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tutorial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .tutorial-badge {
+      background: linear-gradient(135deg, #0284C7, #0369A1);
+      color: #FFF;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+    .tutorial-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #38BDF8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 4px 0;
+    }
+    .tutorial-desc {
+      font-size: 13px;
+      color: #94A3B8;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .tutorial-anim-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 10px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .tutorial-anim-box .anim-stage {
+      height: 108px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .tutorial-steps-strip {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      font-size: 11.5px;
+      color: #CBD5E1;
+      font-weight: 600;
+    }
+    .tutorial-step-pill {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tutorial-step-pill strong {
+      color: #38BDF8;
+    }
+    .tutorial-btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .tutorial-btn-play {
+      flex: 1;
+      background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tutorial-btn-play:active {
+      transform: scale(0.97);
+    }
+
     /* Character Customizer Screen Styles */
     #customizerScreen {
       position: absolute;
@@ -2722,6 +3091,10 @@
           <div><span class="icon-runner">🏃</span> <span id="distText">0m</span></div>
           <span class="high-score" id="highDistText">High: 0m</span>
         </div>
+        <div class="diff-hud-pill medium" id="hudDiffBadge" title="Current Game Difficulty">
+          <span id="hudDiffIcon">⚡</span>
+          <span id="hudDiffText">MED</span>
+        </div>
       </div>
       <div class="pause-btn" id="pauseBtn" title="Pause Game">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -2839,6 +3212,25 @@
               <span class="stat-val" id="menuTotalCoins">0</span>
             </div>
           </div>
+
+          <!-- Skill Level / Difficulty System Selector -->
+          <div class="diff-selector-card">
+            <div class="diff-header-row">
+              <span class="diff-title"><span>⚙️</span> DIFFICULTY LEVEL</span>
+              <span class="diff-info-desc" id="diffDescText">Standard Pace • Regular Obstacles</span>
+            </div>
+            <div class="diff-btn-group" role="group" aria-label="Game Difficulty Selector">
+              <button class="diff-btn diff-easy" id="diffEasyBtn" type="button" data-diff="EASY">
+                <span>🌱</span> Easy
+              </button>
+              <button class="diff-btn diff-medium active" id="diffMedBtn" type="button" data-diff="MEDIUM">
+                <span>⚡</span> Medium
+              </button>
+              <button class="diff-btn diff-hard" id="diffHardBtn" type="button" data-diff="HARD">
+                <span>🔥</span> Hard
+              </button>
+            </div>
+          </div>
           <div class="btn-row">
             <button class="btn btn-play" id="startPlayBtn">
               <span>RUN!</span>
@@ -2907,6 +3299,10 @@
         <div class="stat-item">
           <span class="stat-label">Coins Picked</span>
           <span class="stat-val" id="goCoins">+0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Difficulty</span>
+          <span class="stat-val" id="goDiff">⚡ MED</span>
         </div>
       </div>
 
@@ -3144,7 +3540,7 @@
           </label>
           <label class="consent-checkbox-label" for="consentTermsCheck">
             <input type="checkbox" id="consentTermsCheck" />
-            <span>I accept the <strong>Terms of Service</strong> &amp; <strong>Privacy Policy</strong></span>
+            <span>I accept the <a href="javascript:void(0)" class="consent-legal-link" id="openPrivacyReaderLink">Terms of Service and Privacy Policy</a></span>
           </label>
         </div>
 
@@ -3152,6 +3548,69 @@
 
         <div class="consent-links">
           We respect player privacy. Local scores &amp; cosmetics are saved on your device.
+        </div>
+      </div>
+    </div>
+
+    <!-- Inner Scrollable Privacy Policy & Terms Reader Modal -->
+    <div id="privacyReaderModal">
+      <div class="privacy-reader-card">
+        <div class="privacy-reader-header">
+          <div class="privacy-reader-title">
+            <span>📜</span>
+            <span>Terms of Service &amp; Privacy Policy</span>
+          </div>
+          <button class="privacy-reader-close-btn" id="privacyReaderCloseBtn" aria-label="Close">✕</button>
+        </div>
+        <div class="privacy-reader-content" id="privacyReaderContent">
+          <div style="padding: 15px; font-family: sans-serif; line-height: 1.6; color: #333; overflow-y: auto; max-height: 70vh;">
+            <h2 style="text-align: center;">Terms of Service &amp; Privacy Policy</h2>
+            <p style="text-align: center; font-size: 12px; color: #666;">Last Updated: September 10, 2026</p>
+
+            <hr style="border: 1px solid #eee; margin: 15px 0;">
+
+            <h3 style="color: #222;">PART 1: TERMS OF SERVICE</h3>
+            
+            <h4>1. Acceptance of Terms</h4>
+            <p>Welcome to Dashbound, developed by Glitchora Studios! By accessing, downloading, or playing Dashbound (&quot;the Game&quot;), you agree to be bound by these Terms. If you do not agree, please do not play the Game.</p>
+
+            <h4>2. Eligibility &amp; Age Requirements</h4>
+            <p>You must be at least 13 years of age to play Dashbound. By checking the age confirmation box on the launch screen, you verify that you meet this requirement.</p>
+
+            <h4>3. Virtual Currency and Items</h4>
+            <p>Dashbound includes virtual in-game currency (such as Coins and Diamonds) and virtual items (such as Character Skins). These virtual items have no real-world monetary value, cannot be exchanged for real money, and belong entirely to Glitchora Studios. We reserve the right to manage, modify, or eliminate virtual items at any time.</p>
+
+            <h4>4. Ownership and Intellectual Property</h4>
+            <p>All artwork, animations, code, music, and mechanics within Dashbound are the exclusive property of Glitchora Studios. You may not copy, modify, distribute, or reverse-engineer any part of the Game.</p>
+
+            <br>
+            <h3 style="color: #222;">PART 2: PRIVACY POLICY</h3>
+
+            <h4>1. Data We Do NOT Collect</h4>
+            <p>Dashbound is designed to respect your privacy. We do <strong>not</strong> require you to create an account, and we do not collect your personal information such as your name, email address, phone number, or physical location. All game progress (including your High Score, Coins, Diamonds, and Unlocked Skins) is saved <strong>locally</strong> on your device.</p>
+
+            <h4>2. Third-Party Advertising (Google AdMob)</h4>
+            <p>Dashbound is a free game supported by ads. We use Google AdMob to provide &quot;Rewarded Ads&quot; (e.g., watching a video to double coins or get an extra life). AdMob is a third-party service that may collect and process certain data to provide personalized ads. This data may include:</p>
+            <ul>
+                <li>Your device's Advertising ID (Android Ad ID)</li>
+                <li>IP address and device information (model, OS version)</li>
+                <li>Usage data (how you interact with the ads)</li>
+            </ul>
+            <p>For more information, please read the <a href="https://policies.google.com/privacy" target="_blank" style="color: #0066cc;">Google Privacy Policy</a>.</p>
+
+            <h4>3. Uninstalling &amp; Data Deletion</h4>
+            <p>Because your game save data is stored locally on your device, you can delete all your personal game data simply by clearing the app's data in your Android settings or by uninstalling the Game from your phone.</p>
+
+            <h4>4. Contact Us</h4>
+            <p>If you have any questions regarding these Terms or our Privacy practices, please contact Glitchora Studios via our official social media channels.</p>
+
+            <div style="text-align: center; margin-top: 24px; margin-bottom: 8px;">
+              <button class="privacy-reader-back-btn" id="privacyReaderInlineBackBtn" style="padding: 10px 24px; font-size: 14px;">Go Back to Consent</button>
+            </div>
+          </div>
+        </div>
+        <div class="privacy-reader-footer">
+          <button class="privacy-reader-back-btn" id="privacyReaderBackBtn">Go Back to Consent</button>
         </div>
       </div>
     </div>
@@ -3264,6 +3723,76 @@
 
         <div class="info-actions">
           <button class="btn btn-play" id="infoGotItBtn">
+            <span>Got It! Let's Dash</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- First-Time Gameplay Double Jump Tutorial Overlay -->
+    <div id="tutorialOverlay">
+      <div class="tutorial-card" id="tutorialCard">
+        <div class="tutorial-header">
+          <span class="tutorial-badge">PRO TIP</span>
+          <span style="font-size: 11px; color: #94A3B8; font-weight: 700;">DOUBLE JUMP</span>
+        </div>
+        <div class="tutorial-title">Master The Double Jump!</div>
+        <div class="tutorial-desc">
+          Tap once to leap from the ground, then <strong>tap again while in mid-air</strong> to rocket higher over tall obstacles and reach high coins!
+        </div>
+
+        <div class="tutorial-anim-box">
+          <div class="anim-stage">
+            <div class="stage-ground"></div>
+            <div class="stage-cloud c1"></div>
+            <div class="stage-cloud c2"></div>
+
+            <div class="high-enemy" title="High Enemy"></div>
+            <div class="stage-coin" title="High Coin">🪙</div>
+
+            <svg class="stage-arc" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <path d="M 12 78 Q 30 25 50 18 T 88 78"
+                    fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-dasharray="4 3" opacity="0.8"/>
+            </svg>
+
+            <div class="anim-runner runner-double">
+              <div class="anim-runner-body">
+                <div class="anim-runner-band"></div>
+                <div class="anim-runner-eye"></div>
+                <div class="anim-runner-legs">
+                  <div class="anim-leg l-left"></div>
+                  <div class="anim-leg l-right"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="anim-tap tap-double-1">
+              <div class="tap-ring"></div>
+              <div class="tap-hand">👆</div>
+              <div class="tap-tag">1st TAP (Ground)</div>
+            </div>
+            <div class="anim-tap tap-double-2">
+              <div class="tap-ring ring-blue"></div>
+              <div class="tap-hand">👆</div>
+              <div class="tap-tag tag-blue">2nd TAP! (Air Boost)</div>
+            </div>
+          </div>
+
+          <div class="tutorial-steps-strip">
+            <div class="tutorial-step-pill">
+              <span>1️⃣</span> <span><strong>1st Tap:</strong> Jump</span>
+            </div>
+            <div class="tutorial-step-pill">
+              <span>2️⃣</span> <span><strong>2nd Tap in Air:</strong> Boost</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-btn-row">
+          <button class="tutorial-btn-play" id="tutorialStartBtn">
             <span>Got It! Let's Dash</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
@@ -3537,7 +4066,9 @@
         CONSENT_ACCEPTED: 'dashbound_consent_accepted',
         LOCAL_TOP_RUNS: 'dashbound_local_top_runs',
         HS_TOGGLE_MODE: 'dashbound_hs_toggle_mode',
-        ENEMIES_KILLED: 'dashbound_enemies_killed'
+        ENEMIES_KILLED: 'dashbound_enemies_killed',
+        TUTORIAL_SHOWN: 'dashbound_tutorial_shown',
+        DIFFICULTY: 'dashbound_difficulty'
       },
       getInt: function(key, defaultVal = 0) {
         try {
@@ -4842,6 +5373,8 @@
         this.totalEnemiesKilled = 0;
         this.loadStats();
         this.isConsentModalOpen = false;
+        this.isPrivacyReaderOpen = false;
+        this.isTutorialOpen = false;
 
         // Rewarded ad flags (once per run)
         this.reviveUsed = false;
@@ -4891,7 +5424,42 @@
         this.runnerTrails = [];
 
         // Progressive Difficulty Curve & Speed Scaling
-        this.baseMinObstacleDist = 280;
+        this.selectedDifficulty = Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
+        this.difficultyConfigs = {
+          EASY: {
+            name: 'Easy',
+            icon: '🌱',
+            badgeClass: 'easy',
+            baseSpeed: 4.8,
+            baseMinObstacleDist: 360,
+            enemyChanceMult: 0.7,
+            spikeChanceMult: 0.7,
+            desc: 'Gentler Pace • Fewer Hazards'
+          },
+          MEDIUM: {
+            name: 'Medium',
+            icon: '⚡',
+            badgeClass: 'medium',
+            baseSpeed: 6.0,
+            baseMinObstacleDist: 280,
+            enemyChanceMult: 1.0,
+            spikeChanceMult: 1.0,
+            desc: 'Standard Pace • Regular Hazards'
+          },
+          HARD: {
+            name: 'Hard',
+            icon: '🔥',
+            badgeClass: 'hard',
+            baseSpeed: 7.4,
+            baseMinObstacleDist: 210,
+            enemyChanceMult: 1.35,
+            spikeChanceMult: 1.35,
+            desc: 'High Velocity • Dense Obstacles'
+          }
+        };
+        const initialDiffConfig = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
+        this.baseSpeed = initialDiffConfig.baseSpeed;
+        this.baseMinObstacleDist = initialDiffConfig.baseMinObstacleDist;
         this.lastObstacleX = 0;
         this.lastSpeedTier = 0;
         this.speedUpTimeout = null;
@@ -4998,6 +5566,59 @@
             AndroidBridge.showToast('Welcome to Dashbound!');
           };
         }
+
+        // Privacy Policy & Terms Reader Modal Wireup
+        const privacyReaderModal = document.getElementById('privacyReaderModal');
+        const openPrivacyLink = document.getElementById('openPrivacyReaderLink');
+        const privacyCloseBtn = document.getElementById('privacyReaderCloseBtn');
+        const privacyBackBtn = document.getElementById('privacyReaderBackBtn');
+
+        const openPrivacyReader = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          audio.click();
+          this.isPrivacyReaderOpen = true;
+          if (privacyReaderModal) {
+            privacyReaderModal.classList.add('active');
+            const contentEl = document.getElementById('privacyReaderContent');
+            if (contentEl) contentEl.scrollTop = 0;
+          }
+        };
+
+        const closePrivacyReader = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          audio.click();
+          this.isPrivacyReaderOpen = false;
+          if (privacyReaderModal) {
+            privacyReaderModal.classList.remove('active');
+          }
+        };
+
+        if (openPrivacyLink) {
+          openPrivacyLink.onclick = openPrivacyReader;
+        }
+        if (privacyCloseBtn) {
+          privacyCloseBtn.onclick = closePrivacyReader;
+        }
+        if (privacyBackBtn) {
+          privacyBackBtn.onclick = closePrivacyReader;
+        }
+        const privacyInlineBackBtn = document.getElementById('privacyReaderInlineBackBtn');
+        if (privacyInlineBackBtn) {
+          privacyInlineBackBtn.onclick = closePrivacyReader;
+        }
+        if (privacyReaderModal) {
+          privacyReaderModal.onclick = (e) => {
+            if (e.target === privacyReaderModal) {
+              closePrivacyReader(e);
+            }
+          };
+        }
       }
 
       scheduleAppExitReminders() {
@@ -5042,10 +5663,12 @@
         this.streakModal = document.getElementById('streakModal');
         this.consentModal = document.getElementById('consentModal');
         this.customizerScreen = document.getElementById('customizerScreen');
+        this.tutorialOverlay = document.getElementById('tutorialOverlay');
         this.adModal = document.getElementById('adModal');
         this.adToast = document.getElementById('adToast');
         this.isInfoModalOpen = false;
         this.isStreakModalOpen = false;
+        this.isTutorialOpen = false;
 
         // Power-Up & Mission HUD Elements
         this.fastStartHud = document.getElementById('fastStartHud');
@@ -5059,6 +5682,17 @@
         this.speedUpPopup = document.getElementById('speedUpPopup');
         this.speedUpSub = document.getElementById('speedUpSub');
 
+        // Difficulty UI Elements
+        this.diffEasyBtn = document.getElementById('diffEasyBtn');
+        this.diffMedBtn = document.getElementById('diffMedBtn');
+        this.diffHardBtn = document.getElementById('diffHardBtn');
+        this.diffDescText = document.getElementById('diffDescText');
+        this.hudDiffBadge = document.getElementById('hudDiffBadge');
+        this.hudDiffIcon = document.getElementById('hudDiffIcon');
+        this.hudDiffText = document.getElementById('hudDiffText');
+        this.goDiff = document.getElementById('goDiff');
+
+        this.applyDifficultyUI();
         this.updateHUD();
         this.missionManager.renderUI();
         this.streakManager.renderBadge();
@@ -5120,6 +5754,28 @@
           infoCard.onclick = (e) => e.stopPropagation();
         }
 
+        // First-Time Gameplay Session Tutorial Handlers
+        const closeTutorial = (e) => {
+          if (e) e.stopPropagation();
+          audio.click();
+          this.closeTutorial();
+        };
+
+        const tutorialStartBtn = document.getElementById('tutorialStartBtn');
+        if (tutorialStartBtn) tutorialStartBtn.onclick = closeTutorial;
+
+        if (this.tutorialOverlay) {
+          this.tutorialOverlay.onclick = (e) => {
+            if (e.target === this.tutorialOverlay) {
+              closeTutorial(e);
+            }
+          };
+        }
+        const tutorialCard = document.getElementById('tutorialCard');
+        if (tutorialCard) {
+          tutorialCard.onclick = (e) => e.stopPropagation();
+        }
+
         // Streak Badge & Modal Interactions
         const streakBadgeBtn = document.getElementById('streakBadgeBtn');
         const streakActionBtn = document.getElementById('streakActionBtn');
@@ -5158,7 +5814,7 @@
 
         // Jump Controls (Mobile Tap + Keyboard)
         const handleJump = (e) => {
-          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.state === 'CUSTOMIZER') return;
+          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || this.state === 'CUSTOMIZER') return;
           if (this.state === 'PLAYING') {
             this.playerJump();
           } else if (this.state === 'MENU') {
@@ -5167,7 +5823,7 @@
         };
 
         this.canvas.addEventListener('pointerdown', (e) => {
-          if (this.isConsentModalOpen) return;
+          if (this.isConsentModalOpen || this.isTutorialOpen) return;
           audio.init();
           handleJump(e);
         });
@@ -5175,12 +5831,14 @@
         window.addEventListener('keydown', (e) => {
           if (this.isConsentModalOpen) return;
           if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
-            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.state === 'CUSTOMIZER') return;
+            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || this.state === 'CUSTOMIZER') return;
             e.preventDefault();
             audio.init();
             handleJump(e);
           } else if (e.code === 'Escape' || e.code === 'KeyP') {
-            if (this.state === 'CUSTOMIZER') {
+            if (this.isTutorialOpen) {
+              closeTutorial(e);
+            } else if (this.state === 'CUSTOMIZER') {
               this.setScreen('MENU');
             } else if (this.isStreakModalOpen) {
               closeStreakModal(e);
@@ -5200,6 +5858,26 @@
           audio.click();
           this.startGame();
         };
+
+        // Difficulty Selection Event Listeners
+        if (this.diffEasyBtn) {
+          this.diffEasyBtn.onclick = () => {
+            audio.click();
+            this.setDifficulty('EASY');
+          };
+        }
+        if (this.diffMedBtn) {
+          this.diffMedBtn.onclick = () => {
+            audio.click();
+            this.setDifficulty('MEDIUM');
+          };
+        }
+        if (this.diffHardBtn) {
+          this.diffHardBtn.onclick = () => {
+            audio.click();
+            this.setDifficulty('HARD');
+          };
+        }
 
         const soundBtn = document.getElementById('soundToggleBtn');
         soundBtn.onclick = () => {
@@ -5533,6 +6211,10 @@
             this.isStreakModalOpen = false;
             if (this.streakModal) this.streakModal.classList.remove('active');
           }
+          if (this.isTutorialOpen) {
+            this.isTutorialOpen = false;
+            if (this.tutorialOverlay) this.tutorialOverlay.classList.remove('active');
+          }
         }
         if (screen !== 'PLAYING' && screen !== 'PAUSED') {
           this.magnetTimer = 0;
@@ -5580,6 +6262,7 @@
           document.getElementById('menuHighDist').textContent = `${this.highDistance} m`;
           document.getElementById('menuHighScore').textContent = this.highScore;
           document.getElementById('menuTotalCoins').textContent = this.totalCoins;
+          this.applyDifficultyUI();
           if (this.streakManager) {
             this.streakManager.renderBadge();
             this.streakManager.renderModal();
@@ -5593,8 +6276,71 @@
         }
       }
 
-      startGame() {
+      setDifficulty(diffLevel) {
+        if (!this.difficultyConfigs[diffLevel]) return;
+        this.selectedDifficulty = diffLevel;
+        Storage.setString(Storage.KEYS.DIFFICULTY, diffLevel);
+        const config = this.difficultyConfigs[diffLevel];
+        this.baseSpeed = config.baseSpeed;
+        this.baseMinObstacleDist = config.baseMinObstacleDist;
+        this.applyDifficultyUI();
+      }
+
+      applyDifficultyUI() {
+        const config = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
+        if (this.diffEasyBtn) this.diffEasyBtn.classList.toggle('active', this.selectedDifficulty === 'EASY');
+        if (this.diffMedBtn) this.diffMedBtn.classList.toggle('active', this.selectedDifficulty === 'MEDIUM');
+        if (this.diffHardBtn) this.diffHardBtn.classList.toggle('active', this.selectedDifficulty === 'HARD');
+
+        if (this.diffDescText) {
+          this.diffDescText.textContent = config.desc;
+        }
+
+        if (this.hudDiffBadge && this.hudDiffIcon && this.hudDiffText) {
+          this.hudDiffBadge.className = `diff-hud-pill ${config.badgeClass}`;
+          this.hudDiffIcon.textContent = config.icon;
+          this.hudDiffText.textContent = config.name.toUpperCase();
+        }
+
+        if (this.goDiff) {
+          this.goDiff.textContent = `${config.icon} ${config.name.toUpperCase()}`;
+        }
+      }
+
+      showTutorialModal() {
+        this.isTutorialOpen = true;
+        if (this.tutorialOverlay) {
+          this.tutorialOverlay.classList.add('active');
+        }
+      }
+
+      closeTutorial() {
+        this.isTutorialOpen = false;
+        if (this.tutorialOverlay) {
+          this.tutorialOverlay.classList.remove('active');
+        }
+        // Proceed with gameplay start now that the user has completed the tutorial
+        this.startGame(true);
+      }
+
+      startGame(fromTutorial = false) {
         if (this.isConsentModalOpen || !this.checkConsentState()) return;
+
+        // Check if this is the first gameplay session and tutorial hasn't been shown yet
+        const tutorialShown = Storage.getInt(Storage.KEYS.TUTORIAL_SHOWN, 0) === 1;
+        if (!tutorialShown && !fromTutorial) {
+          Storage.setInt(Storage.KEYS.TUTORIAL_SHOWN, 1);
+          this.showTutorialModal();
+          return;
+        }
+
+        // Ensure difficulty settings are up to date from Storage
+        this.selectedDifficulty = Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
+        const diffConfig = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
+        this.baseSpeed = diffConfig.baseSpeed;
+        this.baseMinObstacleDist = diffConfig.baseMinObstacleDist;
+        this.applyDifficultyUI();
+
         this.distance = 0;
         this.score = 0;
         this.runCoins = 0;
@@ -5809,6 +6555,12 @@
         document.getElementById('goScore').textContent = Math.floor(this.score);
         document.getElementById('goCoins').textContent = `+${this.runCoins}`;
         document.getElementById('newRecordBadge').style.display = isNewRecord ? 'inline-block' : 'none';
+
+        const currentDiffConfig = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
+        const goDiffEl = document.getElementById('goDiff');
+        if (goDiffEl) {
+          goDiffEl.textContent = `${currentDiffConfig.icon} ${currentDiffConfig.name.toUpperCase()}`;
+        }
 
         // Render Local vs Global High Score Comparison Benchmark
         this.renderHighScoreBenchmark(this.distance, prevHighDist, isNewRecord);
@@ -6156,6 +6908,14 @@
         this.distEl.textContent = `${Math.floor(this.distance)}m`;
         this.highDistEl.textContent = `High: ${this.highDistance}m`;
 
+        // Update difficulty HUD badge
+        if (this.hudDiffBadge && this.hudDiffIcon && this.hudDiffText) {
+          const cfg = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
+          this.hudDiffBadge.className = `diff-hud-pill ${cfg.badgeClass}`;
+          this.hudDiffIcon.textContent = cfg.icon;
+          this.hudDiffText.textContent = cfg.name.toUpperCase();
+        }
+
         // Update heart icons
         const hearts = this.heartsBox.children;
         for (let i = 0; i < hearts.length; i++) {
@@ -6331,20 +7091,25 @@
           const dist = this.distance;
           const postDist = Math.max(0, dist - 50);
           const obstacleSpacingFactor = Math.pow(0.92, postDist / 150);
-          const currentMinObstacleDist = Math.max(110, this.baseMinObstacleDist * obstacleSpacingFactor);
+          const currentMinObstacleDist = Math.max(100, this.baseMinObstacleDist * obstacleSpacingFactor);
+          const diffCfg = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
+          const enemyChanceMult = diffCfg.enemyChanceMult || 1.0;
+          const spikeChanceMult = diffCfg.spikeChanceMult || 1.0;
 
           if (dist >= 50 && platW > 180) {
             const enemyX = newPlatform.x + platW * 0.5;
             const canSpawnEnemy = (enemyX - this.lastObstacleX) >= currentMinObstacleDist;
-            const spawnEnemyChance = dist < 100 ? 0.45 : 0.65;
+            const spawnEnemyChance = Math.min(0.9, (dist < 100 ? 0.45 : 0.65) * enemyChanceMult);
             if (canSpawnEnemy && Math.random() < spawnEnemyChance) {
+              const baseEnemySpeed = (Math.random() * 1.2 + 1.2) * (Math.random() > 0.5 ? 1 : -1);
+              const enemySpeedMultiplier = this.selectedDifficulty === 'HARD' ? 1.25 : (this.selectedDifficulty === 'EASY' ? 0.85 : 1.0);
               this.enemies.push({
                 x: enemyX,
                 y: newPlatform.y - 20,
                 radius: 18,
                 patrolMin: newPlatform.x + 25,
                 patrolMax: newPlatform.x + platW - 25,
-                speed: (Math.random() * 1.2 + 1.2) * (Math.random() > 0.5 ? 1 : -1),
+                speed: baseEnemySpeed * enemySpeedMultiplier,
                 passed: false,
                 hitPlayer: false
               });
@@ -6355,7 +7120,7 @@
           if (dist >= 100 && platW > 220) {
             const spikeX = newPlatform.x + platW * 0.75;
             const canSpawnSpike = (spikeX - this.lastObstacleX) >= currentMinObstacleDist;
-            const spawnSpikeChance = dist < 200 ? 0.4 : 0.6;
+            const spawnSpikeChance = Math.min(0.85, (dist < 200 ? 0.4 : 0.6) * spikeChanceMult);
             if (canSpawnSpike && Math.random() < spawnSpikeChance) {
               this.spikes.push({
                 x: spikeX,
