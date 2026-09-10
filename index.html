@@ -1418,6 +1418,113 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    /* Mandatory First-Time Privacy Consent Modal */
+    #consentModal {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    #consentModal.active {
+      display: flex;
+    }
+    .consent-card {
+      background: linear-gradient(165deg, #1E293B 0%, #0F172A 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      border-radius: 22px;
+      padding: 24px 28px;
+      max-width: 480px;
+      width: 95%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      color: #F8FAFC;
+      box-sizing: border-box;
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .consent-icon {
+      font-size: 38px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    .consent-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #FFF;
+      margin-bottom: 6px;
+    }
+    .consent-desc {
+      font-size: 13px;
+      color: #94A3B8;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+    .consent-checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .consent-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      color: #E2E8F0;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .consent-checkbox-label:hover {
+      background: rgba(51, 65, 85, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .consent-checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #38BDF8;
+      cursor: pointer;
+    }
+    .consent-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+      color: #FFF;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+      transition: all 0.2s ease;
+    }
+    .consent-btn:disabled, .consent-btn.disabled {
+      background: #334155 !important;
+      color: #64748B !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      opacity: 0.6;
+    }
+    .consent-links {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #64748B;
+    }
     .streak-card {
       background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
       border: 1px solid rgba(255, 255, 255, 0.18);
@@ -3021,6 +3128,34 @@
       </div>
     </div>
 
+    <!-- Mandatory First-Time Privacy Consent Modal -->
+    <div id="consentModal">
+      <div class="consent-card">
+        <div class="consent-icon">🏃🔥</div>
+        <div class="consent-title">Welcome to Dashbound</div>
+        <div class="consent-desc">
+          To ensure a safe, high-performance experience, please confirm the following before playing:
+        </div>
+
+        <div class="consent-checkbox-group">
+          <label class="consent-checkbox-label" for="consentAgeCheck">
+            <input type="checkbox" id="consentAgeCheck" />
+            <span>I am <strong>13 years of age or older</strong></span>
+          </label>
+          <label class="consent-checkbox-label" for="consentTermsCheck">
+            <input type="checkbox" id="consentTermsCheck" />
+            <span>I accept the <strong>Terms of Service</strong> &amp; <strong>Privacy Policy</strong></span>
+          </label>
+        </div>
+
+        <button id="consentAcceptBtn" class="consent-btn disabled" disabled>ACCEPT &amp; PLAY</button>
+
+        <div class="consent-links">
+          We respect player privacy. Local scores &amp; cosmetics are saved on your device.
+        </div>
+      </div>
+    </div>
+
     <!-- Info Modal / Controls Visual Guide -->
     <div id="infoModal">
       <div class="info-card" id="infoCard">
@@ -3362,6 +3497,20 @@
           navigator.vibrate(ms);
         }
       },
+      scheduleLocalNotification: function(hours, title, message) {
+        if (typeof Android !== 'undefined' && Android.scheduleLocalNotification) {
+          Android.scheduleLocalNotification(hours, title, message);
+        } else {
+          console.log(`[Notification Sim] Scheduled in ${hours}h: "${title}" - ${message}`);
+        }
+      },
+      cancelAllNotifications: function() {
+        if (typeof Android !== 'undefined' && Android.cancelAllNotifications) {
+          Android.cancelAllNotifications();
+        } else {
+          console.log('[Notification Sim] Cancelled all pending notifications');
+        }
+      },
       onAdReward: function(type) {
         game.handleAdReward(type);
       },
@@ -3371,7 +3520,68 @@
     };
     window.AndroidBridge = AndroidBridge;
 
-    // 3. Particle System
+    // 3. Centralized Storage Manager (Safe localStorage audit & single source of truth)
+    const Storage = {
+      KEYS: {
+        TOTAL_COINS: 'dashbound_total_coins',
+        HIGH_SCORE: 'dashbound_high_score',
+        HIGH_DIST: 'dashbound_high_dist',
+        DIAMONDS: 'dashbound_diamonds',
+        MISSIONS_DATA: 'dashbound_missions_data',
+        MISSIONS_DATE: 'dashbound_missions_date',
+        STREAK_COUNT: 'dashbound_streak_count',
+        STREAK_CLAIMED_DATE: 'dashbound_streak_claimed_date',
+        LAST_LOGIN_DATE: 'dashbound_last_login_date',
+        UNLOCKED_SKINS: 'dashbound_unlocked_skins',
+        SELECTED_SKIN: 'dashbound_selected_skin',
+        CONSENT_ACCEPTED: 'dashbound_consent_accepted',
+        LOCAL_TOP_RUNS: 'dashbound_local_top_runs',
+        HS_TOGGLE_MODE: 'dashbound_hs_toggle_mode',
+        ENEMIES_KILLED: 'dashbound_enemies_killed'
+      },
+      getInt: function(key, defaultVal = 0) {
+        try {
+          const val = localStorage.getItem(key);
+          return val !== null ? parseInt(val, 10) || defaultVal : defaultVal;
+        } catch (e) {
+          return defaultVal;
+        }
+      },
+      setInt: function(key, val) {
+        try {
+          localStorage.setItem(key, (val || 0).toString());
+        } catch (e) {}
+      },
+      getJSON: function(key, defaultVal = null) {
+        try {
+          const val = localStorage.getItem(key);
+          return val ? JSON.parse(val) : defaultVal;
+        } catch (e) {
+          return defaultVal;
+        }
+      },
+      setJSON: function(key, val) {
+        try {
+          localStorage.setItem(key, JSON.stringify(val));
+        } catch (e) {}
+      },
+      getString: function(key, defaultVal = '') {
+        try {
+          const val = localStorage.getItem(key);
+          return val !== null ? val : defaultVal;
+        } catch (e) {
+          return defaultVal;
+        }
+      },
+      setString: function(key, val) {
+        try {
+          localStorage.setItem(key, val);
+        } catch (e) {}
+      }
+    };
+    window.Storage = Storage;
+
+    // 4. Particle System
     class ParticleSystem {
       constructor() {
         this.particles = [];
@@ -3630,6 +3840,11 @@
       save() {
         localStorage.setItem('dashbound_missions_date', this.todayKey);
         localStorage.setItem('dashbound_missions_data', JSON.stringify(this.missions));
+      }
+
+      hasUnfinishedMissions() {
+        if (!this.missions || this.missions.length === 0) return true;
+        return this.missions.some(m => !m.completed || !m.claimed);
       }
 
       checkCompletion(m) {
@@ -4180,9 +4395,14 @@
           const raw = localStorage.getItem('dashbound_unlocked_skins');
           if (raw) {
             const list = JSON.parse(raw);
-            if (Array.isArray(list) && list.includes('classic')) return list;
+            if (Array.isArray(list)) {
+              if (!list.includes('classic')) list.unshift('classic');
+              return list;
+            }
           }
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Error loading unlocked skins:', e);
+        }
         const defaultList = ['classic'];
         this.saveUnlockedSkins(defaultList);
         return defaultList;
@@ -4191,7 +4411,9 @@
       saveUnlockedSkins(list) {
         try {
           localStorage.setItem('dashbound_unlocked_skins', JSON.stringify(list));
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Error saving unlocked skins:', e);
+        }
       }
 
       loadSelectedSkin() {
@@ -4230,6 +4452,9 @@
         this.selectedSkinId = skinId;
         this.previewSkinId = skinId;
         this.saveSelectedSkin(skinId);
+        if (this.game.player) {
+          this.game.player.skinId = skinId;
+        }
         audio.equip();
         AndroidBridge.vibrate(35);
         this.renderCustomizer();
@@ -4262,22 +4487,36 @@
 
         // Deduct coins & unlock
         this.game.totalCoins -= skin.price;
-        this.game.saveStats();
-        this.unlockedSkins.push(skinId);
+        if (typeof this.game.saveStats === 'function') {
+          this.game.saveStats();
+        } else {
+          localStorage.setItem('dashbound_total_coins', this.game.totalCoins.toString());
+        }
+
+        if (!this.unlockedSkins.includes(skinId)) {
+          this.unlockedSkins.push(skinId);
+        }
         this.saveUnlockedSkins(this.unlockedSkins);
+
+        // Immediately equip purchased skin
         this.selectedSkinId = skinId;
         this.previewSkinId = skinId;
         this.saveSelectedSkin(skinId);
+        if (this.game.player) {
+          this.game.player.skinId = skinId;
+        }
 
         audio.purchase();
+        audio.equip();
         AndroidBridge.vibrate(80);
-        AndroidBridge.showToast(`🎉 Unlocked ${skin.name}!`);
+        AndroidBridge.showToast(`🎉 Unlocked & Equipped ${skin.name}!`);
 
         // Trigger confetti celebration
         if (this.game.streakManager && typeof this.game.streakManager.spawnConfetti === 'function') {
           this.game.streakManager.spawnConfetti();
         }
 
+        // Instantly re-render Customizer UI to reflect 'Equipped' state
         this.renderCustomizer();
       }
 
@@ -4594,10 +4833,15 @@
         this.lives = 3;
         this.maxLives = 3;
 
-        // Local storage persistence
-        this.highDistance = parseInt(localStorage.getItem('dashbound_high_dist') || '0', 10);
-        this.highScore = parseInt(localStorage.getItem('dashbound_high_score') || '0', 10);
-        this.totalCoins = parseInt(localStorage.getItem('dashbound_total_coins') || '0', 10);
+        // Local storage persistence via Centralized Storage Manager
+        this.highDistance = 0;
+        this.highScore = 0;
+        this.totalCoins = 0;
+        this.diamonds = 0;
+        this.enemiesKilled = 0;
+        this.totalEnemiesKilled = 0;
+        this.loadStats();
+        this.isConsentModalOpen = false;
 
         // Rewarded ad flags (once per run)
         this.reviveUsed = false;
@@ -4675,13 +4919,110 @@
         this.initEvents();
         this.resize();
 
+        // Clear any pending notifications on game load / Main Menu initialization
+        AndroidBridge.cancelAllNotifications();
+
         // Auto transition from Glitchora splash to Main Menu
         setTimeout(() => {
           this.setScreen('MENU');
+          this.checkConsentState();
         }, 1800);
 
         this.lastTime = performance.now();
         requestAnimationFrame((t) => this.loop(t));
+      }
+
+      loadStats() {
+        this.highDistance = Storage.getInt(Storage.KEYS.HIGH_DIST, 0);
+        this.highScore = Storage.getInt(Storage.KEYS.HIGH_SCORE, 0);
+        this.totalCoins = Storage.getInt(Storage.KEYS.TOTAL_COINS, 0);
+        this.diamonds = Storage.getInt(Storage.KEYS.DIAMONDS, 0);
+        this.totalEnemiesKilled = Storage.getInt(Storage.KEYS.ENEMIES_KILLED, 0);
+      }
+
+      saveStats() {
+        Storage.setInt(Storage.KEYS.HIGH_DIST, this.highDistance);
+        Storage.setInt(Storage.KEYS.HIGH_SCORE, this.highScore);
+        Storage.setInt(Storage.KEYS.TOTAL_COINS, this.totalCoins);
+        Storage.setInt(Storage.KEYS.DIAMONDS, this.diamonds || 0);
+        Storage.setInt(Storage.KEYS.ENEMIES_KILLED, this.totalEnemiesKilled || 0);
+        this.updateHUD();
+      }
+
+      checkConsentState() {
+        const accepted = Storage.getString(Storage.KEYS.CONSENT_ACCEPTED) === 'true';
+        if (!accepted) {
+          this.showConsentModal();
+          return false;
+        }
+        return true;
+      }
+
+      showConsentModal() {
+        const modal = document.getElementById('consentModal');
+        if (!modal) return;
+        modal.classList.add('active');
+        this.isConsentModalOpen = true;
+
+        const ageCheck = document.getElementById('consentAgeCheck');
+        const termsCheck = document.getElementById('consentTermsCheck');
+        const acceptBtn = document.getElementById('consentAcceptBtn');
+
+        const updateBtnState = () => {
+          const ready = !!(ageCheck && termsCheck && ageCheck.checked && termsCheck.checked);
+          if (acceptBtn) {
+            acceptBtn.disabled = !ready;
+            acceptBtn.classList.toggle('disabled', !ready);
+          }
+        };
+
+        if (ageCheck) {
+          ageCheck.checked = false;
+          ageCheck.onchange = updateBtnState;
+        }
+        if (termsCheck) {
+          termsCheck.checked = false;
+          termsCheck.onchange = updateBtnState;
+        }
+        updateBtnState();
+
+        if (acceptBtn) {
+          acceptBtn.onclick = () => {
+            if (!ageCheck.checked || !termsCheck.checked) return;
+            Storage.setString(Storage.KEYS.CONSENT_ACCEPTED, 'true');
+            this.isConsentModalOpen = false;
+            modal.classList.remove('active');
+            audio.init();
+            audio.click();
+            AndroidBridge.vibrate(40);
+            AndroidBridge.showToast('Welcome to Dashbound!');
+          };
+        }
+      }
+
+      scheduleAppExitReminders() {
+        try {
+          const hasUnfinished = this.missionManager ? this.missionManager.hasUnfinishedMissions() : true;
+          const missionMsg = hasUnfinished
+            ? 'You have unfinished missions waiting! Jump in and earn some coins!'
+            : 'New missions are available. Jump in and earn some coins!';
+
+          // 24-hour reminder
+          AndroidBridge.scheduleLocalNotification(
+            24,
+            '🔥 Daily Missions Reset!',
+            missionMsg
+          );
+
+          // 48-hour streak warning
+          AndroidBridge.scheduleLocalNotification(
+            48,
+            '⚠️ Streak in Danger!',
+            'Play now to keep your daily login streak alive!'
+          );
+        } catch (e) {
+          console.error('Failed to schedule reminders', e);
+        }
       }
 
       initDOM() {
@@ -4699,6 +5040,7 @@
         this.gameOverScreen = document.getElementById('gameOverScreen');
         this.infoModal = document.getElementById('infoModal');
         this.streakModal = document.getElementById('streakModal');
+        this.consentModal = document.getElementById('consentModal');
         this.customizerScreen = document.getElementById('customizerScreen');
         this.adModal = document.getElementById('adModal');
         this.adToast = document.getElementById('adToast');
@@ -4816,7 +5158,7 @@
 
         // Jump Controls (Mobile Tap + Keyboard)
         const handleJump = (e) => {
-          if (this.isInfoModalOpen || this.isStreakModalOpen || this.state === 'CUSTOMIZER') return;
+          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.state === 'CUSTOMIZER') return;
           if (this.state === 'PLAYING') {
             this.playerJump();
           } else if (this.state === 'MENU') {
@@ -4825,13 +5167,15 @@
         };
 
         this.canvas.addEventListener('pointerdown', (e) => {
+          if (this.isConsentModalOpen) return;
           audio.init();
           handleJump(e);
         });
 
         window.addEventListener('keydown', (e) => {
+          if (this.isConsentModalOpen) return;
           if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
-            if (this.isInfoModalOpen || this.isStreakModalOpen || this.state === 'CUSTOMIZER') return;
+            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.state === 'CUSTOMIZER') return;
             e.preventDefault();
             audio.init();
             handleJump(e);
@@ -4852,6 +5196,7 @@
 
         // UI Buttons
         document.getElementById('startPlayBtn').onclick = () => {
+          if (this.isConsentModalOpen || !this.checkConsentState()) return;
           audio.click();
           this.startGame();
         };
@@ -4930,6 +5275,7 @@
             AndroidBridge.vibrate(40);
           } else {
             this.resetPauseConfirmations();
+            this.scheduleAppExitReminders();
             AndroidBridge.exitApp();
           }
         };
@@ -5022,6 +5368,19 @@
           hsGlobalBtn.onclick = () => setHSToggleMode('global');
         }
         setHSToggleMode(this.hsToggleMode, false);
+
+        // App lifecycle listeners: schedule reminders when app is put in background
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden') {
+            this.scheduleAppExitReminders();
+          } else if (document.visibilityState === 'visible') {
+            AndroidBridge.cancelAllNotifications();
+          }
+        });
+
+        window.addEventListener('pagehide', () => {
+          this.scheduleAppExitReminders();
+        });
       }
 
       resize() {
@@ -5197,6 +5556,10 @@
         this.pauseScreen.classList.toggle('active', screen === 'PAUSED');
         this.gameOverScreen.classList.toggle('active', screen === 'GAMEOVER');
 
+        if (screen === 'MENU') {
+          AndroidBridge.cancelAllNotifications();
+        }
+
         // Always reset two-tap confirmation states whenever navigating screens
         this.resetPauseConfirmations();
         if (this.customizerScreen) {
@@ -5231,9 +5594,11 @@
       }
 
       startGame() {
+        if (this.isConsentModalOpen || !this.checkConsentState()) return;
         this.distance = 0;
         this.score = 0;
         this.runCoins = 0;
+        this.enemiesKilled = 0;
         this.lives = this.maxLives;
         this.gameSpeed = this.baseSpeed;
         this.reviveUsed = false;
@@ -5339,7 +5704,7 @@
         // Accumulate and persist current run coins
         if (this.runCoins > 0) {
           this.totalCoins += this.runCoins;
-          localStorage.setItem('dashbound_total_coins', this.totalCoins.toString());
+          this.saveStats();
           this.showToast(`💰 Saved ${this.runCoins} coins to bank!`);
         }
 
@@ -5430,17 +5795,15 @@
         let isNewRecord = false;
         if (this.distance > this.highDistance) {
           this.highDistance = Math.floor(this.distance);
-          localStorage.setItem('dashbound_high_dist', this.highDistance.toString());
           isNewRecord = true;
         }
         if (this.score > this.highScore) {
           this.highScore = Math.floor(this.score);
-          localStorage.setItem('dashbound_high_score', this.highScore.toString());
           isNewRecord = true;
         }
 
         this.totalCoins += this.runCoins;
-        localStorage.setItem('dashbound_total_coins', this.totalCoins.toString());
+        this.saveStats();
 
         document.getElementById('goDist').textContent = `${Math.floor(this.distance)} m`;
         document.getElementById('goScore').textContent = Math.floor(this.score);
@@ -6255,22 +6618,81 @@
             e.speed = Math.abs(e.speed);
           }
 
-          // Player collision with enemy
+          // Player collision with circular enemy (Angle-based Stomp & Reward + Fast Start)
           if (this.player.invulnerableTimer === 0) {
             const px = this.player.x + this.player.w / 2;
             const py = this.player.y + this.player.h / 2;
-            const dist = Math.hypot(px - e.x, py - e.y);
+            const dx = px - e.x;
+            const dy = py - e.y;
+            const dist = Math.hypot(dx, dy);
+
             if (dist < e.radius + 18) {
               if (this.isFastStartActive()) {
-                // Runner smashes through enemy with celebratory sparks!
+                // Fast Start invulnerability: runner smashes through enemy on any contact with celebratory sparks!
                 e.hitPlayer = true;
-                this.particles.createCelebrationExplosion(e.x, e.y, 20);
+                this.particles.createCelebrationExplosion(e.x, e.y, 22);
                 audio.coin();
                 AndroidBridge.vibrate(35);
+                this.enemiesKilled = (this.enemiesKilled || 0) + 1;
+                this.totalEnemiesKilled = (this.totalEnemiesKilled || 0) + 1;
+                Storage.setInt(Storage.KEYS.ENEMIES_KILLED, this.totalEnemiesKilled);
                 this.enemies.splice(i, 1);
                 this.score += 20;
+                if (this.missionManager && typeof this.missionManager.onEnemyDefeated === 'function') {
+                  this.missionManager.onEnemyDefeated();
+                }
+                continue;
+              }
+
+              // 1. Calculate angle of collision between player center and circular enemy center
+              const angleRad = Math.atan2(dy, dx);
+
+              // 2. Convert radian angle to degrees and normalize so straight up (Top) is 0°, Right is 90°, Bottom is 180°, Left is 270°
+              const angleDeg = angleRad * (180 / Math.PI);
+              let collisionAngle = (angleDeg + 90) % 360;
+              if (collisionAngle < 0) {
+                collisionAngle += 360;
+              }
+
+              // 3. Stomp Zone: strictly top 90-degree arc (from 315° to 45°)
+              const inStompZone = (collisionAngle >= 315 || collisionAngle <= 45);
+              const isFalling = this.player.vy > 0;
+
+              // 4. Stomp check: collision angle within 315°–45° window AND player falling downward (vy > 0)
+              if (inStompZone && isFalling) {
+                e.hitPlayer = true;
+                this.particles.createCelebrationExplosion(e.x, e.y, 20);
+
+                // Apply upward bounce and air jump refund
+                this.player.vy = this.jumpForce * 0.85;
+                this.player.jumpsLeft = 1;
+                this.player.scaleX = 1.3;
+                this.player.scaleY = 0.7;
+
+                // Increment kill counter
+                this.enemiesKilled = (this.enemiesKilled || 0) + 1;
+                this.totalEnemiesKilled = (this.totalEnemiesKilled || 0) + 1;
+                Storage.setInt(Storage.KEYS.ENEMIES_KILLED, this.totalEnemiesKilled);
+
+                // Reward bonus score and coins
+                const stompCoins = 3;
+                const stompScore = 50;
+                this.runCoins += stompCoins;
+                this.totalCoins += stompCoins;
+                this.score += stompScore;
+                this.saveStats();
+
+                audio.jump();
+                audio.coin();
+                AndroidBridge.vibrate(45);
+                this.showToast('💥 STOMP! +50 pts & 3 coins');
+                if (this.missionManager && typeof this.missionManager.onEnemyDefeated === 'function') {
+                  this.missionManager.onEnemyDefeated();
+                }
+                this.enemies.splice(i, 1);
                 continue;
               } else {
+                // 5. Outside stomp window (sides 90°/270°, bottom 180°, or moving upward): hazard collision
                 e.hitPlayer = true;
                 this.takeDamage(e.x);
               }
@@ -7416,9 +7838,11 @@
         const dt = Math.min((time - this.lastTime) / 1000, 0.1);
         this.lastTime = time;
 
-        this.update(dt);
-        if (this.state !== 'PLAYING' && this.particles.particles.length > 0) {
-          this.particles.update();
+        if (!this.isConsentModalOpen) {
+          this.update(dt);
+          if (this.state !== 'PLAYING' && this.particles.particles.length > 0) {
+            this.particles.update();
+          }
         }
         this.draw();
 
