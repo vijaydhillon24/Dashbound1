@@ -116,6 +116,8 @@
       letter-spacing: 0.3px;
       white-space: nowrap;
       flex-shrink: 1;
+      transform-origin: center center;
+      will-change: transform, filter;
     }
     .hud-stat.distance-container {
       display: flex;
@@ -140,6 +142,162 @@
     .icon-trophy { color: #F59E0B; }
     .icon-coin { color: #FBBF24; }
     .icon-runner { color: #38BDF8; }
+
+    /* Subtle 'Breathing' Ambient Animation for HUD Stat Bars */
+    .hud-stat.hud-breathe {
+      animation-duration: 2.8s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+      transform-origin: center center;
+    }
+
+    /* Phased organic breathing so all 3 stat bars feel alive with natural offsets */
+    .hud-stat-trophy.hud-breathe {
+      animation-name: hudBreatheTrophy;
+      animation-delay: 0s;
+    }
+    .hud-stat-coin.hud-breathe {
+      animation-name: hudBreatheCoin;
+      animation-delay: -0.93s;
+    }
+    .hud-stat-distance.hud-breathe {
+      animation-name: hudBreatheDistance;
+      animation-delay: -1.86s;
+    }
+
+    /* Fast Pace rhythm when sprinting at top speed or in Fast Start */
+    .hud-bar.fast-pace .hud-stat.hud-breathe {
+      animation-duration: 1.4s !important;
+    }
+
+    @keyframes hudBreatheTrophy {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(245, 158, 11, 0));
+      }
+      50% {
+        transform: scale(1.045);
+        filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.45));
+      }
+    }
+
+    @keyframes hudBreatheCoin {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(251, 191, 36, 0));
+      }
+      50% {
+        transform: scale(1.045);
+        filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.5));
+      }
+    }
+
+    @keyframes hudBreatheDistance {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(56, 189, 248, 0));
+      }
+      50% {
+        transform: scale(1.04);
+        filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.45));
+      }
+    }
+
+    /* Responsive in-game action pop / reactive animations */
+    .hud-stat.action-pulse-coin {
+      animation: hudActionCoin 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+    .hud-stat.action-pulse-trophy {
+      animation: hudActionTrophy 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+    .hud-stat.action-pulse-distance {
+      animation: hudActionDistance 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+
+    @keyframes hudActionCoin {
+      0% {
+        transform: scale(1);
+      }
+      35% {
+        transform: scale(1.22);
+        filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)) brightness(1.25);
+      }
+      70% {
+        transform: scale(1.06);
+        filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6)) brightness(1.1);
+      }
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(251, 191, 36, 0));
+      }
+    }
+
+    @keyframes hudActionTrophy {
+      0% {
+        transform: scale(1);
+      }
+      35% {
+        transform: scale(1.22);
+        filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)) brightness(1.25);
+      }
+      70% {
+        transform: scale(1.06);
+        filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6)) brightness(1.1);
+      }
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(245, 158, 11, 0));
+      }
+    }
+
+    @keyframes hudActionDistance {
+      0% {
+        transform: scale(1);
+      }
+      35% {
+        transform: scale(1.18);
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9)) brightness(1.2);
+      }
+      70% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5)) brightness(1.08);
+      }
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(56, 189, 248, 0));
+      }
+    }
+
+    /* Icon micro-animations during breathing */
+    .hud-stat .icon-trophy,
+    .hud-stat .icon-coin,
+    .hud-stat .icon-runner {
+      display: inline-block;
+      transform-origin: center center;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .hud-stat-trophy.hud-breathe .icon-trophy {
+      animation: trophyBob 2.8s infinite ease-in-out;
+    }
+    .hud-stat-coin.hud-breathe .icon-coin {
+      animation: coinBob 2.8s infinite ease-in-out -0.93s;
+    }
+    .hud-stat-distance.hud-breathe .icon-runner {
+      animation: runnerLean 2.8s infinite ease-in-out -1.86s;
+    }
+
+    @keyframes trophyBob {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-1.5px) rotate(3deg); }
+    }
+    @keyframes coinBob {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-1.5px) rotate(-3deg); }
+    }
+    @keyframes runnerLean {
+      0%, 100% { transform: translateX(0px) scaleX(1); }
+      50% { transform: translateX(1.5px) scaleX(1.06); }
+    }
 
     .hearts-box {
       display: flex;
@@ -529,28 +687,34 @@
       width: 100%;
       height: 100%;
       height: 100dvh;
+      max-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       z-index: 20;
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color: #fff;
       text-align: center;
-      padding: max(10px, env(safe-area-inset-top, 10px)) max(14px, env(safe-area-inset-right, 14px)) max(16px, env(safe-area-inset-bottom, 16px)) max(14px, env(safe-area-inset-left, 14px));
+      padding: max(6px, env(safe-area-inset-top, 6px)) max(10px, env(safe-area-inset-right, 10px)) max(6px, env(safe-area-inset-bottom, 6px)) max(10px, env(safe-area-inset-left, 10px));
       box-sizing: border-box;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
+      overflow: hidden; /* Page itself NEVER scrolls */
+      overscroll-behavior: none;
     }
-    /* Momentum-based scrolling & overscroll containment for all overlays and containers */
-    .overlay,
+    /* Clamped screens & cards */
+    #startScreen,
+    #pauseScreen,
+    #gameOverScreen,
+    #customizerScreen {
+      max-height: 100dvh;
+      overflow: hidden;
+    }
+    /* Momentum-based scrolling & overscroll containment for dedicated inner lists */
     .menu-container,
     .customizer-container,
     .streak-card,
@@ -566,11 +730,6 @@
     [class*="container"] {
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
-    }
-    .overlay::before,
-    .overlay::after {
-      content: '';
-      margin: auto;
     }
     .overlay.active {
       opacity: 1;
@@ -635,11 +794,14 @@
     .stats-card {
       background: rgba(30, 41, 59, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      padding: 14px 24px;
+      border-radius: 14px;
+      padding: clamp(6px, 1.2vh, 10px) clamp(10px, 1.8vw, 20px);
       display: flex;
-      gap: 28px;
-      margin-bottom: 22px;
+      gap: clamp(10px, 2vw, 24px);
+      margin-bottom: clamp(6px, 1.5vh, 16px);
+      box-sizing: border-box;
+      flex-shrink: 1;
+      min-height: 0;
     }
     .stat-item {
       display: flex;
@@ -647,35 +809,96 @@
       align-items: center;
     }
     .stat-label {
-      font-size: 11px;
+      font-size: clamp(9px, 1.5vh, 11px);
       color: #94A3B8;
       text-transform: uppercase;
       font-weight: 700;
       letter-spacing: 0.5px;
     }
     .stat-val {
-      font-size: 20px;
+      font-size: clamp(14px, 2.6vh, 20px);
       font-weight: 800;
       color: #F8FAFC;
     }
 
-    /* Game Over Overlay Screen with High Score Benchmark */
+    /* Game Over Overlay Screen with Horizontal Flex/Grid Layout */
     #gameOverScreen {
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      padding: 16px 14px;
-      justify-content: flex-start;
+      overflow: hidden;
+      padding: clamp(6px, 1.5vh, 14px) clamp(10px, 2vw, 16px);
+      justify-content: center;
+      align-items: center;
+      max-height: 100dvh;
+      box-sizing: border-box;
     }
     #gameOverScreen::before,
     #gameOverScreen::after {
-      content: '';
-      margin: auto;
+      display: none;
+    }
+    .gameover-container {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: center;
+      gap: clamp(10px, 2vw, 24px);
+      width: 100%;
+      max-width: 920px;
+      max-height: 95dvh;
+      box-sizing: border-box;
+      min-height: 0;
+      flex-shrink: 1;
+      overflow: hidden;
+    }
+    .gameover-left-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 340px;
+      max-width: 420px;
+      min-height: 0;
+      flex-shrink: 1;
+    }
+    .gameover-header-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: clamp(2px, 0.8vh, 6px);
+      flex-shrink: 0;
+    }
+    .gameover-title {
+      font-size: clamp(20px, 4.2vh, 32px);
+      font-weight: 900;
+      color: #EF4444;
+      margin: 0;
+      letter-spacing: 1px;
     }
     #gameOverScreen .stats-card {
-      margin-bottom: 12px;
-      padding: 10px 20px;
-      gap: 22px;
+      margin-bottom: clamp(6px, 1.2vh, 10px);
+      padding: clamp(6px, 1vh, 10px) clamp(10px, 1.8vw, 18px);
+      gap: clamp(8px, 1.5vw, 18px);
+    }
+    .gameover-btn-row {
+      display: flex;
+      gap: clamp(4px, 1vw, 8px);
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 420px;
+      flex-shrink: 1;
+    }
+    .gameover-btn-row .btn {
+      padding: clamp(6px, 1.2vh, 9px) clamp(10px, 1.5vw, 16px);
+      font-size: clamp(11px, 2vh, 13px);
+      min-width: clamp(88px, 16vw, 116px);
+      border-radius: 10px;
+    }
+    .gameover-right-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1 1 380px;
+      max-width: 440px;
+      min-height: 0;
+      flex-shrink: 1;
     }
 
     /* High Score Benchmark Card (Global vs Local Toggle) */
@@ -684,13 +907,18 @@
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 16px;
-      padding: 12px 16px;
+      padding: clamp(8px, 1.5vh, 12px) clamp(10px, 1.8vw, 16px);
       width: 100%;
-      max-width: 400px;
-      margin-bottom: 16px;
+      max-width: 440px;
+      margin-bottom: 0;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       text-align: left;
       box-sizing: border-box;
+      min-height: 0;
+      flex-shrink: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
     .hs-toggle-header {
       display: flex;
@@ -851,6 +1079,43 @@
       color: #F87171;
       border-color: rgba(248, 113, 113, 0.35);
     }
+    .weather-hud-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(15, 23, 42, 0.65);
+      text-transform: uppercase;
+      transition: all 0.35s ease;
+    }
+    .weather-hud-pill.clear {
+      color: #FBBF24;
+      border-color: rgba(251, 191, 36, 0.45);
+      background: rgba(251, 191, 36, 0.1);
+    }
+    .weather-hud-pill.sandstorm {
+      color: #F59E0B;
+      border-color: rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.14);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+    }
+    .weather-hud-pill.rain {
+      color: #38BDF8;
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.14);
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+    }
+    .weather-hud-pill.snow {
+      color: #E0F2FE;
+      border-color: rgba(224, 242, 254, 0.55);
+      background: rgba(224, 242, 254, 0.16);
+      box-shadow: 0 0 9px rgba(224, 242, 254, 0.35);
+    }
     .hs-switch-btn:hover:not(.active) {
       color: #E2E8F0;
       background: rgba(255, 255, 255, 0.06);
@@ -1008,8 +1273,8 @@
     .hs-records-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      max-height: 100px;
+      gap: 3px;
+      max-height: clamp(55px, 12vh, 88px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
@@ -3145,10 +3410,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 10px 14px;
+      padding: clamp(6px, 1.5vh, 12px) clamp(8px, 1.5vw, 14px);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      max-height: 100dvh;
+      box-sizing: border-box;
     }
     #customizerScreen.active {
       opacity: 1;
@@ -3157,27 +3425,27 @@
     .customizer-container {
       background: rgba(15, 23, 42, 0.94);
       border: 1.5px solid rgba(255, 255, 255, 0.16);
-      border-radius: 20px;
+      border-radius: 18px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-      width: 95%;
+      width: 100%;
       max-width: 880px;
-      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
-      padding: 12px 16px;
-      padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+      max-height: 95dvh;
+      height: 95dvh;
+      padding: clamp(8px, 1.5vh, 12px) clamp(10px, 1.8vw, 16px);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
+      overflow: hidden; /* Main modal itself NEVER scrolls */
       box-sizing: border-box;
       margin: auto 0;
+      min-height: 0;
+      flex-shrink: 1;
     }
     .customizer-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 10px;
-      margin-bottom: 10px;
+      padding-bottom: clamp(4px, 1vh, 8px);
+      margin-bottom: clamp(4px, 1vh, 8px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       flex-shrink: 0;
     }
@@ -3192,9 +3460,9 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #F1F5F9;
       border-radius: 10px;
-      padding: 6px 12px;
+      padding: clamp(4px, 0.8vh, 6px) clamp(8px, 1vw, 12px);
       font-weight: 800;
-      font-size: 11px;
+      font-size: clamp(9.5px, 1.6vh, 11px);
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
@@ -3210,7 +3478,7 @@
       transform: scale(0.96);
     }
     .customizer-title {
-      font-size: 19px;
+      font-size: clamp(16px, 3.2vh, 20px);
       font-weight: 900;
       letter-spacing: 1px;
       color: #FFFFFF;
@@ -3220,7 +3488,7 @@
       margin: 0;
     }
     .customizer-subtitle {
-      font-size: 11px;
+      font-size: clamp(9px, 1.6vh, 11px);
       color: #94A3B8;
       font-weight: 500;
       margin: 1px 0 0 0;
@@ -3229,17 +3497,17 @@
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.12) 100%);
       border: 1.5px solid rgba(245, 158, 11, 0.5);
       border-radius: 12px;
-      padding: 6px 14px;
+      padding: clamp(4px, 0.8vh, 6px) clamp(8px, 1.2vw, 14px);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       color: #FBBF24;
-      font-size: 17px;
+      font-size: clamp(13px, 2.4vh, 17px);
       font-weight: 900;
       box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
     }
     .coins-label {
-      font-size: 10px;
+      font-size: clamp(8px, 1.4vh, 10px);
       color: #F59E0B;
       font-weight: 800;
       letter-spacing: 0.5px;
@@ -3256,8 +3524,8 @@
     .customizer-body {
       display: flex;
       flex-direction: row;
-      gap: 14px;
-      flex: 1;
+      gap: clamp(8px, 1.5vw, 14px);
+      flex: 1 1 auto;
       min-height: 0;
       align-items: stretch;
       overflow: hidden;
@@ -3265,30 +3533,33 @@
 
     /* Left Preview Pane */
     .customizer-preview-pane {
-      flex: 0 0 240px;
+      flex: 0 0 clamp(160px, 25vw, 220px);
       background: rgba(30, 41, 59, 0.55);
       border: 1.5px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: clamp(6px, 1.2vh, 10px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
       box-sizing: border-box;
+      min-height: 0;
+      overflow: hidden;
     }
     .preview-canvas-wrapper {
-      width: 130px;
-      height: 120px;
+      width: clamp(75px, 16vh, 120px);
+      height: clamp(70px, 15vh, 110px);
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(15, 23, 42, 0.5) 75%);
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1.5px dashed rgba(255, 255, 255, 0.16);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
       transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      flex-shrink: 0;
     }
     @keyframes unlockGlowPulse {
       0% {
@@ -3413,13 +3684,14 @@
 
     /* Right Skins Grid */
     .customizer-skins-list {
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(130px, 18vw, 170px), 1fr));
+      gap: clamp(6px, 1vw, 10px);
       padding: 2px 4px 6px 2px;
       align-content: start;
     }
@@ -3434,7 +3706,7 @@
       background: rgba(30, 41, 59, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.12);
       border-radius: 14px;
-      padding: 10px 12px;
+      padding: clamp(6px, 1vh, 10px) clamp(8px, 1vw, 12px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -3443,7 +3715,7 @@
       position: relative;
       overflow: hidden;
       text-align: left;
-      min-height: 105px;
+      min-height: clamp(80px, 16vh, 105px);
       box-sizing: border-box;
     }
     .skin-card:hover {
@@ -3539,47 +3811,168 @@
       animation: shakeErr 0.35s ease;
     }
 
-    @media (max-height: 440px) {
+    /* Aggressive scaling and hiding non-essential fluff on short screens (e.g. mobile landscape / fake-landscape) */
+    @media (max-height: 450px) {
+      /* Non-essential text, subtitles, taglines, hints, and decorative elements hidden */
+      .subtitle,
+      .customizer-subtitle,
+      .streak-desc-line,
+      .diff-info-desc,
+      .help-hint,
+      .missions-header-sub,
+      .hs-records-sub,
+      .hs-tier-milestones,
+      .hs-tier-subtitle,
+      .preview-tagline,
+      .menu-char-dust-container {
+        display: none !important;
+      }
+
+      /* Main Menu compacting */
+      .game-logo {
+        font-size: clamp(20px, 5vh, 26px) !important;
+        margin-bottom: 2px !important;
+      }
+      .streak-card {
+        padding: 3px 8px !important;
+        margin-bottom: 4px !important;
+        font-size: 11px !important;
+      }
+      .diff-selector-card {
+        padding: 4px 8px !important;
+        margin-bottom: 4px !important;
+      }
+      .diff-btn {
+        padding: 3px 6px !important;
+        font-size: 10px !important;
+      }
+      .menu-char-widget {
+        padding: 2px 8px !important;
+        margin-bottom: 4px !important;
+      }
+      .menu-container {
+        padding: 4px 8px !important;
+        gap: 8px !important;
+      }
+      .daily-missions-card {
+        padding: 6px 10px !important;
+        gap: 4px !important;
+      }
+      .missions-header {
+        margin-bottom: 4px !important;
+      }
+      .mission-item {
+        padding: 4px 6px !important;
+      }
+
+      /* Game Over Screen compacting */
+      .gameover-title {
+        font-size: clamp(18px, 4.5vh, 24px) !important;
+      }
+      #newRecordBadge {
+        font-size: 9px !important;
+        padding: 2px 8px !important;
+        margin-top: 2px !important;
+      }
+      #gameOverScreen .stats-card {
+        padding: 4px 10px !important;
+        margin-bottom: 6px !important;
+        gap: 8px !important;
+      }
+      .gameover-btn-row .btn {
+        padding: 5px 8px !important;
+        font-size: 11px !important;
+        min-width: 80px !important;
+      }
+      .hs-compare-card {
+        padding: 6px 10px !important;
+      }
+      .hs-toggle-header {
+        margin-bottom: 4px !important;
+        padding-bottom: 4px !important;
+      }
+      .hs-compare-metrics {
+        margin-bottom: 4px !important;
+        gap: 4px !important;
+      }
+      .hs-metric-box {
+        padding: 4px 6px !important;
+      }
+      .hs-metric-val {
+        font-size: 14px !important;
+      }
+      .hs-bar-container {
+        margin-bottom: 4px !important;
+      }
+      .hs-records-section {
+        padding: 4px 8px !important;
+      }
+      .hs-records-list {
+        max-height: 55px !important;
+      }
+      .hs-global-tier-banner {
+        padding: 4px 8px !important;
+        margin-bottom: 4px !important;
+      }
+
+      /* Character Customizer compacting */
       .customizer-container {
-        padding: 6px 12px;
-        padding-bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+        padding: 6px 10px !important;
+      }
+      .customizer-header {
+        padding-bottom: 4px !important;
+        margin-bottom: 4px !important;
+      }
+      .customizer-title {
+        font-size: 15px !important;
+      }
+      .customizer-coins-badge {
+        padding: 3px 8px !important;
+        font-size: 12px !important;
       }
       .customizer-preview-pane {
-        flex: 0 0 175px;
-        padding: 6px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-y: contain;
+        flex: 0 0 160px !important;
+        padding: 6px !important;
       }
       .preview-canvas-wrapper {
-        width: 80px;
-        height: 72px;
+        width: 76px !important;
+        height: 68px !important;
       }
       #customizerPreviewCanvas {
-        width: 80px;
-        height: 72px;
+        width: 100% !important;
+        height: 100% !important;
       }
       .preview-skin-name {
-        font-size: 12px;
-      }
-      .preview-tagline {
-        display: none;
+        font-size: 12px !important;
       }
       .btn-customizer-action {
-        padding: 6px 10px;
-        font-size: 11px;
+        padding: 5px 8px !important;
+        font-size: 11px !important;
+      }
+      .customizer-skins-list {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+        gap: 6px !important;
       }
       .skin-card {
-        padding: 5px 6px;
-        min-height: 80px;
+        padding: 5px 6px !important;
+        min-height: 76px !important;
       }
       .skin-card-icon-box {
-        width: 28px;
-        height: 28px;
-        font-size: 16px;
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 15px !important;
       }
       .skin-card-name {
-        font-size: 11px;
+        font-size: 11px !important;
+      }
+
+      /* Global button row compacting */
+      .btn-row {
+        gap: 4px !important;
+      }
+      .btn {
+        padding: 5px 8px !important;
+        font-size: 11px !important;
       }
     }
 
@@ -3765,60 +4158,20 @@
       }
     }
 
-    /* Orientation Lock Notice for Portrait Orientation on Mobile Devices */
-    #rotateDeviceOverlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      z-index: 999999;
-      background: rgba(8, 12, 22, 0.96);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #FFFFFF;
-      text-align: center;
-      padding: 24px;
-      box-sizing: border-box;
-      pointer-events: auto;
-    }
+    /* Orientation Support: Fake Landscape auto-rotation on portrait mobile screens */
     @media (orientation: portrait) {
-      #rotateDeviceOverlay {
-        display: flex !important;
+      #gameContainer {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 100vh;
+        width: 100dvh;
+        height: 100vw;
+        height: 100dvw;
+        transform: translate(-50%, -50%) rotate(90deg);
+        transform-origin: center center;
+        overflow: hidden;
       }
-      #gameContainer > *:not(#rotateDeviceOverlay) {
-        display: none !important;
-      }
-    }
-    .rotate-icon-anim {
-      width: 62px;
-      height: 62px;
-      margin-bottom: 20px;
-      animation: rotatePhonePrompt 2.2s infinite ease-in-out;
-      filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.6));
-    }
-    @keyframes rotatePhonePrompt {
-      0%, 15% { transform: rotate(0deg); }
-      45%, 85% { transform: rotate(-90deg); }
-      100% { transform: rotate(-90deg); }
-    }
-    .rotate-title {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: #38BDF8;
-      margin-bottom: 8px;
-      text-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
-    }
-    .rotate-subtitle {
-      font-size: 13.5px;
-      color: #94A3B8;
-      max-width: 300px;
-      line-height: 1.5;
     }
 
   </style>
@@ -3830,12 +4183,12 @@
     <!-- Top HUD Bar -->
     <div id="hud">
       <div class="hud-spacer"></div>
-      <div class="hud-bar">
-        <div class="hud-stat">
+      <div class="hud-bar" id="hudBar">
+        <div class="hud-stat hud-stat-trophy hud-breathe" id="hudStatTrophy" title="Current Score">
           <span class="icon-trophy">🏆</span>
           <span id="scoreText">0</span>
         </div>
-        <div class="hud-stat">
+        <div class="hud-stat hud-stat-coin hud-breathe" id="hudStatCoin" title="Coins Collected">
           <span class="icon-coin">💰</span>
           <span id="coinsText">0</span>
         </div>
@@ -3844,13 +4197,17 @@
           <span class="heart-icon">❤️</span>
           <span class="heart-icon">❤️</span>
         </div>
-        <div class="hud-stat distance-container">
+        <div class="hud-stat distance-container hud-stat-distance hud-breathe" id="hudStatDist" title="Distance Travelled">
           <div><span class="icon-runner">🏃</span> <span id="distText">0m</span></div>
           <span class="high-score" id="highDistText">High: 0m</span>
         </div>
         <div class="diff-hud-pill medium" id="hudDiffBadge" title="Current Game Difficulty">
           <span id="hudDiffIcon">⚡</span>
           <span id="hudDiffText">MED</span>
+        </div>
+        <div class="weather-hud-pill clear" id="hudWeatherBadge" title="Active Biome & Weather Condition">
+          <span id="hudWeatherIcon">☀️</span>
+          <span id="hudWeatherText">CLEAR</span>
         </div>
       </div>
       <div class="pause-btn" id="pauseBtn" title="Pause Game">
@@ -4066,154 +4423,164 @@
 
     <!-- 4. Game Over Screen -->
     <div id="gameOverScreen" class="overlay">
-      <h2 style="font-size: 34px; font-weight: 900; color: #EF4444; margin-bottom: 4px;">GAME OVER</h2>
-      <div id="newRecordBadge" style="display: none; background: #F59E0B; color: #000; font-weight: 800; font-size: 11px; padding: 3px 12px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 1px;">🎉 NEW BEST RECORD!</div>
-
-      <div class="stats-card">
-        <div class="stat-item">
-          <span class="stat-label">Distance</span>
-          <span class="stat-val" id="goDist">0 m</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Score</span>
-          <span class="stat-val" id="goScore">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Coins Picked</span>
-          <span class="stat-val" id="goCoins">+0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Difficulty</span>
-          <span class="stat-val" id="goDiff">⚡ MED</span>
-        </div>
-      </div>
-
-      <!-- High Score Benchmark Comparison Card: Global vs Local Toggle -->
-      <div class="hs-compare-card" id="hsCompareCard">
-        <div class="hs-toggle-header">
-          <div class="hs-toggle-title-box">
-            <span class="hs-toggle-icon">🏆</span>
-            <span class="hs-toggle-heading">Benchmark Comparison</span>
+      <div class="gameover-container">
+        <!-- Left Column: Header, Stats, and Action Buttons -->
+        <div class="gameover-left-col">
+          <div class="gameover-header-group">
+            <h2 class="gameover-title">GAME OVER</h2>
+            <div id="newRecordBadge" style="display: none; background: #F59E0B; color: #000; font-weight: 800; font-size: 11px; padding: 3px 12px; border-radius: 9999px; margin-top: 4px; letter-spacing: 1px;">🎉 NEW BEST RECORD!</div>
           </div>
-          <div class="hs-switch" role="tablist" aria-label="High Score Benchmark Mode">
-            <button class="hs-switch-btn active" id="hsToggleLocalBtn" role="tab" aria-selected="true" type="button" title="Compare with your personal records">
-              <span>🏠 Local</span>
+
+          <div class="stats-card">
+            <div class="stat-item">
+              <span class="stat-label">Distance</span>
+              <span class="stat-val" id="goDist">0 m</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Score</span>
+              <span class="stat-val" id="goScore">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Coins Picked</span>
+              <span class="stat-val" id="goCoins">+0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Difficulty</span>
+              <span class="stat-val" id="goDiff">⚡ MED</span>
+            </div>
+          </div>
+
+          <div class="btn-row gameover-btn-row">
+            <!-- Rewarded Ad buttons as specified in doc -->
+            <button class="btn btn-reward" id="adContinueBtn">
+              <span>🎬 Revive +1 Life</span>
             </button>
-            <button class="hs-switch-btn" id="hsToggleGlobalBtn" role="tab" aria-selected="false" type="button" title="Compare with global runner benchmarks">
-              <span>🌐 Global</span>
+            <button class="btn btn-reward" id="adDoubleCoinsBtn">
+              <span>🎬 2x Coins</span>
             </button>
+            <button class="btn btn-play" id="goRestartBtn">Play Again</button>
+            <button class="btn btn-customizer" id="goCustomizerBtn" title="Customize Runner Skins">
+              <span>🎨</span> <span>Skins</span>
+            </button>
+            <button class="btn btn-secondary" id="goMenuBtn">Main Menu</button>
           </div>
         </div>
 
-        <!-- 1. Local Benchmark Tab Panel -->
-        <div class="hs-tab-panel active" id="hsLocalPanel" role="tabpanel">
-          <div class="hs-compare-metrics">
-            <div class="hs-metric-box current">
-              <div class="hs-metric-tag">THIS RUN</div>
-              <div class="hs-metric-val" id="hsLocalCurrentDist">0 m</div>
+        <!-- Right Column: Benchmark Leaderboard Tabs -->
+        <div class="gameover-right-col">
+          <!-- High Score Benchmark Comparison Card: Global vs Local Toggle -->
+          <div class="hs-compare-card" id="hsCompareCard">
+            <div class="hs-toggle-header">
+              <div class="hs-toggle-title-box">
+                <span class="hs-toggle-icon">🏆</span>
+                <span class="hs-toggle-heading">Benchmark Comparison</span>
+              </div>
+              <div class="hs-switch" role="tablist" aria-label="High Score Benchmark Mode">
+                <button class="hs-switch-btn active" id="hsToggleLocalBtn" role="tab" aria-selected="true" type="button" title="Compare with your personal records">
+                  <span>🏠 Local</span>
+                </button>
+                <button class="hs-switch-btn" id="hsToggleGlobalBtn" role="tab" aria-selected="false" type="button" title="Compare with global runner benchmarks">
+                  <span>🌐 Global</span>
+                </button>
+              </div>
             </div>
-            <div class="hs-delta-badge" id="hsLocalDeltaBadge">
-              <span id="hsLocalDeltaSign">--</span>
-              <span id="hsLocalDeltaText">0 m vs PB</span>
-            </div>
-            <div class="hs-metric-box best">
-              <div class="hs-metric-tag">PERSONAL BEST</div>
-              <div class="hs-metric-val" id="hsLocalBestDist">0 m</div>
-            </div>
-          </div>
 
-          <div class="hs-bar-container">
-            <div class="hs-bar-meta">
-              <span>Progress to Personal Best</span>
-              <span class="hs-bar-percentage" id="hsLocalBarPercent">0%</span>
-            </div>
-            <div class="hs-bar-track">
-              <div class="hs-bar-fill local" id="hsLocalBarFill" style="width: 0%;"></div>
-            </div>
-            <div class="hs-tier-milestones">
-              <span>0 m</span>
-              <span id="hsLocalMidMilestone">250 m</span>
-              <span id="hsLocalBestMilestone">500 m</span>
-            </div>
-          </div>
+            <!-- 1. Local Benchmark Tab Panel -->
+            <div class="hs-tab-panel active" id="hsLocalPanel" role="tabpanel">
+              <div class="hs-compare-metrics">
+                <div class="hs-metric-box current">
+                  <div class="hs-metric-tag">THIS RUN</div>
+                  <div class="hs-metric-val" id="hsLocalCurrentDist">0 m</div>
+                </div>
+                <div class="hs-delta-badge" id="hsLocalDeltaBadge">
+                  <span id="hsLocalDeltaSign">--</span>
+                  <span id="hsLocalDeltaText">0 m vs PB</span>
+                </div>
+                <div class="hs-metric-box best">
+                  <div class="hs-metric-tag">PERSONAL BEST</div>
+                  <div class="hs-metric-val" id="hsLocalBestDist">0 m</div>
+                </div>
+              </div>
 
-          <div class="hs-records-section">
-            <div class="hs-records-head">
-              <span>Your Top Local Runs</span>
-              <span class="hs-records-sub">Personal All-Time</span>
+              <div class="hs-bar-container">
+                <div class="hs-bar-meta">
+                  <span>Progress to Personal Best</span>
+                  <span class="hs-bar-percentage" id="hsLocalBarPercent">0%</span>
+                </div>
+                <div class="hs-bar-track">
+                  <div class="hs-bar-fill local" id="hsLocalBarFill" style="width: 0%;"></div>
+                </div>
+                <div class="hs-tier-milestones">
+                  <span>0 m</span>
+                  <span id="hsLocalMidMilestone">250 m</span>
+                  <span id="hsLocalBestMilestone">500 m</span>
+                </div>
+              </div>
+
+              <div class="hs-records-section">
+                <div class="hs-records-head">
+                  <span>Your Top Local Runs</span>
+                  <span class="hs-records-sub">Personal All-Time</span>
+                </div>
+                <div class="hs-records-list" id="hsLocalRecordsList">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
             </div>
-            <div class="hs-records-list" id="hsLocalRecordsList">
-              <!-- Rendered dynamically -->
+
+            <!-- 2. Global Benchmark Tab Panel -->
+            <div class="hs-tab-panel" id="hsGlobalPanel" role="tabpanel">
+              <div class="hs-global-tier-banner" id="hsGlobalTierBanner">
+                <div class="hs-tier-icon" id="hsGlobalTierIcon">🥈</div>
+                <div class="hs-tier-details">
+                  <div class="hs-tier-title" id="hsGlobalTierTitle">Silver Dasher</div>
+                  <div class="hs-tier-subtitle" id="hsGlobalTierSub">Top 35% of Global Dashers</div>
+                </div>
+                <div class="hs-tier-rank-pill" id="hsGlobalRankPill">Rank #4,820</div>
+              </div>
+
+              <div class="hs-compare-metrics">
+                <div class="hs-metric-box current">
+                  <div class="hs-metric-tag">THIS RUN</div>
+                  <div class="hs-metric-val" id="hsGlobalCurrentDist">0 m</div>
+                </div>
+                <div class="hs-delta-badge" id="hsGlobalDeltaBadge">
+                  <span id="hsGlobalDeltaSign">--</span>
+                  <span id="hsGlobalDeltaText">Global Apex</span>
+                </div>
+                <div class="hs-metric-box best">
+                  <div class="hs-metric-tag">GLOBAL APEX</div>
+                  <div class="hs-metric-val" id="hsGlobalApexDist">1,450 m</div>
+                </div>
+              </div>
+
+              <div class="hs-bar-container">
+                <div class="hs-bar-meta">
+                  <span>Apex Target Benchmark</span>
+                  <span class="hs-bar-percentage" id="hsGlobalBarPercent">0%</span>
+                </div>
+                <div class="hs-bar-track">
+                  <div class="hs-bar-fill global" id="hsGlobalBarFill" style="width: 0%;"></div>
+                </div>
+                <div class="hs-tier-milestones">
+                  <span>Novice (100m)</span>
+                  <span>Elite (600m)</span>
+                  <span>Legend (1,200m+)</span>
+                </div>
+              </div>
+
+              <div class="hs-records-section">
+                <div class="hs-records-head">
+                  <span>World Tier Leaderboard</span>
+                  <span class="hs-records-sub">Global Standing</span>
+                </div>
+                <div class="hs-records-list" id="hsGlobalRecordsList">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <!-- 2. Global Benchmark Tab Panel -->
-        <div class="hs-tab-panel" id="hsGlobalPanel" role="tabpanel">
-          <div class="hs-global-tier-banner" id="hsGlobalTierBanner">
-            <div class="hs-tier-icon" id="hsGlobalTierIcon">🥈</div>
-            <div class="hs-tier-details">
-              <div class="hs-tier-title" id="hsGlobalTierTitle">Silver Dasher</div>
-              <div class="hs-tier-subtitle" id="hsGlobalTierSub">Top 35% of Global Dashers</div>
-            </div>
-            <div class="hs-tier-rank-pill" id="hsGlobalRankPill">Rank #4,820</div>
-          </div>
-
-          <div class="hs-compare-metrics">
-            <div class="hs-metric-box current">
-              <div class="hs-metric-tag">THIS RUN</div>
-              <div class="hs-metric-val" id="hsGlobalCurrentDist">0 m</div>
-            </div>
-            <div class="hs-delta-badge" id="hsGlobalDeltaBadge">
-              <span id="hsGlobalDeltaSign">--</span>
-              <span id="hsGlobalDeltaText">Global Apex</span>
-            </div>
-            <div class="hs-metric-box best">
-              <div class="hs-metric-tag">GLOBAL APEX</div>
-              <div class="hs-metric-val" id="hsGlobalApexDist">1,450 m</div>
-            </div>
-          </div>
-
-          <div class="hs-bar-container">
-            <div class="hs-bar-meta">
-              <span>Apex Target Benchmark</span>
-              <span class="hs-bar-percentage" id="hsGlobalBarPercent">0%</span>
-            </div>
-            <div class="hs-bar-track">
-              <div class="hs-bar-fill global" id="hsGlobalBarFill" style="width: 0%;"></div>
-            </div>
-            <div class="hs-tier-milestones">
-              <span>Novice (100m)</span>
-              <span>Elite (600m)</span>
-              <span>Legend (1,200m+)</span>
-            </div>
-          </div>
-
-          <div class="hs-records-section">
-            <div class="hs-records-head">
-              <span>World Tier Leaderboard</span>
-              <span class="hs-records-sub">Global Standing</span>
-            </div>
-            <div class="hs-records-list" id="hsGlobalRecordsList">
-              <!-- Rendered dynamically -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <!-- Rewarded Ad buttons as specified in doc -->
-        <button class="btn btn-reward" id="adContinueBtn">
-          <span>🎬 Revive +1 Life</span>
-        </button>
-        <button class="btn btn-reward" id="adDoubleCoinsBtn">
-          <span>🎬 2x Coins</span>
-        </button>
-        <button class="btn btn-play" id="goRestartBtn">Play Again</button>
-        <button class="btn btn-customizer" id="goCustomizerBtn" title="Customize Runner Skins">
-          <span>🎨</span> <span>Skins</span>
-        </button>
-        <button class="btn btn-secondary" id="goMenuBtn">Main Menu</button>
       </div>
     </div>
 
@@ -4621,16 +4988,6 @@
 
     <!-- Notification Toast -->
     <div id="adToast">Reward Applied!</div>
-
-    <!-- Orientation Lock Notice for Portrait Devices -->
-    <div id="rotateDeviceOverlay" aria-hidden="true">
-      <svg class="rotate-icon-anim" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-      </svg>
-      <div class="rotate-title">Please Rotate Your Device</div>
-      <div class="rotate-subtitle">Dashbound is designed to be played in landscape mode. Please rotate your device to continue running!</div>
-    </div>
   </div>
 
   <script>
@@ -4643,6 +5000,15 @@
       constructor() {
         this.ctx = null;
         this.muted = false;
+
+        // Ambient Weather Sound Loop State
+        this.weatherLoopsInitialized = false;
+        this.currentWeatherType = 'clear';
+        this.currentWeatherIntensity = 0;
+        this.weatherMasterGain = null;
+        this.rainGain = null;
+        this.snowGain = null;
+        this.sandGain = null;
       }
       init() {
         if (!this.ctx) {
@@ -4653,6 +5019,9 @@
         }
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume();
+        }
+        if (this.ctx && !this.weatherLoopsInitialized && this.ctx.state === 'running') {
+          this.initWeatherLoops();
         }
       }
       playTone(freqStart, freqEnd, type = 'sine', duration = 0.15, vol = 0.18) {
@@ -4681,6 +5050,66 @@
       doubleJump() {
         this.init();
         this.playTone(440, 880, 'triangle', 0.15, 0.2);
+      }
+      whoosh() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const duration = 0.22;
+          const vol = 0.25;
+
+          // 1. Aerodynamic bandpass-filtered noise burst for the rushing air effect
+          const sampleRate = this.ctx.sampleRate;
+          const bufferSize = Math.floor(sampleRate * duration);
+          const buffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+
+          const noiseSource = this.ctx.createBufferSource();
+          noiseSource.buffer = buffer;
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.Q.setValueAtTime(2.2, now);
+          filter.frequency.setValueAtTime(450, now);
+          filter.frequency.exponentialRampToValueAtTime(1600, now + duration * 0.35);
+          filter.frequency.exponentialRampToValueAtTime(320, now + duration);
+
+          const noiseGain = this.ctx.createGain();
+          noiseGain.gain.setValueAtTime(0.001, now);
+          noiseGain.gain.linearRampToValueAtTime(vol, now + duration * 0.2);
+          noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+          noiseSource.connect(filter);
+          filter.connect(noiseGain);
+          noiseGain.connect(this.ctx.destination);
+
+          noiseSource.start(now);
+          noiseSource.stop(now + duration);
+
+          // 2. Tonal harmonic air sweep complementing the noise
+          const osc = this.ctx.createOscillator();
+          const oscGain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(280, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + duration * 0.35);
+          osc.frequency.exponentialRampToValueAtTime(220, now + duration);
+
+          oscGain.gain.setValueAtTime(0.001, now);
+          oscGain.gain.linearRampToValueAtTime(vol * 0.45, now + duration * 0.2);
+          oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+          osc.connect(oscGain);
+          oscGain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + duration);
+        } catch (e) {
+          this.playTone(320, 720, 'sine', 0.18, 0.2);
+        }
       }
       coin() {
         this.init();
@@ -4803,8 +5232,497 @@
           this.playTone(320, 880, 'triangle', 0.22, 0.22);
         }
       }
+      thunderRumble() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const filter = this.ctx.createBiquadFilter();
+
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(120, now);
+          filter.frequency.exponentialRampToValueAtTime(40, now + 1.25);
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(58, now);
+          osc.frequency.linearRampToValueAtTime(30, now + 1.25);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.18, now + 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.35);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 1.4);
+        } catch (e) {}
+      }
+      thunderCrack() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const sampleRate = this.ctx.sampleRate || 44100;
+
+          // Master bus for thunder crack effect
+          const crackMasterGain = this.ctx.createGain();
+          crackMasterGain.gain.setValueAtTime(0.85, now);
+          crackMasterGain.connect(this.ctx.destination);
+
+          // -----------------------------------------------------------------
+          // 1. PROCEDURAL INITIAL SUPERSONIC CRACK (Explosive Transient Snap)
+          // -----------------------------------------------------------------
+          const crackDuration = 0.08 + Math.random() * 0.04; // 80ms - 120ms
+          const crackBufferSize = Math.floor(sampleRate * crackDuration);
+          const crackBuffer = this.ctx.createBuffer(1, crackBufferSize, sampleRate);
+          const crackData = crackBuffer.getChannelData(0);
+
+          // Synthesize high-energy explosive shockwave noise with fast decay
+          for (let i = 0; i < crackBufferSize; i++) {
+            const progress = i / crackBufferSize;
+            const decay = Math.exp(-progress * 24); // violent exponential snap
+            // Soft clipping for distorted visceral crack edge
+            const raw = (Math.random() * 2 - 1) * decay;
+            crackData[i] = Math.max(-0.95, Math.min(0.95, raw * 1.75));
+          }
+
+          const crackSrc = this.ctx.createBufferSource();
+          crackSrc.buffer = crackBuffer;
+
+          // Bandpass filter for the sharp, whip-like electrical crack
+          const crackFilter = this.ctx.createBiquadFilter();
+          crackFilter.type = 'bandpass';
+          const centerFreq = 1500 + Math.random() * 950; // 1500Hz - 2450Hz
+          crackFilter.frequency.setValueAtTime(centerFreq, now);
+          crackFilter.frequency.exponentialRampToValueAtTime(650, now + crackDuration);
+          crackFilter.Q.setValueAtTime(1.8 + Math.random() * 0.8, now);
+
+          const crackGain = this.ctx.createGain();
+          crackGain.gain.setValueAtTime(0.44, now);
+          crackGain.gain.exponentialRampToValueAtTime(0.001, now + crackDuration);
+
+          crackSrc.connect(crackFilter);
+          crackFilter.connect(crackGain);
+          crackGain.connect(crackMasterGain);
+          crackSrc.start(now);
+
+          // -----------------------------------------------------------------
+          // 2. LOW-END IMPACT PUNCH (Visceral Sub-Shockwave)
+          // -----------------------------------------------------------------
+          const punchOsc = this.ctx.createOscillator();
+          const punchGain = this.ctx.createGain();
+          punchOsc.type = 'sine';
+          const punchStartFreq = 260 + Math.random() * 80;
+          punchOsc.frequency.setValueAtTime(punchStartFreq, now);
+          punchOsc.frequency.exponentialRampToValueAtTime(45, now + 0.14);
+
+          punchGain.gain.setValueAtTime(0.38, now);
+          punchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+          punchOsc.connect(punchGain);
+          punchGain.connect(crackMasterGain);
+          punchOsc.start(now);
+          punchOsc.stop(now + 0.18);
+
+          // -----------------------------------------------------------------
+          // 3. PROCEDURAL SECONDARY DISCHARGE ECHOES (Branching Leader Strikes)
+          // -----------------------------------------------------------------
+          const numEchoes = 2 + Math.floor(Math.random() * 2); // 2 or 3 echoes
+          for (let e = 0; e < numEchoes; e++) {
+            const delay = 0.045 + (e + 1) * (0.05 + Math.random() * 0.06); // 95ms - 280ms
+            const echoDuration = 0.07 + Math.random() * 0.05;
+            const echoBufSize = Math.floor(sampleRate * echoDuration);
+            const echoBuf = this.ctx.createBuffer(1, echoBufSize, sampleRate);
+            const echoData = echoBuf.getChannelData(0);
+
+            for (let i = 0; i < echoBufSize; i++) {
+              const prog = i / echoBufSize;
+              echoData[i] = (Math.random() * 2 - 1) * Math.exp(-prog * 18);
+            }
+
+            const echoSrc = this.ctx.createBufferSource();
+            echoSrc.buffer = echoBuf;
+
+            const echoFilter = this.ctx.createBiquadFilter();
+            echoFilter.type = 'bandpass';
+            echoFilter.frequency.setValueAtTime(1100 + Math.random() * 800, now + delay);
+            echoFilter.Q.setValueAtTime(2.2, now + delay);
+
+            const echoGain = this.ctx.createGain();
+            const echoVol = (0.22 / (e + 1.2)) * (0.7 + Math.random() * 0.4);
+            echoGain.gain.setValueAtTime(0.001, now);
+            echoGain.gain.setValueAtTime(echoVol, now + delay);
+            echoGain.gain.exponentialRampToValueAtTime(0.001, now + delay + echoDuration);
+
+            echoSrc.connect(echoFilter);
+            echoFilter.connect(echoGain);
+            echoGain.connect(crackMasterGain);
+            echoSrc.start(now + delay);
+          }
+
+          // -----------------------------------------------------------------
+          // 4. DEEP CAVERNOUS ROLLING RUMBLE (The Roaring Sky Tail)
+          // -----------------------------------------------------------------
+          const rumbleDuration = 1.8 + Math.random() * 0.8; // 1.8s - 2.6s
+          const rumbleBufSize = Math.floor(sampleRate * rumbleDuration);
+          const rumbleBuffer = this.ctx.createBuffer(1, rumbleBufSize, sampleRate);
+          const rumbleData = rumbleBuffer.getChannelData(0);
+
+          // Generate brown/pink turbulent noise with random rolling swells
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < rumbleBufSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.992 * b0 + white * 0.09;
+            b1 = 0.97 * b1 + white * 0.14;
+            b2 = 0.92 * b2 + white * 0.22;
+            rumbleData[i] = (b0 + b1 + b2) * 0.25;
+          }
+
+          const rumbleSrc = this.ctx.createBufferSource();
+          rumbleSrc.buffer = rumbleBuffer;
+
+          // Lowpass filter that slowly slides down from 280Hz to 42Hz
+          const rumbleFilter = this.ctx.createBiquadFilter();
+          rumbleFilter.type = 'lowpass';
+          rumbleFilter.frequency.setValueAtTime(280, now);
+          rumbleFilter.frequency.exponentialRampToValueAtTime(42, now + rumbleDuration);
+          rumbleFilter.Q.setValueAtTime(3.2, now);
+
+          // Rumble amplitude envelope: swells right after the initial crack, then rolls off
+          const rumbleGain = this.ctx.createGain();
+          rumbleGain.gain.setValueAtTime(0.001, now);
+          rumbleGain.gain.linearRampToValueAtTime(0.36, now + 0.07); // swell after snap
+          rumbleGain.gain.exponentialRampToValueAtTime(0.18, now + 0.5); // body roll
+          rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + rumbleDuration);
+
+          // Sub-bass sawtooth oscillator for deep physical vibration presence
+          const subOsc = this.ctx.createOscillator();
+          const subGain = this.ctx.createGain();
+          subOsc.type = 'sawtooth';
+          const subFreq = 54 + Math.random() * 16; // 54Hz - 70Hz
+          subOsc.frequency.setValueAtTime(subFreq, now);
+          subOsc.frequency.linearRampToValueAtTime(28, now + rumbleDuration);
+
+          subGain.gain.setValueAtTime(0.001, now);
+          subGain.gain.linearRampToValueAtTime(0.24, now + 0.08);
+          subGain.gain.exponentialRampToValueAtTime(0.001, now + rumbleDuration);
+
+          const subFilter = this.ctx.createBiquadFilter();
+          subFilter.type = 'lowpass';
+          subFilter.frequency.setValueAtTime(90, now);
+
+          subOsc.connect(subFilter);
+          subFilter.connect(subGain);
+          subGain.connect(crackMasterGain);
+          subOsc.start(now);
+          subOsc.stop(now + rumbleDuration);
+
+          rumbleSrc.connect(rumbleFilter);
+          rumbleFilter.connect(rumbleGain);
+          rumbleGain.connect(crackMasterGain);
+          rumbleSrc.start(now);
+        } catch (e) {
+          console.warn('Thunder crack synthesis error:', e);
+        }
+      }
+      windGust() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const filter = this.ctx.createBiquadFilter();
+
+          filter.type = 'bandpass';
+          filter.Q.setValueAtTime(2.8, now);
+          filter.frequency.setValueAtTime(170, now);
+          filter.frequency.linearRampToValueAtTime(390, now + 0.45);
+          filter.frequency.linearRampToValueAtTime(150, now + 1.1);
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(75, now);
+          osc.frequency.linearRampToValueAtTime(115, now + 0.45);
+          osc.frequency.linearRampToValueAtTime(70, now + 1.1);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.28);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 1.18);
+        } catch (e) {}
+      }
+      createNoiseBuffer(duration = 3.5) {
+        if (!this.ctx) return null;
+        const sampleRate = this.ctx.sampleRate || 44100;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const buffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+
+        // Pink/Brown smoothed noise generator for rich organic wind layers
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
+          b6 = white * 0.115926;
+        }
+        return buffer;
+      }
+
+      createRainBuffer(duration = 3.2) {
+        if (!this.ctx) return null;
+        const sampleRate = this.ctx.sampleRate || 44100;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const buffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+
+        // 1. Soft background pink noise floor for ambient rainfall rustle
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.045;
+          b6 = white * 0.115926;
+        }
+
+        // 2. Sprinkle discrete, authentic rain droplet pitter-patter pings/pats across the loop
+        const dropCount = Math.floor(duration * 46); // ~145 distinct droplets across 3.2s
+        for (let d = 0; d < dropCount; d++) {
+          const start = Math.floor(Math.random() * (bufferSize - 500));
+          const dropFreq = 1050 + Math.random() * 1750; // 1050Hz to 2800Hz droplet impact pitch
+          const dropSamples = Math.floor(95 + Math.random() * 150); // 2.5ms to 5.5ms
+          const dropAmp = 0.18 + Math.random() * 0.28;
+          const decayRate = 0.038 + Math.random() * 0.02;
+
+          for (let s = 0; s < dropSamples; s++) {
+            const t = s / sampleRate;
+            const sine = Math.sin(2 * Math.PI * dropFreq * t);
+            const env = Math.exp(-s * decayRate);
+            data[start + s] += sine * env * dropAmp;
+          }
+        }
+
+        // Soft clamp buffer values to avoid clipping
+        for (let i = 0; i < bufferSize; i++) {
+          if (data[i] > 0.95) data[i] = 0.95;
+          else if (data[i] < -0.95) data[i] = -0.95;
+        }
+
+        return buffer;
+      }
+
+      initWeatherLoops() {
+        if (!this.ctx || this.weatherLoopsInitialized) return;
+        try {
+          this.weatherLoopsInitialized = true;
+
+          // Master weather audio bus
+          this.weatherMasterGain = this.ctx.createGain();
+          this.weatherMasterGain.gain.setValueAtTime(1.0, this.ctx.currentTime);
+          this.weatherMasterGain.connect(this.ctx.destination);
+
+          // -------------------------------------------------------------
+          // 1. RAIN PITTER-PATTER AMBIENT LOOP
+          // -------------------------------------------------------------
+          const rainBuf = this.createRainBuffer(3.4);
+          if (rainBuf) {
+            const rainSrc = this.ctx.createBufferSource();
+            rainSrc.buffer = rainBuf;
+            rainSrc.loop = true;
+
+            const rainHighpass = this.ctx.createBiquadFilter();
+            rainHighpass.type = 'highpass';
+            rainHighpass.frequency.setValueAtTime(360, this.ctx.currentTime);
+
+            const rainLowpass = this.ctx.createBiquadFilter();
+            rainLowpass.type = 'lowpass';
+            rainLowpass.frequency.setValueAtTime(2600, this.ctx.currentTime);
+
+            // Subtle slow breathing cadence for rain gusts
+            const rainLFO = this.ctx.createOscillator();
+            rainLFO.frequency.setValueAtTime(0.2, this.ctx.currentTime);
+            const rainLFOGain = this.ctx.createGain();
+            rainLFOGain.gain.setValueAtTime(450, this.ctx.currentTime);
+            rainLFO.connect(rainLFOGain);
+            rainLFOGain.connect(rainLowpass.frequency);
+            rainLFO.start();
+
+            this.rainGain = this.ctx.createGain();
+            this.rainGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+
+            rainSrc.connect(rainHighpass);
+            rainHighpass.connect(rainLowpass);
+            rainLowpass.connect(this.rainGain);
+            this.rainGain.connect(this.weatherMasterGain);
+            rainSrc.start();
+          }
+
+          // -------------------------------------------------------------
+          // 2. SNOW WIND HOWLING AMBIENT LOOP (Cold Mountain Blizzard)
+          // -------------------------------------------------------------
+          const snowBuf = this.createNoiseBuffer(4.0);
+          if (snowBuf) {
+            const snowSrc = this.ctx.createBufferSource();
+            snowSrc.buffer = snowBuf;
+            snowSrc.loop = true;
+
+            const snowHighpass = this.ctx.createBiquadFilter();
+            snowHighpass.type = 'highpass';
+            snowHighpass.frequency.setValueAtTime(160, this.ctx.currentTime);
+
+            // Resonant bandpass filter creates high-altitude eerie whistling wind
+            const snowBandpass = this.ctx.createBiquadFilter();
+            snowBandpass.type = 'bandpass';
+            snowBandpass.Q.setValueAtTime(3.8, this.ctx.currentTime);
+            snowBandpass.frequency.setValueAtTime(420, this.ctx.currentTime);
+
+            // LFO for slow eerie pitch modulation of howling wind
+            const snowLFO = this.ctx.createOscillator();
+            snowLFO.type = 'sine';
+            snowLFO.frequency.setValueAtTime(0.16, this.ctx.currentTime); // ~6.2s period
+            const snowLFOGain = this.ctx.createGain();
+            snowLFOGain.gain.setValueAtTime(220, this.ctx.currentTime);
+            snowLFO.connect(snowLFOGain);
+            snowLFOGain.connect(snowBandpass.frequency);
+            snowLFO.start();
+
+            this.snowGain = this.ctx.createGain();
+            this.snowGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+
+            snowSrc.connect(snowHighpass);
+            snowHighpass.connect(snowBandpass);
+            snowBandpass.connect(this.snowGain);
+            this.snowGain.connect(this.weatherMasterGain);
+            snowSrc.start();
+          }
+
+          // -------------------------------------------------------------
+          // 3. SANDSTORM WIND HOWLING AMBIENT LOOP (Desert Gale)
+          // -------------------------------------------------------------
+          const sandBuf = this.createNoiseBuffer(3.8);
+          if (sandBuf) {
+            const sandSrc = this.ctx.createBufferSource();
+            sandSrc.buffer = sandBuf;
+            sandSrc.loop = true;
+
+            // Deep low rumble of high-velocity sandstorm air pressure
+            const sandLowpass = this.ctx.createBiquadFilter();
+            sandLowpass.type = 'lowpass';
+            sandLowpass.frequency.setValueAtTime(180, this.ctx.currentTime);
+            const sandRumbleGain = this.ctx.createGain();
+            sandRumbleGain.gain.setValueAtTime(0.65, this.ctx.currentTime);
+
+            // Fierce howling gale bandpass
+            const sandBandpass = this.ctx.createBiquadFilter();
+            sandBandpass.type = 'bandpass';
+            sandBandpass.Q.setValueAtTime(2.2, this.ctx.currentTime);
+            sandBandpass.frequency.setValueAtTime(520, this.ctx.currentTime);
+            const sandHowlGain = this.ctx.createGain();
+            sandHowlGain.gain.setValueAtTime(0.65, this.ctx.currentTime);
+
+            // LFO for aggressive sand gale wind surges
+            const sandLFO = this.ctx.createOscillator();
+            sandLFO.type = 'triangle';
+            sandLFO.frequency.setValueAtTime(0.28, this.ctx.currentTime); // ~3.5s period
+            const sandLFOGain = this.ctx.createGain();
+            sandLFOGain.gain.setValueAtTime(280, this.ctx.currentTime);
+            sandLFO.connect(sandLFOGain);
+            sandLFOGain.connect(sandBandpass.frequency);
+            sandLFO.start();
+
+            // Dry sand grain sizzle (subtle highpass)
+            const sandHiss = this.ctx.createBiquadFilter();
+            sandHiss.type = 'highpass';
+            sandHiss.frequency.setValueAtTime(2800, this.ctx.currentTime);
+            const sandHissGain = this.ctx.createGain();
+            sandHissGain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+
+            this.sandGain = this.ctx.createGain();
+            this.sandGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+
+            sandSrc.connect(sandLowpass);
+            sandLowpass.connect(sandRumbleGain);
+            sandRumbleGain.connect(this.sandGain);
+
+            sandSrc.connect(sandBandpass);
+            sandBandpass.connect(sandHowlGain);
+            sandHowlGain.connect(this.sandGain);
+
+            sandSrc.connect(sandHiss);
+            sandHiss.connect(sandHissGain);
+            sandHissGain.connect(this.sandGain);
+
+            this.sandGain.connect(this.weatherMasterGain);
+            sandSrc.start();
+          }
+
+          this.updateWeatherLoops();
+        } catch (e) {
+          console.warn('Weather ambient loop init error:', e);
+        }
+      }
+
+      setWeatherAmbience(weatherType, intensity = 1.0) {
+        this.currentWeatherType = weatherType || 'clear';
+        this.currentWeatherIntensity = Math.max(0, Math.min(1.0, intensity));
+        if (!this.ctx) return;
+        if (!this.weatherLoopsInitialized && this.ctx.state === 'running') {
+          this.initWeatherLoops();
+        }
+        this.updateWeatherLoops();
+      }
+
+      updateWeatherLoops() {
+        if (!this.ctx || !this.weatherLoopsInitialized) return;
+        try {
+          const now = this.ctx.currentTime;
+          const isMuted = this.muted;
+          const type = this.currentWeatherType;
+          const intensity = this.currentWeatherIntensity;
+
+          // Time constant for smooth exponential gain fade without clicks (0.35s)
+          const timeConstant = 0.35;
+
+          // Target loop volumes calibrated to sit balanced behind gameplay audio
+          const targetRain = (!isMuted && type === 'rain') ? (0.24 * intensity) : 0.0001;
+          const targetSnow = (!isMuted && type === 'snow') ? (0.22 * intensity) : 0.0001;
+          const targetSand = (!isMuted && type === 'sandstorm') ? (0.26 * intensity) : 0.0001;
+
+          if (this.rainGain) {
+            this.rainGain.gain.setTargetAtTime(targetRain, now, timeConstant);
+          }
+          if (this.snowGain) {
+            this.snowGain.gain.setTargetAtTime(targetSnow, now, timeConstant);
+          }
+          if (this.sandGain) {
+            this.sandGain.gain.setTargetAtTime(targetSand, now, timeConstant);
+          }
+        } catch (e) {}
+      }
+
       toggleMute() {
         this.muted = !this.muted;
+        this.updateWeatherLoops();
         return !this.muted;
       }
     }
@@ -4928,13 +5846,99 @@
     };
     window.Storage = Storage;
 
-    // 4. Particle System
+    // 4. Particle System with Dynamic Low-End Android Device Adaptation
     class ParticleSystem {
       constructor() {
         this.particles = [];
+        this.isLowEnd = ParticleSystem.detectLowEndDevice();
+        // Set baseline density multiplier and particle capacity based on hardware tier
+        this.density = this.isLowEnd ? 0.45 : 1.0;
+        this.maxParticles = this.isLowEnd ? 55 : 160;
+
+        // Dynamic frame-rate monitoring for runtime GPU throttling
+        this.lowFpsFrameCount = 0;
+        this.highFpsFrameCount = 0;
+
+        // Reactive weather condition state for atmospheric particle physics
+        this.currentWeather = 'clear';
+        this.weatherIntensity = 0;
       }
+
+      setWeather(weather, intensity = 1.0) {
+        this.currentWeather = weather || 'clear';
+        this.weatherIntensity = intensity;
+      }
+
+      static detectLowEndDevice() {
+        try {
+          const ua = navigator.userAgent || '';
+          const isAndroid = /Android/i.test(ua);
+
+          // 1. Device RAM check (Android WebView & Chrome expose navigator.deviceMemory in GB)
+          if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 3) {
+            return true;
+          }
+
+          // 2. CPU concurrency check (<= 4 cores on mobile devices indicates budget/older SoC)
+          if (typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4 && isAndroid) {
+            return true;
+          }
+
+          // 3. WebGL GPU renderer inspection for budget / legacy chipsets
+          const testCanvas = document.createElement('canvas');
+          const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+          if (gl) {
+            const ext = gl.getExtension('WEBGL_debug_renderer_info');
+            if (ext) {
+              const renderer = (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '').toLowerCase();
+              if (
+                renderer.includes('mali-4') ||
+                renderer.includes('mali-t') ||
+                renderer.includes('mali-g31') ||
+                renderer.includes('mali-g51') ||
+                renderer.includes('mali-g52') ||
+                renderer.includes('adreno (tm) 3') ||
+                renderer.includes('adreno (tm) 504') ||
+                renderer.includes('adreno (tm) 505') ||
+                renderer.includes('adreno (tm) 506') ||
+                renderer.includes('powervr') ||
+                renderer.includes('swiftshader')
+              ) {
+                return true;
+              }
+            }
+          }
+        } catch (e) {
+          // Graceful fallback to default
+        }
+        return false;
+      }
+
+      monitorPerformance(fps) {
+        if (fps < 45) {
+          this.lowFpsFrameCount++;
+          this.highFpsFrameCount = 0;
+          if (this.lowFpsFrameCount > 30) { // Sustained low FPS (< 45 FPS for ~0.5-0.8s)
+            this.density = Math.max(0.25, this.density * 0.82);
+            this.maxParticles = Math.max(30, Math.floor(this.maxParticles * 0.82));
+            this.lowFpsFrameCount = 0;
+          }
+        } else if (fps >= 58 && !this.isLowEnd) {
+          this.highFpsFrameCount++;
+          if (this.highFpsFrameCount > 180 && this.density < 1.0) { // Smooth 60 FPS for ~3s
+            this.density = Math.min(1.0, this.density + 0.08);
+            this.maxParticles = Math.min(160, this.maxParticles + 15);
+            this.highFpsFrameCount = 0;
+          }
+        }
+      }
+
       create(x, y, count, color, speed = 2, size = 4, shape = 'circle') {
-        for (let i = 0; i < count; i++) {
+        const actualCount = Math.max(1, Math.round(count * this.density));
+        for (let i = 0; i < actualCount; i++) {
+          if (this.particles.length >= this.maxParticles) {
+            this.particles.shift();
+          }
           const angle = Math.random() * Math.PI * 2;
           const velocity = (Math.random() * 0.7 + 0.3) * speed;
           this.particles.push({
@@ -4951,7 +5955,136 @@
         }
       }
       createDust(x, y) {
-        this.create(x, y, 4, '#CBD5E1', 1.5, 3, 'circle');
+        if (this.currentWeather === 'rain' && this.weatherIntensity > 0.2) {
+          // Splashing wet puddle droplets on ground/platforms
+          const splashColors = ['#BAE6FD', '#38BDF8', '#E0F2FE', '#FFFFFF'];
+          const count = Math.max(2, Math.round(4 * this.density));
+          for (let i = 0; i < count; i++) {
+            if (this.particles.length >= this.maxParticles) this.particles.shift();
+            const angle = Math.PI * (0.75 + Math.random() * 0.5);
+            const speed = Math.random() * 2.2 + 0.8;
+            this.particles.push({
+              x: x + (Math.random() - 0.5) * 8,
+              y: y - 1,
+              vx: Math.cos(angle) * speed - 1.0,
+              vy: Math.sin(angle) * speed - 0.5,
+              life: 1.0,
+              decay: Math.random() * 0.06 + 0.04, // quick splash fade
+              color: splashColors[Math.floor(Math.random() * splashColors.length)],
+              size: Math.random() * 2.0 + 1.2,
+              shape: 'circle'
+            });
+          }
+        } else if (this.currentWeather === 'snow' && this.weatherIntensity > 0.2) {
+          // Powdered snow puffs kicked up by runner
+          const snowColors = ['#FFFFFF', '#F8FAFC', '#E0F2FE', '#BAE6FD'];
+          const count = Math.max(2, Math.round(5 * this.density));
+          for (let i = 0; i < count; i++) {
+            if (this.particles.length >= this.maxParticles) this.particles.shift();
+            this.particles.push({
+              x: x + (Math.random() - 0.5) * 8,
+              y: y - 1,
+              vx: -(Math.random() * 1.5 + 0.6),
+              vy: -(Math.random() * 1.2 + 0.2), // gentle upward float
+              life: 1.0,
+              decay: Math.random() * 0.025 + 0.018, // lingering hang time
+              color: snowColors[Math.floor(Math.random() * snowColors.length)],
+              size: Math.random() * 2.8 + 1.6,
+              shape: 'circle'
+            });
+          }
+        } else if (this.currentWeather === 'sandstorm' && this.weatherIntensity > 0.2) {
+          // Amber sand grains whipped back by runner
+          const sandColors = ['#F59E0B', '#D97706', '#FDE68A', '#B45309'];
+          this.create(x, y, 4, sandColors[Math.floor(Math.random() * sandColors.length)], 2.5, 2.5, 'dust');
+        } else {
+          this.create(x, y, 4, '#CBD5E1', 1.5, 3, 'dust');
+        }
+      }
+      createJumpDustBurst(x, y, isDoubleJump = false) {
+        const count = isDoubleJump ? 8 : 6;
+        let colors = isDoubleJump
+          ? ['#BAE6FD', '#7DD3FC', '#E2E8F0', '#CBD5E1', '#FFFFFF', '#38BDF8']
+          : ['#CBD5E1', '#94A3B8', '#E2E8F0', '#F1F5F9', '#FFFFFF'];
+
+        if (this.currentWeather === 'rain' && this.weatherIntensity > 0.2) {
+          colors = isDoubleJump
+            ? ['#38BDF8', '#0284C7', '#BAE6FD', '#FFFFFF', '#7DD3FC']
+            : ['#BAE6FD', '#7DD3FC', '#38BDF8', '#E0F2FE', '#FFFFFF'];
+        } else if (this.currentWeather === 'snow' && this.weatherIntensity > 0.2) {
+          colors = isDoubleJump
+            ? ['#FFFFFF', '#E0F2FE', '#BAE6FD', '#93C5FD', '#FFFFFF']
+            : ['#FFFFFF', '#F8FAFC', '#E2E8F0', '#CBD5E1', '#BAE6FD'];
+        } else if (this.currentWeather === 'sandstorm' && this.weatherIntensity > 0.2) {
+          colors = isDoubleJump
+            ? ['#FDE68A', '#F59E0B', '#D97706', '#FBBF24', '#FFFFFF']
+            : ['#F59E0B', '#D97706', '#B45309', '#FDE68A', '#E2E8F0'];
+        }
+
+        const actualCount = Math.max(3, Math.round(count * this.density));
+
+        for (let i = 0; i < actualCount; i++) {
+          if (this.particles.length >= this.maxParticles) {
+            this.particles.shift();
+          }
+          const angle = isDoubleJump
+            ? Math.PI * 0.5 + (Math.random() - 0.5) * 1.6 // radially downward from mid-air feet
+            : Math.PI * 0.85 + Math.random() * 0.9;      // backward and downward ground kick
+          const speed = Math.random() * 2.8 + 1.2;
+          const size = Math.random() * 2.5 + 2.0;
+
+          const isSnow = this.currentWeather === 'snow' && this.weatherIntensity > 0.2;
+          const isRain = this.currentWeather === 'rain' && this.weatherIntensity > 0.2;
+
+          this.particles.push({
+            x: x + (Math.random() - 0.5) * 10,
+            y: y + (Math.random() - 0.5) * 4,
+            vx: Math.cos(angle) * speed - (isSnow ? 0.6 : 1.2),
+            vy: Math.sin(angle) * speed + (isSnow ? -0.2 : (isRain ? 0.8 : 0.4)),
+            life: 1.0,
+            decay: isSnow ? (Math.random() * 0.02 + 0.018) : (isRain ? (Math.random() * 0.045 + 0.035) : (Math.random() * 0.035 + 0.03)),
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: size,
+            growth: isSnow ? 0.03 : 0.05,
+            shape: 'dust'
+          });
+        }
+      }
+      createJumpDustTrail(x, y, isDoubleJump = false) {
+        const count = isDoubleJump ? 2 : 1;
+        let colors = isDoubleJump
+          ? ['#BAE6FD', '#E2E8F0', '#7DD3FC', '#F0F9FF', '#FFFFFF']
+          : ['#CBD5E1', '#E2E8F0', '#94A3B8', '#F8FAFC'];
+
+        if (this.currentWeather === 'rain' && this.weatherIntensity > 0.2) {
+          colors = ['#BAE6FD', '#38BDF8', '#E0F2FE', '#FFFFFF'];
+        } else if (this.currentWeather === 'snow' && this.weatherIntensity > 0.2) {
+          colors = ['#FFFFFF', '#F8FAFC', '#E0F2FE', '#BAE6FD'];
+        } else if (this.currentWeather === 'sandstorm' && this.weatherIntensity > 0.2) {
+          colors = ['#F59E0B', '#FDE68A', '#D97706', '#FBBF24'];
+        }
+
+        const actualCount = Math.max(1, Math.round(count * this.density));
+
+        for (let i = 0; i < actualCount; i++) {
+          if (this.particles.length >= this.maxParticles) {
+            this.particles.shift();
+          }
+          const size = Math.random() * 1.8 + 1.8; // Small dust sprite: ~1.8 - 3.6px
+
+          this.particles.push({
+            x: x + (Math.random() - 0.5) * 6,
+            y: y + (Math.random() - 0.5) * 3,
+            vx: -(Math.random() * 1.8 + 1.0), // trail backwards opposite runner movement
+            vy: Math.random() * 1.0 + 0.3,    // subtle downward drift from feet
+            life: 1.0,
+            decay: Math.random() * 0.045 + 0.04, // fast fading
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: size,
+            growth: 0.04,
+            shape: 'dust'
+          });
+        }
       }
       createCoinSparkle(x, y) {
         this.create(x, y, 8, '#FBBF24', 3, 4, 'star');
@@ -4968,7 +6101,11 @@
       }
       createFastStartSparks(x, y) {
         const colors = ['#F59E0B', '#FDE047', '#38BDF8', '#FFFFFF'];
-        for (let i = 0; i < 2; i++) {
+        const sparkCount = Math.max(1, Math.round(2 * this.density));
+        for (let i = 0; i < sparkCount; i++) {
+          if (this.particles.length >= this.maxParticles) {
+            this.particles.shift();
+          }
           const angle = Math.PI * (0.85 + Math.random() * 0.3);
           const speed = Math.random() * 4 + 2.5;
           this.particles.push({
@@ -4996,8 +6133,12 @@
           '#EC4899', '#FFFBEB', '#FFFFFF'  // Sparkling Pink & Diamonds
         ];
         const shapes = ['star', 'circle', 'square'];
+        const actualCount = Math.max(15, Math.round(count * this.density));
 
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < actualCount; i++) {
+          if (this.particles.length >= this.maxParticles) {
+            this.particles.shift();
+          }
           const angle = Math.random() * Math.PI * 2;
           const speed = Math.random() * 6.0 + 2.0;
           const size = Math.random() * 5.5 + 3.0;
@@ -5021,7 +6162,11 @@
       }
       createConfetti(w, h) {
         const colors = ['#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6'];
-        for (let i = 0; i < 40; i++) {
+        const count = Math.max(12, Math.round(40 * this.density));
+        for (let i = 0; i < count; i++) {
+          if (this.particles.length >= this.maxParticles) {
+            this.particles.shift();
+          }
           this.particles.push({
             x: Math.random() * w,
             y: Math.random() * (h * 0.4),
@@ -5038,12 +6183,35 @@
         }
       }
       update() {
+        const isRain = this.currentWeather === 'rain';
+        const isSnow = this.currentWeather === 'snow';
+        const isSand = this.currentWeather === 'sandstorm';
+        const int = this.weatherIntensity || 1.0;
+
         for (let i = this.particles.length - 1; i >= 0; i--) {
           const p = this.particles[i];
           p.x += p.vx;
           p.y += p.vy;
-          p.vx *= 0.98; // gentle air resistance
-          p.vy = (p.vy * 0.98) + 0.08; // celebratory gravity
+
+          if (isRain && int > 0.1) {
+            // Rain washes dust and airborne particles down faster with stronger air drag
+            p.vx *= (0.97 - 0.03 * int);
+            p.vy = (p.vy * 0.95) + (0.08 + 0.09 * int);
+          } else if (isSnow && int > 0.1) {
+            // Cold snowy air gives particles floatiness, reduced gravity and gentle fluttering drift
+            p.vx = (p.vx * 0.99) + Math.sin((p.x + performance.now() * 0.06) * 0.02) * (0.08 * int);
+            p.vy = (p.vy * 0.99) + (0.08 - 0.045 * int);
+          } else if (isSand && int > 0.1) {
+            // Fierce sandstorm wind sweeps particles backwards
+            p.vx = (p.vx - 0.45 * int) * 0.97;
+            p.vy = (p.vy * 0.97) + 0.07;
+          } else {
+            p.vx *= 0.98; // gentle air resistance
+            p.vy = (p.vy * 0.98) + 0.08; // celebratory gravity
+          }
+          if (p.growth) {
+            p.size += p.growth;
+          }
           if (p.rotation !== undefined) {
             p.rotation += p.rotSpeed;
           }
@@ -5061,6 +6229,17 @@
           if (p.shape === 'circle') {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (p.shape === 'dust') {
+            // Soft fading dust sprite with outer puff and feathered nucleus
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            // Softer highlighted nucleus
+            ctx.fillStyle = '#FFFFFF';
+            ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 0.5));
+            ctx.beginPath();
+            ctx.arc(p.x - p.size * 0.22, p.y - p.size * 0.22, Math.max(0.8, p.size * 0.38), 0, Math.PI * 2);
             ctx.fill();
           } else if (p.shape === 'square') {
             ctx.translate(p.x, p.y);
@@ -5093,7 +6272,607 @@
       }
     }
 
-    // 4. Daily Missions Manager
+    // 4. Dynamic Biome-Reactive Weather & Atmospheric System
+    class WeatherManager {
+      constructor(game) {
+        this.game = game;
+        this.currentWeather = 'clear';
+        this.targetWeather = 'clear';
+        this.intensity = 0; // 0.0 to 1.0 smooth transition
+        this.isLowEnd = ParticleSystem.detectLowEndDevice();
+
+        // Precipitation particle pools tailored for device tier
+        this.rainMax = this.isLowEnd ? 40 : 85;
+        this.snowMax = this.isLowEnd ? 35 : 75;
+        this.sandMax = this.isLowEnd ? 40 : 90;
+
+        this.rainDrops = [];
+        this.snowFlakes = [];
+        this.sandGrains = [];
+        this.splashes = [];
+
+        // Camera lens water droplets for rain screen overlay
+        this.screenWaterDrops = [];
+        this.initScreenDrops();
+
+        // Sinuous wind ribbons for sandstorm screen overlay
+        this.sandWindRibbons = [];
+        this.initSandRibbons();
+
+        // Atmospheric events
+        this.lightningTimer = 0;
+        this.thunderCrackTimer = 0;
+        this.lightningFlash = 0;
+        this.ambientSoundCooldown = 0;
+      }
+
+      initScreenDrops() {
+        const count = this.isLowEnd ? 8 : 16;
+        this.screenWaterDrops = [];
+        for (let i = 0; i < count; i++) {
+          this.screenWaterDrops.push({
+            x: Math.random() * (this.game.width || 800),
+            y: Math.random() * (this.game.height || 480),
+            r: Math.random() * 2.2 + 1.2,
+            dripSpeed: Math.random() * 0.35 + 0.15,
+            trailLen: Math.random() * 14 + 6,
+            alpha: Math.random() * 0.35 + 0.25
+          });
+        }
+      }
+
+      initSandRibbons() {
+        this.sandWindRibbons = [];
+        const count = 4;
+        for (let i = 0; i < count; i++) {
+          this.sandWindRibbons.push({
+            y: Math.random() * (this.game.height || 480) * 0.7 + 40,
+            speed: Math.random() * 2.5 + 4.5,
+            thickness: Math.random() * 30 + 20,
+            phase: Math.random() * Math.PI * 2,
+            freq: Math.random() * 0.005 + 0.003
+          });
+        }
+      }
+
+      reset() {
+        this.rainDrops = [];
+        this.snowFlakes = [];
+        this.sandGrains = [];
+        this.splashes = [];
+        this.intensity = 0;
+        this.currentWeather = 'clear';
+        this.targetWeather = 'clear';
+        this.lightningFlash = 0;
+        this.lightningTimer = 0;
+        this.thunderCrackTimer = 0;
+        audio.setWeatherAmbience('clear', 0);
+      }
+
+      update(blendedBiome, gameSpeed) {
+        if (!blendedBiome) return;
+        const target = blendedBiome.weather || 'clear';
+        this.targetWeather = target;
+
+        // Smoothly interpolate intensity and cross-fade between weather states
+        if (target !== this.currentWeather) {
+          if (this.intensity > 0.05) {
+            this.intensity -= 0.03; // smooth fade out of outgoing weather
+          } else {
+            this.currentWeather = target;
+            this.intensity = 0.05;
+          }
+        } else {
+          if (this.currentWeather !== 'clear' && this.intensity < 1.0) {
+            this.intensity = Math.min(1.0, this.intensity + 0.035);
+          } else if (this.currentWeather === 'clear' && this.intensity > 0) {
+            this.intensity = Math.max(0, this.intensity - 0.035);
+          }
+        }
+
+        // Notify ParticleSystem of active weather & intensity to adjust player particle physics!
+        if (this.game.particles) {
+          this.game.particles.setWeather(this.currentWeather, this.intensity);
+        }
+
+        // Continuously update ambient weather sound loops in AudioEngine
+        if (this.game.state === 'PLAYING') {
+          audio.setWeatherAmbience(this.currentWeather, this.intensity);
+        }
+
+        const w = this.game.width || 800;
+        const h = this.game.height || 480;
+
+        // Update active precipitation particles
+        if (this.currentWeather === 'rain' || this.rainDrops.length > 0) {
+          this.updateRain(w, h, gameSpeed);
+        }
+        if (this.currentWeather === 'snow' || this.snowFlakes.length > 0) {
+          this.updateSnow(w, h, gameSpeed);
+        }
+        if (this.currentWeather === 'sandstorm' || this.sandGrains.length > 0) {
+          this.updateSandstorm(w, h, gameSpeed);
+        }
+
+        // Update ground & platform splashes
+        for (let i = this.splashes.length - 1; i >= 0; i--) {
+          const s = this.splashes[i];
+          s.x += s.vx;
+          s.y += s.vy;
+          s.vy += 0.16;
+          s.r += 0.1;
+          s.alpha -= s.decay;
+          if (s.alpha <= 0) {
+            this.splashes.splice(i, 1);
+          }
+        }
+
+        // Rain camera screen droplets update
+        if (this.currentWeather === 'rain' && this.intensity > 0.25) {
+          for (const drop of this.screenWaterDrops) {
+            drop.y += drop.dripSpeed;
+            if (drop.y > h + 25) {
+              drop.y = -12;
+              drop.x = Math.random() * w;
+            }
+          }
+
+          // Procedurally generated thunder crack triggered randomly when weather is 'rain' and intensity is high
+          if (this.intensity > 0.6) {
+            this.thunderCrackTimer++;
+            // Cooldown ~220 frames (~3.6s), with randomized strike trigger probability
+            if (this.thunderCrackTimer > 220 && Math.random() < 0.02) {
+              this.thunderCrackTimer = 0;
+              this.lightningFlash = 1.4; // Intense blinding flash
+              audio.thunderCrack(); // Trigger procedurally generated thunder crack!
+              if (this.game) {
+                this.game.shake(12, 5.5); // Shockwave camera shake
+              }
+              AndroidBridge.vibrate(85);
+            }
+          } else {
+            // Lower intensity rain: occasional ambient distant rumble
+            this.lightningTimer++;
+            if (this.lightningTimer > 500 && Math.random() < 0.012) {
+              this.lightningTimer = 0;
+              this.lightningFlash = 0.9;
+              audio.thunderRumble();
+            }
+          }
+
+          if (this.lightningFlash > 0) {
+            this.lightningFlash -= 0.06;
+          }
+        } else {
+          this.lightningFlash = 0;
+        }
+
+        // Sandstorm ambient wind audio cue
+        if (this.currentWeather === 'sandstorm' && this.intensity > 0.6) {
+          this.ambientSoundCooldown++;
+          if (this.ambientSoundCooldown > 620 && Math.random() < 0.015) {
+            this.ambientSoundCooldown = 0;
+            audio.windGust();
+          }
+        }
+      }
+
+      updateRain(w, h, gameSpeed) {
+        const targetCount = this.currentWeather === 'rain' ? Math.round(this.rainMax * this.intensity) : 0;
+
+        // Spawn new rain drops
+        while (this.rainDrops.length < targetCount) {
+          this.rainDrops.push({
+            x: Math.random() * (w + 240) - 80,
+            y: -20 - Math.random() * 40,
+            len: Math.random() * 10 + 14,
+            speed: Math.random() * 7 + 19,
+            vx: -(gameSpeed * 0.45 + 4.5 + Math.random() * 2),
+            alpha: Math.random() * 0.35 + 0.45
+          });
+        }
+
+        const platforms = this.game.platforms || [];
+
+        // Update existing rain drops
+        for (let i = this.rainDrops.length - 1; i >= 0; i--) {
+          const d = this.rainDrops[i];
+          d.x += d.vx;
+          d.y += d.speed;
+
+          let hit = false;
+
+          // Check collision against platforms
+          for (let pIdx = 0; pIdx < platforms.length; pIdx++) {
+            const p = platforms[pIdx];
+            if (d.x >= p.x && d.x <= p.x + p.w && d.y >= p.y && d.y <= p.y + 14) {
+              hit = true;
+              // Spawn micro splash droplet
+              if (this.splashes.length < 30 && Math.random() < 0.65) {
+                this.splashes.push({
+                  x: d.x,
+                  y: p.y,
+                  vx: (Math.random() - 0.5) * 2.2,
+                  vy: -(Math.random() * 2.2 + 0.8),
+                  r: 1.2,
+                  alpha: 0.75,
+                  decay: 0.08,
+                  color: '#BAE6FD'
+                });
+              }
+              break;
+            }
+          }
+
+          // Check collision with ground
+          if (!hit && d.y >= h - 22) {
+            hit = true;
+            if (this.splashes.length < 30 && Math.random() < 0.4) {
+              this.splashes.push({
+                x: d.x,
+                y: h - 20,
+                vx: (Math.random() - 0.5) * 1.8,
+                vy: -(Math.random() * 1.8 + 0.6),
+                r: 1.0,
+                alpha: 0.65,
+                decay: 0.08,
+                color: '#BAE6FD'
+              });
+            }
+          }
+
+          if (hit || d.y > h + 30 || d.x < -60) {
+            if (this.currentWeather === 'rain' && this.rainDrops.length <= targetCount) {
+              d.x = Math.random() * (w + 240) - 80;
+              d.y = -20 - Math.random() * 30;
+              d.vx = -(gameSpeed * 0.45 + 4.5 + Math.random() * 2);
+            } else {
+              this.rainDrops.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      updateSnow(w, h, gameSpeed) {
+        const targetCount = this.currentWeather === 'snow' ? Math.round(this.snowMax * this.intensity) : 0;
+
+        // Spawn new snowflakes
+        while (this.snowFlakes.length < targetCount) {
+          this.snowFlakes.push({
+            x: Math.random() * (w + 140) - 40,
+            y: -15 - Math.random() * 40,
+            size: Math.random() * 2.6 + 1.4,
+            vy: Math.random() * 1.3 + 1.1,
+            swayOffset: Math.random() * Math.PI * 2,
+            swaySpeed: Math.random() * 0.002 + 0.0016,
+            swayAmp: Math.random() * 1.5 + 0.8,
+            alpha: Math.random() * 0.4 + 0.5,
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.035,
+            isCrystal: Math.random() < 0.35
+          });
+        }
+
+        const now = performance.now();
+        const platforms = this.game.platforms || [];
+
+        // Update snowflakes with gentle sinusoidal sway
+        for (let i = this.snowFlakes.length - 1; i >= 0; i--) {
+          const s = this.snowFlakes[i];
+          s.x += -(gameSpeed * 0.32) + Math.sin(now * s.swaySpeed + s.swayOffset) * s.swayAmp;
+          s.y += s.vy;
+          s.rot += s.rotSpeed;
+
+          let hit = false;
+
+          // Check landing on platform tops
+          for (let pIdx = 0; pIdx < platforms.length; pIdx++) {
+            const p = platforms[pIdx];
+            if (s.x >= p.x && s.x <= p.x + p.w && s.y >= p.y && s.y <= p.y + 6) {
+              hit = true;
+              if (this.splashes.length < 25 && Math.random() < 0.45) {
+                this.splashes.push({
+                  x: s.x,
+                  y: p.y,
+                  vx: (Math.random() - 0.5) * 0.5,
+                  vy: -0.3,
+                  r: 1.1,
+                  alpha: 0.65,
+                  decay: 0.032,
+                  color: '#FFFFFF'
+                });
+              }
+              break;
+            }
+          }
+
+          if (hit || s.y > h + 15 || s.x < -30) {
+            if (this.currentWeather === 'snow' && this.snowFlakes.length <= targetCount) {
+              s.x = Math.random() * (w + 140) - 20;
+              s.y = -15 - Math.random() * 30;
+            } else {
+              this.snowFlakes.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      updateSandstorm(w, h, gameSpeed) {
+        const targetCount = this.currentWeather === 'sandstorm' ? Math.round(this.sandMax * this.intensity) : 0;
+        const sandColors = ['#F59E0B', '#D97706', '#FDE68A', '#B45309', '#FBBF24'];
+
+        // Spawn new sandstorm grains
+        while (this.sandGrains.length < targetCount) {
+          this.sandGrains.push({
+            x: w + Math.random() * 60,
+            y: Math.random() * h,
+            size: Math.random() * 2.2 + 1.2,
+            vx: -(gameSpeed * 1.6 + 9.5 + Math.random() * 7.5),
+            vy: (Math.random() - 0.5) * 1.6,
+            alpha: Math.random() * 0.4 + 0.4,
+            color: sandColors[Math.floor(Math.random() * sandColors.length)],
+            offset: Math.random() * 100
+          });
+        }
+
+        // Update high-velocity sand grains
+        for (let i = this.sandGrains.length - 1; i >= 0; i--) {
+          const g = this.sandGrains[i];
+          g.x += g.vx;
+          g.y += g.vy + Math.sin((g.x + g.offset) * 0.015) * 0.8;
+
+          if (g.x < -40 || g.y > h + 20 || g.y < -20) {
+            if (this.currentWeather === 'sandstorm' && this.sandGrains.length <= targetCount) {
+              g.x = w + Math.random() * 60;
+              g.y = Math.random() * h;
+              g.vx = -(gameSpeed * 1.6 + 9.5 + Math.random() * 7.5);
+            } else {
+              this.sandGrains.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      drawPrecipitation(ctx) {
+        if (this.intensity <= 0) return;
+
+        // 1. Draw Rain Streaks
+        if (this.rainDrops.length > 0) {
+          ctx.save();
+          ctx.lineWidth = 1.4;
+          for (const d of this.rainDrops) {
+            const alpha = d.alpha * this.intensity;
+            const grad = ctx.createLinearGradient(d.x, d.y, d.x + d.vx * 0.5, d.y + d.len);
+            grad.addColorStop(0, 'rgba(186, 230, 253, 0)');
+            grad.addColorStop(0.5, `rgba(186, 230, 253, ${alpha})`);
+            grad.addColorStop(1, `rgba(255, 255, 255, ${alpha * 1.15})`);
+
+            ctx.strokeStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(d.x, d.y);
+            ctx.lineTo(d.x + d.vx * 0.45, d.y + d.len);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        // 2. Draw Snowflakes
+        if (this.snowFlakes.length > 0) {
+          ctx.save();
+          for (const s of this.snowFlakes) {
+            const alpha = s.alpha * this.intensity;
+            ctx.save();
+            ctx.translate(s.x, s.y);
+            ctx.globalAlpha = alpha;
+
+            if (s.isCrystal) {
+              // 6-Point Snowflake Crystal
+              ctx.rotate(s.rot);
+              ctx.strokeStyle = '#FFFFFF';
+              ctx.lineWidth = 1.2;
+              const r = s.size * 1.2;
+              ctx.beginPath();
+              for (let a = 0; a < 3; a++) {
+                const ang = (a * Math.PI) / 3;
+                const cos = Math.cos(ang) * r;
+                const sin = Math.sin(ang) * r;
+                ctx.moveTo(-cos, -sin);
+                ctx.lineTo(cos, sin);
+              }
+              ctx.stroke();
+              // Core dot
+              ctx.fillStyle = '#E0F2FE';
+              ctx.beginPath();
+              ctx.arc(0, 0, s.size * 0.35, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              // Soft glowing snowflake orb
+              ctx.fillStyle = '#FFFFFF';
+              ctx.beginPath();
+              ctx.arc(0, 0, s.size, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Subtle frosted rim glow
+              ctx.fillStyle = 'rgba(186, 230, 253, 0.45)';
+              ctx.beginPath();
+              ctx.arc(0, 0, s.size * 1.4, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.restore();
+          }
+          ctx.restore();
+        }
+
+        // 3. Draw Sandstorm Grains
+        if (this.sandGrains.length > 0) {
+          ctx.save();
+          for (const g of this.sandGrains) {
+            const alpha = g.alpha * this.intensity;
+            ctx.fillStyle = g.color;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            // Stretched horizontal grain to convey ferocious wind velocity
+            ctx.ellipse(g.x, g.y, g.size * 1.8, g.size * 0.8, -0.12, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // 4. Draw Platform & Ground Splashes
+        if (this.splashes.length > 0) {
+          ctx.save();
+          for (const sp of this.splashes) {
+            ctx.fillStyle = sp.color;
+            ctx.globalAlpha = Math.max(0, sp.alpha);
+            ctx.beginPath();
+            ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
+      drawOverlays(ctx, w, h) {
+        if (this.intensity <= 0) return;
+
+        // 1. RAIN SCREEN OVERLAYS
+        if ((this.currentWeather === 'rain' || this.lightningFlash > 0) && this.intensity > 0.05) {
+          ctx.save();
+
+          // Subtle stormy atmospheric vignette darkening edges
+          const rainVig = ctx.createRadialGradient(w * 0.5, h * 0.5, h * 0.35, w * 0.5, h * 0.5, w * 0.75);
+          rainVig.addColorStop(0, 'rgba(15, 23, 42, 0)');
+          rainVig.addColorStop(1, `rgba(15, 23, 42, ${0.24 * this.intensity})`);
+          ctx.fillStyle = rainVig;
+          ctx.fillRect(0, 0, w, h);
+
+          // Atmospheric distant lightning flash across the screen
+          if (this.lightningFlash > 0) {
+            ctx.fillStyle = `rgba(224, 242, 254, ${this.lightningFlash * 0.22 * this.intensity})`;
+            ctx.fillRect(0, 0, w, h);
+          }
+
+          // Camera lens water droplets trickling down
+          if (this.intensity > 0.25) {
+            for (const drop of this.screenWaterDrops) {
+              const dropAlpha = drop.alpha * this.intensity;
+              // Subtle downward trickle trail
+              ctx.strokeStyle = `rgba(224, 242, 254, ${dropAlpha * 0.4})`;
+              ctx.lineWidth = drop.r * 0.7;
+              ctx.beginPath();
+              ctx.moveTo(drop.x, drop.y - drop.trailLen);
+              ctx.lineTo(drop.x, drop.y);
+              ctx.stroke();
+
+              // Translucent water bead nucleus
+              ctx.fillStyle = `rgba(255, 255, 255, ${dropAlpha * 0.7})`;
+              ctx.beginPath();
+              ctx.arc(drop.x, drop.y, drop.r, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Lens refraction highlight
+              ctx.fillStyle = `rgba(56, 189, 248, ${dropAlpha * 0.5})`;
+              ctx.beginPath();
+              ctx.arc(drop.x - drop.r * 0.3, drop.y - drop.r * 0.3, drop.r * 0.45, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.restore();
+        }
+
+        // 2. SNOW SCREEN OVERLAYS
+        if (this.currentWeather === 'snow' && this.intensity > 0.05) {
+          ctx.save();
+          const snowInt = this.intensity;
+
+          // Frosted glass vignette around perimeter
+          const frostVig = ctx.createRadialGradient(w * 0.5, h * 0.5, h * 0.3, w * 0.5, h * 0.5, w * 0.72);
+          frostVig.addColorStop(0, 'rgba(186, 230, 253, 0)');
+          frostVig.addColorStop(0.75, `rgba(186, 230, 253, ${0.12 * snowInt})`);
+          frostVig.addColorStop(1, `rgba(224, 242, 254, ${0.28 * snowInt})`);
+          ctx.fillStyle = frostVig;
+          ctx.fillRect(0, 0, w, h);
+
+          // Delicate frosted crystalline corner filigree with gentle breathing
+          const breathe = 0.85 + 0.15 * Math.sin(performance.now() * 0.002);
+          const cornerAlpha = 0.32 * snowInt * breathe;
+          ctx.strokeStyle = `rgba(240, 249, 255, ${cornerAlpha})`;
+          ctx.lineWidth = 1.6;
+
+          // Top-Left corner ice needles
+          this.drawFrostCorner(ctx, 0, 0, 55, 1, 1);
+          // Top-Right corner ice needles
+          this.drawFrostCorner(ctx, w, 0, 55, -1, 1);
+          // Bottom-Left corner ice needles
+          this.drawFrostCorner(ctx, 0, h, 55, 1, -1);
+          // Bottom-Right corner ice needles
+          this.drawFrostCorner(ctx, w, h, 55, -1, -1);
+
+          ctx.restore();
+        }
+
+        // 3. SANDSTORM SCREEN OVERLAYS
+        if (this.currentWeather === 'sandstorm' && this.intensity > 0.05) {
+          ctx.save();
+          const sandInt = this.intensity;
+
+          // Warm amber dust haze overlay across entire viewport
+          ctx.fillStyle = `rgba(217, 119, 6, ${0.13 * sandInt})`;
+          ctx.fillRect(0, 0, w, h);
+
+          // Terracotta desert edge vignette
+          const sandVig = ctx.createRadialGradient(w * 0.5, h * 0.5, h * 0.35, w * 0.5, h * 0.5, w * 0.74);
+          sandVig.addColorStop(0, 'rgba(180, 83, 9, 0)');
+          sandVig.addColorStop(1, `rgba(120, 53, 15, ${0.25 * sandInt})`);
+          ctx.fillStyle = sandVig;
+          ctx.fillRect(0, 0, w, h);
+
+          // Sinuous sweeping horizontal sandstorm wind ribbons
+          const t = performance.now();
+          for (let i = 0; i < this.sandWindRibbons.length; i++) {
+            const ribbon = this.sandWindRibbons[i];
+            const y = ribbon.y + Math.sin(t * ribbon.freq + ribbon.phase) * 12;
+            const grad = ctx.createLinearGradient(0, y - ribbon.thickness, 0, y + ribbon.thickness);
+            grad.addColorStop(0, 'rgba(251, 191, 36, 0)');
+            grad.addColorStop(0.5, `rgba(245, 158, 11, ${0.16 * sandInt})`);
+            grad.addColorStop(1, 'rgba(217, 119, 6, 0)');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(0, y - ribbon.thickness * 0.5);
+            for (let x = 0; x <= w; x += 50) {
+              const wy = y + Math.sin(x * 0.01 + t * 0.003 + i) * 8;
+              ctx.lineTo(x, wy);
+            }
+            ctx.lineTo(w, y + ribbon.thickness * 0.5);
+            ctx.lineTo(0, y + ribbon.thickness * 0.5);
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
+      drawFrostCorner(ctx, cx, cy, size, dirX, dirY) {
+        ctx.beginPath();
+        // Central needle
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + dirX * size, cy + dirY * (size * 0.35));
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + dirX * (size * 0.35), cy + dirY * size);
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + dirX * (size * 0.75), cy + dirY * (size * 0.75));
+
+        // Lateral crystalline branches
+        ctx.moveTo(cx + dirX * (size * 0.4), cy + dirY * (size * 0.4));
+        ctx.lineTo(cx + dirX * (size * 0.55), cy + dirY * (size * 0.28));
+        ctx.moveTo(cx + dirX * (size * 0.4), cy + dirY * (size * 0.4));
+        ctx.lineTo(cx + dirX * (size * 0.28), cy + dirY * (size * 0.55));
+        ctx.stroke();
+      }
+    }
+
+    // 5. Daily Missions Manager
     class MissionManager {
       constructor(game) {
         this.game = game;
@@ -5661,7 +7440,7 @@
             name: 'Shadow Shinobi',
             modelType: 'biped',
             w: 36, h: 50,
-            price: 180,
+            price: 6000,
             rarity: 'rare',
             icon: '🥷',
             tagline: 'Silent assassin with flowing twin tails, obsidian armor, and stealth mask',
@@ -5678,7 +7457,7 @@
             name: 'Aegis Knight',
             modelType: 'biped',
             w: 42, h: 54,
-            price: 320,
+            price: 22500,
             rarity: 'epic',
             icon: '🛡️',
             tagline: 'Armored vanguard clad in gleaming steel plate and golden crest',
@@ -5697,8 +7476,8 @@
             name: 'Jaxen Vance',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 250,
-            rarity: 'rare',
+            price: 500,
+            rarity: 'common',
             icon: '🦾',
             tagline: 'Grit-hardened mercenary with a high-torque prosthetic arm and bionic optic',
             bodyGrad: ['#64748B', '#334155'],
@@ -5714,8 +7493,8 @@
             name: 'Valerie "Vex" Cross',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 340,
-            rarity: 'epic',
+            price: 2500,
+            rarity: 'rare',
             icon: '⚡',
             tagline: 'Cybernetic rogue with neon magenta augmentations and holographic goggles',
             bodyGrad: ['#F43F5E', '#881337'],
@@ -5731,7 +7510,7 @@
             name: 'Marcus the Unbroken',
             modelType: 'biped',
             w: 42, h: 54,
-            price: 360,
+            price: 12500,
             rarity: 'epic',
             icon: '🎖️',
             tagline: 'Seasoned battle commander equipped with heavy ammo bandolier and armored pauldron',
@@ -5748,7 +7527,7 @@
             name: 'Leo "Dash" Rossi',
             modelType: 'biped',
             w: 38, h: 50,
-            price: 150,
+            price: 800,
             rarity: 'common',
             icon: '🧢',
             tagline: 'Spirited urban parkour prodigy sporting a backward cap and yellow race scarf',
@@ -5765,8 +7544,8 @@
             name: 'Dr. Elena Vance',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 290,
-            rarity: 'rare',
+            price: 10000,
+            rarity: 'epic',
             icon: '🔬',
             tagline: 'Brilliant biometric researcher with a floating cybernetic optic eyepiece HUD',
             bodyGrad: ['#F8FAFC', '#94A3B8'],
@@ -5782,8 +7561,8 @@
             name: 'Roxie Sparks',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 380,
-            rarity: 'epic',
+            price: 5000,
+            rarity: 'rare',
             icon: '🎧',
             tagline: 'Underground DJ runner with glowing neon-pink studio cans and electric personality',
             bodyGrad: ['#EC4899', '#9D174D'],
@@ -5801,7 +7580,7 @@
             name: 'Apex-9',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 400,
+            price: 15000,
             rarity: 'epic',
             icon: '🤖',
             tagline: 'Autonomous combat android with sleek chrome casing and sweeping laser eye',
@@ -5818,7 +7597,7 @@
             name: 'Rusty',
             modelType: 'biped',
             w: 38, h: 50,
-            price: 160,
+            price: 1000,
             rarity: 'common',
             icon: '🔩',
             tagline: 'Clunky scrapheap automaton with a puffing chimney smokestack and welded plates',
@@ -5835,8 +7614,8 @@
             name: 'Null-Void',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 520,
-            rarity: 'legendary',
+            price: 25000,
+            rarity: 'epic',
             icon: '🕳️',
             tagline: 'Dark matter mechanoid harboring an active cosmic singularity portal in its chest',
             bodyGrad: ['#09090B', '#18181B'],
@@ -5852,8 +7631,8 @@
             name: 'DJ B-00M',
             modelType: 'biped',
             w: 40, h: 52,
-            price: 420,
-            rarity: 'epic',
+            price: 3500,
+            rarity: 'rare',
             icon: '📻',
             tagline: 'Boombox automaton blasting frequency audio waveforms across live equalizer LEDs',
             bodyGrad: ['#8B5CF6', '#3B0764'],
@@ -5869,8 +7648,8 @@
             name: 'Orion',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 460,
-            rarity: 'legendary',
+            price: 18000,
+            rarity: 'epic',
             icon: '🌌',
             tagline: 'Astral navigational drone crowned with an orbiting golden solar ring halo',
             bodyGrad: ['#1E1B4B', '#312E81'],
@@ -5886,8 +7665,8 @@
             name: 'Bastion-Prime',
             modelType: 'biped',
             w: 42, h: 54,
-            price: 350,
-            rarity: 'rare',
+            price: 40000,
+            rarity: 'legendary',
             icon: '🏰',
             tagline: 'Heavy mechanized fortress vanguard armed with dual shoulder blast shields',
             bodyGrad: ['#475569', '#1E293B'],
@@ -5905,8 +7684,8 @@
             name: 'Kaelith Star-Eye',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 480,
-            rarity: 'legendary',
+            price: 20000,
+            rarity: 'epic',
             icon: '👁️',
             tagline: 'Mystical celestial hybrid gazing into infinity with a radiant third eye',
             bodyGrad: ['#6366F1', '#3730A3'],
@@ -5922,8 +7701,8 @@
             name: 'Gorgoroth',
             modelType: 'biped',
             w: 40, h: 54,
-            price: 440,
-            rarity: 'epic',
+            price: 35000,
+            rarity: 'legendary',
             icon: '👹',
             tagline: 'Infernal volcanic brute crowned with curving obsidian horns and magma cracks',
             bodyGrad: ['#DC2626', '#7F1D1D'],
@@ -5939,7 +7718,7 @@
             name: 'Sylph',
             modelType: 'biped',
             w: 36, h: 50,
-            price: 330,
+            price: 7500,
             rarity: 'rare',
             icon: '🦋',
             tagline: 'Ethereal forest fairy alien with wiggling bioluminescent moth antennae',
@@ -5956,8 +7735,8 @@
             name: 'Zorblax the Great',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 370,
-            rarity: 'epic',
+            price: 42500,
+            rarity: 'legendary',
             icon: '👽',
             tagline: 'Megalomaniacal alien overlord with an exposed glowing brain dome and eye-stalks',
             bodyGrad: ['#4ADE80', '#15803D'],
@@ -5973,7 +7752,7 @@
             name: 'Nyx',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 500,
+            price: 48000,
             rarity: 'legendary',
             icon: '🐙',
             tagline: 'Cosmic entity of the deep void with writhing shadowy ethereal tentacles',
@@ -5992,7 +7771,7 @@
             name: '骨-K0 (Bone-KZero)',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 600,
+            price: 50000,
             rarity: 'legendary',
             icon: '💀',
             tagline: 'A cybernetic undead warrior with glowing neon ribs and cranial circuits',
@@ -6009,8 +7788,8 @@
             name: 'Captain Skelly',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 310,
-            rarity: 'rare',
+            price: 30000,
+            rarity: 'legendary',
             icon: '🏴‍☠️',
             tagline: 'Resurrected buccaneer sporting a skull-and-crossbones captain hat and eye-patch',
             bodyGrad: ['#E2E8F0', '#94A3B8'],
@@ -6026,8 +7805,8 @@
             name: 'Baron Marrow',
             modelType: 'biped',
             w: 38, h: 54,
-            price: 450,
-            rarity: 'epic',
+            price: 45000,
+            rarity: 'legendary',
             icon: '🎩',
             tagline: 'Aristocratic skeletal nobleman attired in a velvet top hat, gold monocle, and bowtie',
             bodyGrad: ['#F1F5F9', '#64748B'],
@@ -6143,7 +7922,7 @@
         if (this.game.totalCoins < skin.price) {
           audio.denied();
           AndroidBridge.vibrate(60);
-          AndroidBridge.showToast(`Need ${skin.price - this.game.totalCoins} more coins to unlock ${skin.name}!`);
+          AndroidBridge.showToast(`Need ${(skin.price - this.game.totalCoins).toLocaleString()} more coins to unlock ${skin.name}!`);
 
           // Shake action button & coins badge for visual feedback
           const actBtn = document.getElementById('customizerActionBtn');
@@ -6229,16 +8008,16 @@
 
         const questionEl = document.getElementById('skinConfirmQuestion');
         if (questionEl) {
-          questionEl.textContent = `Unlock ${skin.name} for ${skin.price} coins?`;
+          questionEl.textContent = `Unlock ${skin.name} for ${skin.price.toLocaleString()} coins?`;
         }
 
         const priceEl = document.getElementById('skinConfirmPriceVal');
-        if (priceEl) priceEl.textContent = `${skin.price} 🪙`;
+        if (priceEl) priceEl.textContent = `${skin.price.toLocaleString()} 🪙`;
 
         const balanceEl = document.getElementById('skinConfirmRemainingVal');
         if (balanceEl) {
           const remaining = Math.max(0, this.game.totalCoins - skin.price);
-          balanceEl.textContent = `${remaining} 🪙`;
+          balanceEl.textContent = `${remaining.toLocaleString()} 🪙`;
         }
 
         const cancelBtn = document.getElementById('skinConfirmCancelBtn');
@@ -6424,7 +8203,7 @@
 
       renderCustomizer() {
         const coinsValEl = document.getElementById('customizerCoinsVal');
-        if (coinsValEl) coinsValEl.textContent = this.game.totalCoins;
+        if (coinsValEl) coinsValEl.textContent = this.game.totalCoins.toLocaleString();
 
         const currentSkin = this.getSkin(this.previewSkinId);
         const isOwned = this.isUnlocked(currentSkin.id);
@@ -6458,7 +8237,7 @@
           } else {
             const canAfford = this.game.totalCoins >= currentSkin.price;
             actBtn.className = canAfford ? 'btn-customizer-action buy' : 'btn-customizer-action cannot-buy';
-            actBtn.innerHTML = `<span>UNLOCK ${currentSkin.price} 🪙</span>`;
+            actBtn.innerHTML = `<span>UNLOCK ${currentSkin.price.toLocaleString()} 🪙</span>`;
             actBtn.onclick = () => {
               this.buySkin(currentSkin.id);
             };
@@ -6492,7 +8271,8 @@
           if (unlocked) {
             costHtml = '<span class="skin-card-cost free">READY</span>';
           } else {
-            costHtml = `<span class="skin-card-cost">${skin.price} 🪙</span>`;
+            const shortPrice = skin.price >= 10000 ? (skin.price / 1000) + 'k' : skin.price.toLocaleString();
+            costHtml = `<span class="skin-card-cost">${shortPrice} 🪙</span>`;
           }
 
           card.innerHTML = `
@@ -6531,6 +8311,9 @@
         id: 'meadow',
         name: 'Sunny Meadow',
         icon: '☀️',
+        weather: 'clear',
+        weatherName: 'Clear Skies',
+        weatherIcon: '☀️',
         skyTop: '#73BDE4',
         skyMid: '#A2D8F2',
         skyBottom: '#C9EDF8',
@@ -6552,8 +8335,11 @@
       },
       {
         id: 'sunset',
-        name: 'Golden Sunset',
-        icon: '🌅',
+        name: 'Sunset Dunes',
+        icon: '🏜️',
+        weather: 'sandstorm',
+        weatherName: 'Sandstorm',
+        weatherIcon: '🏜️',
         skyTop: '#9A3412',
         skyMid: '#EA580C',
         skyBottom: '#FDE047',
@@ -6575,8 +8361,11 @@
       },
       {
         id: 'night',
-        name: 'Starry Midnight',
-        icon: '🌙',
+        name: 'Midnight Storm',
+        icon: '🌧️',
+        weather: 'rain',
+        weatherName: 'Rainstorm',
+        weatherIcon: '🌧️',
         skyTop: '#030712',
         skyMid: '#0F172A',
         skyBottom: '#1E1B4B',
@@ -6585,21 +8374,50 @@
         sunSize: 30,
         sunYRatio: 0.18,
         sunType: 'moon',
-        cloudColor: 'rgba(148, 163, 184, 0.42)',
-        cloudShadow: 'rgba(51, 65, 85, 0.4)',
+        cloudColor: 'rgba(100, 116, 139, 0.65)',
+        cloudShadow: 'rgba(30, 41, 59, 0.6)',
         treeColors: ['#0F766E', '#134E4A', '#1E293B', '#0E7490'],
         treeTrunk: '#0F172A',
         treeStyles: ['pine'],
-        starsOpacity: 1.0,
-        grassColor: '#0D9488',
+        starsOpacity: 0.55,
+        grassColor: '#0F766E',
         tuftColor: '#14B8A6',
         soilColor: '#1E293B',
         soilShadow: '#0F172A'
       },
       {
+        id: 'snow',
+        name: 'Frost Peak',
+        icon: '❄️',
+        weather: 'snow',
+        weatherName: 'Snow Flurry',
+        weatherIcon: '❄️',
+        skyTop: '#0B1329',
+        skyMid: '#1E293B',
+        skyBottom: '#93C5FD',
+        sunColor: '#E0F2FE',
+        sunGlow: '#BAE6FD',
+        sunSize: 32,
+        sunYRatio: 0.20,
+        sunType: 'frost_moon',
+        cloudColor: 'rgba(241, 245, 249, 0.85)',
+        cloudShadow: 'rgba(148, 163, 184, 0.5)',
+        treeColors: ['#E2E8F0', '#CBD5E1', '#94A3B8', '#64748B'],
+        treeTrunk: '#334155',
+        treeStyles: ['pine'],
+        starsOpacity: 0.65,
+        grassColor: '#E2E8F0',
+        tuftColor: '#FFFFFF',
+        soilColor: '#334155',
+        soilShadow: '#1E293B'
+      },
+      {
         id: 'cyber',
         name: 'Cyber Twilight',
         icon: '⚡',
+        weather: 'clear',
+        weatherName: 'Neon Clear',
+        weatherIcon: '⚡',
         skyTop: '#2E1065',
         skyMid: '#701A75',
         skyBottom: '#0284C7',
@@ -6676,6 +8494,11 @@
 
         this.width = 0;
         this.height = 0;
+        this.aspectRatio = 16 / 9;
+        this.scaleX = 1;
+        this.scaleY = 1;
+        this.coordScale = 1;
+        this.isPortrait = false;
         this.dpr = window.devicePixelRatio || 1;
 
         // Stats & Progress
@@ -6723,7 +8546,9 @@
           scaleX: 1,
           scaleY: 1,
           invulnerableTimer: 0,
-          legAngle: 0
+          legAngle: 0,
+          jumpTrailTimer: 0,
+          jumpTrailIsDouble: false
         };
 
         // World Objects
@@ -6803,6 +8628,9 @@
 
         // Character Skins & Customizer Manager
         this.skinManager = new SkinManager(this);
+
+        // Biome-Reactive Weather & Atmospheric Manager
+        this.weatherManager = new WeatherManager(this);
 
         this.initDOM();
         this.initEvents();
@@ -6975,6 +8803,23 @@
         this.heartsBox = document.getElementById('heartsBox');
         this.pauseBtn = document.getElementById('pauseBtn');
 
+        // HUD Bar & Breathing Stat Elements
+        this.hudBar = document.getElementById('hudBar');
+        this.hudStatTrophy = document.getElementById('hudStatTrophy');
+        this.hudStatCoin = document.getElementById('hudStatCoin');
+        this.hudStatDist = document.getElementById('hudStatDist');
+
+        // Cleanly reset action pulse classes on animation completion so breathing resumes seamlessly
+        [this.hudStatTrophy, this.hudStatCoin, this.hudStatDist].forEach(el => {
+          if (el) {
+            el.addEventListener('animationend', (e) => {
+              if (e.animationName && e.animationName.startsWith('hudAction')) {
+                el.classList.remove('action-pulse-coin', 'action-pulse-trophy', 'action-pulse-distance');
+              }
+            });
+          }
+        });
+
         // Overlays
         this.splashScreen = document.getElementById('splashScreen');
         this.startScreen = document.getElementById('startScreen');
@@ -7012,6 +8857,11 @@
         this.hudDiffIcon = document.getElementById('hudDiffIcon');
         this.hudDiffText = document.getElementById('hudDiffText');
         this.goDiff = document.getElementById('goDiff');
+
+        // Weather HUD Badge Elements
+        this.hudWeatherBadge = document.getElementById('hudWeatherBadge');
+        this.hudWeatherIcon = document.getElementById('hudWeatherIcon');
+        this.hudWeatherText = document.getElementById('hudWeatherText');
 
         this.applyDifficultyUI();
         this.updateHUD();
@@ -7139,8 +8989,31 @@
           streakCard.onclick = (e) => e.stopPropagation();
         }
 
+        // Helper to convert screen pointer/click coordinates into canvas game space
+        const getCanvasCoords = (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+          const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+          const isPortrait = window.innerHeight > window.innerWidth;
+          let x, y;
+          if (isPortrait) {
+            // Rotated 90deg clockwise:
+            // Screen Y maps to game X, inverted Screen X maps to game Y
+            x = (clientY - rect.top) * (this.width / rect.height);
+            y = (rect.right - clientX) * (this.height / rect.width);
+          } else {
+            x = (clientX - rect.left) * (this.width / rect.width);
+            y = (clientY - rect.top) * (this.height / rect.height);
+          }
+          return { x, y };
+        };
+
         // Jump Controls (Mobile Tap + Keyboard)
-        const handleJump = (e) => {
+        let lastJumpTapTime = 0;
+        const handleJump = (e, coords) => {
+          const now = performance.now();
+          if (now - lastJumpTapTime < 60) return; // Debounce simultaneous touch/pointer triggers
+          lastJumpTapTime = now;
           if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || this.state === 'CUSTOMIZER') return;
           if (this.state === 'PLAYING') {
             this.playerJump();
@@ -7149,11 +9022,27 @@
           }
         };
 
-        this.canvas.addEventListener('pointerdown', (e) => {
+        // Passive touch listener for touch devices (Android low-latency compositor touch pipeline, prevents scrolling interference)
+        this.canvas.addEventListener('touchstart', (e) => {
           if (this.isConsentModalOpen || this.isTutorialOpen) return;
           audio.init();
-          handleJump(e);
-        });
+          const touch = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
+          const coords = touch ? getCanvasCoords(touch) : null;
+          handleJump(e, coords);
+        }, { passive: true });
+
+        this.canvas.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'touch') return; // Handled with ultra-low latency by passive touchstart
+          if (this.isConsentModalOpen || this.isTutorialOpen) return;
+          audio.init();
+          const coords = getCanvasCoords(e);
+          handleJump(e, coords);
+        }, { passive: true });
+
+        this.canvas.addEventListener('click', (e) => {
+          if (this.isConsentModalOpen || this.isTutorialOpen) return;
+          const coords = getCanvasCoords(e);
+        }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
           if (this.isConsentModalOpen) return;
@@ -7399,12 +9288,33 @@
 
       resize() {
         const vp = window.visualViewport;
-        this.width = vp ? Math.round(vp.width) : window.innerWidth;
-        this.height = vp ? Math.round(vp.height) : window.innerHeight;
-        // Auto-pause running game if rotated to portrait
-        if (this.width < this.height && this.state === 'PLAYING') {
-          this.pauseGame();
-        }
+        const rawW = vp ? Math.round(vp.width) : window.innerWidth;
+        const rawH = vp ? Math.round(vp.height) : window.innerHeight;
+
+        const isPortrait = window.innerHeight > window.innerWidth;
+
+        // In CSS fake-landscape rotation, physical width and height swap on screen
+        const targetWidth = isPortrait ? Math.max(rawW, rawH) : rawW;
+        const targetHeight = isPortrait ? Math.min(rawW, rawH) : rawH;
+
+        // Track previous dimensions for smooth dynamic coordinate scaling
+        const oldWidth = this.width;
+        const oldHeight = this.height;
+
+        this.width = targetWidth;
+        this.height = targetHeight;
+        this.isPortrait = isPortrait;
+
+        // Dynamic aspect ratio calculation
+        this.aspectRatio = this.width / Math.max(1, this.height);
+
+        // Virtual reference baseline (standard mobile landscape baseline: 960x540)
+        this.baseWidth = 960;
+        this.baseHeight = 540;
+        this.scaleX = this.width / this.baseWidth;
+        this.scaleY = this.height / this.baseHeight;
+        this.coordScale = Math.min(this.scaleX, this.scaleY);
+
         // Cap DPR at 2.0 to prevent high-density screen GPU buffer exhaustion (SIGKILL code -1)
         this.dpr = Math.min(window.devicePixelRatio || 1, 2.0);
 
@@ -7412,10 +9322,67 @@
         this.canvas.height = Math.floor(this.height * this.dpr);
         this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
-        this.sun.x = this.width * 0.78;
-        this.sun.y = this.height * 0.16;
+        // Reposition sun proportionally to canvas dimensions
+        if (this.sun) {
+          this.sun.x = this.width * 0.78;
+          this.sun.y = this.height * 0.16;
+        }
 
-        this.initBackgroundDecor();
+        // Smooth coordinate scaling for existing entities when viewport height shifts dynamically
+        // (e.g., orientation swap, browser chrome address bar collapse/expand)
+        if (oldHeight > 0 && Math.abs(oldHeight - this.height) > 2) {
+          const deltaScaleY = this.height / oldHeight;
+
+          // Scale platforms gracefully
+          if (this.platforms && this.platforms.length > 0) {
+            for (let i = 0; i < this.platforms.length; i++) {
+              const p = this.platforms[i];
+              p.y = Math.round(p.y * deltaScaleY);
+              p.h = Math.max(60, Math.round(p.h * deltaScaleY));
+            }
+          }
+
+          // Scale player Y position and keep grounded state valid
+          if (this.player) {
+            this.player.y = Math.round(this.player.y * deltaScaleY);
+            if (this.player.onGround && this.platforms) {
+              const standingPlat = this.platforms.find(p =>
+                this.player.x + this.player.w > p.x && this.player.x < p.x + p.w
+              );
+              if (standingPlat) {
+                this.player.y = standingPlat.y - this.player.h;
+              }
+            }
+          }
+
+          // Scale active items and obstacles
+          if (this.coins) {
+            for (let i = 0; i < this.coins.length; i++) {
+              this.coins[i].y *= deltaScaleY;
+            }
+          }
+          if (this.powerups) {
+            for (let i = 0; i < this.powerups.length; i++) {
+              this.powerups[i].y *= deltaScaleY;
+            }
+          }
+          if (this.enemies) {
+            for (let i = 0; i < this.enemies.length; i++) {
+              this.enemies[i].y *= deltaScaleY;
+            }
+          }
+          if (this.spikes) {
+            for (let i = 0; i < this.spikes.length; i++) {
+              this.spikes[i].y *= deltaScaleY;
+            }
+          }
+        }
+
+        // Only re-generate background decor if screen size changed significantly (> 12px) or on initial load
+        const sizeDelta = Math.abs(oldWidth - this.width) + Math.abs(oldHeight - this.height);
+        if (oldWidth === 0 || sizeDelta > 12) {
+          this.initBackgroundDecor();
+        }
       }
 
       initBackgroundDecor() {
@@ -7463,19 +9430,21 @@
       }
 
       getProgressionState() {
-        const cycleDist = 2000;
+        const cycleDist = 2500;
         const distInCycle = this.distance % cycleDist;
 
-        // Biome ranges within each 2000m cycle:
-        // 0 - 350m: Meadow (Sunny, lush greenery)
-        // 350 - 800m: Sunset (Golden amber, autumn tones)
-        // 800 - 1400m: Night (Midnight aurora, crescent moon, stars)
-        // 1400 - 2000m: Cyber (Cyberpunk twilight, synthwave neon sun)
+        // Biome ranges within each 2500m cycle:
+        // 0 - 450m: Meadow (Sunny Meadow, Clear Skies)
+        // 450 - 950m: Sunset Dunes (Desert dunes, Sandstorm)
+        // 950 - 1550m: Midnight Storm (Stormy midnight, Rainstorm)
+        // 1550 - 2100m: Frost Peak (Glacial mountains, Snow Flurry)
+        // 2100 - 2500m: Cyber (Cyber Twilight, Neon Clear)
         const ranges = [
-          { biome: BIOMES[0], start: 0, end: 350 },
-          { biome: BIOMES[1], start: 350, end: 800 },
-          { biome: BIOMES[2], start: 800, end: 1400 },
-          { biome: BIOMES[3], start: 1400, end: 2000 }
+          { biome: BIOMES[0], start: 0, end: 450 },
+          { biome: BIOMES[1], start: 450, end: 950 },
+          { biome: BIOMES[2], start: 950, end: 1550 },
+          { biome: BIOMES[3], start: 1550, end: 2100 },
+          { biome: BIOMES[4], start: 2100, end: 2500 }
         ];
 
         let currentRange = ranges[0];
@@ -7517,6 +9486,9 @@
           id: t < 0.5 ? currentBiome.id : nextBiome.id,
           name: t < 0.5 ? currentBiome.name : nextBiome.name,
           icon: t < 0.5 ? currentBiome.icon : nextBiome.icon,
+          weather: t < 0.5 ? currentBiome.weather : nextBiome.weather,
+          weatherName: t < 0.5 ? currentBiome.weatherName : nextBiome.weatherName,
+          weatherIcon: t < 0.5 ? currentBiome.weatherIcon : nextBiome.weatherIcon,
           skyTop: lerpColor(currentBiome.skyTop, nextBiome.skyTop, t),
           skyMid: lerpColor(currentBiome.skyMid, nextBiome.skyMid, t),
           skyBottom: lerpColor(currentBiome.skyBottom, nextBiome.skyBottom, t),
@@ -7574,6 +9546,13 @@
             clearTimeout(this.speedUpTimeout);
             this.speedUpTimeout = null;
           }
+        }
+
+        // Fade ambient weather loops out during non-gameplay screens, or restore when playing
+        if (screen !== 'PLAYING') {
+          audio.setWeatherAmbience('clear', 0);
+        } else if (this.weatherManager) {
+          audio.setWeatherAmbience(this.weatherManager.currentWeather, this.weatherManager.intensity);
         }
         this.splashScreen.classList.toggle('active', screen === 'SPLASH');
         this.startScreen.classList.toggle('active', screen === 'MENU');
@@ -7702,6 +9681,13 @@
         // Reset progressive difficulty curve tracking
         this.lastSpeedTier = 0;
         this.lastObstacleX = 0;
+        this.hasTriggeredHighScorePop = false;
+        this.lastDistMilestone = 0;
+
+        if (this.hudStatTrophy) this.hudStatTrophy.classList.remove('action-pulse-coin', 'action-pulse-trophy', 'action-pulse-distance');
+        if (this.hudStatCoin) this.hudStatCoin.classList.remove('action-pulse-coin', 'action-pulse-trophy', 'action-pulse-distance');
+        if (this.hudStatDist) this.hudStatDist.classList.remove('action-pulse-coin', 'action-pulse-trophy', 'action-pulse-distance');
+
         if (this.speedUpTimeout) {
           clearTimeout(this.speedUpTimeout);
           this.speedUpTimeout = null;
@@ -7727,6 +9713,9 @@
         document.getElementById('newRecordBadge').style.display = 'none';
 
         this.particles.clear();
+        if (this.weatherManager) {
+          this.weatherManager.reset();
+        }
         this.platforms = [];
         this.coins = [];
         this.enemies = [];
@@ -7748,6 +9737,8 @@
         this.player.onGround = true;
         this.player.jumpsLeft = 2;
         this.player.invulnerableTimer = 0;
+        this.player.jumpTrailTimer = 0;
+        this.player.jumpTrailIsDouble = false;
 
         audio.fastStart();
         AndroidBridge.vibrate(60);
@@ -7841,12 +9832,23 @@
           this.player.scaleY = 1.35;
           this.player.onGround = false;
 
+          const footX = this.player.x + this.player.w / 2;
+          const footY = this.player.y + this.player.h;
+
           if (this.player.jumpsLeft === 2) {
             audio.jump();
-            this.particles.createDust(this.player.x + this.player.w / 2, this.player.y + this.player.h);
+            this.player.jumpTrailTimer = 22;
+            this.player.jumpTrailIsDouble = false;
+            this.particles.createJumpDustBurst(footX, footY, false);
+            this.triggerHudStatAction('distance');
           } else {
             audio.doubleJump();
-            this.particles.create(this.player.x + this.player.w / 2, this.player.y + this.player.h, 6, '#38BDF8', 2.5);
+            audio.whoosh();
+            this.player.jumpTrailTimer = 24;
+            this.player.jumpTrailIsDouble = true;
+            this.particles.createJumpDustBurst(footX, footY, true);
+            this.particles.create(footX, footY, 6, '#38BDF8', 2.5);
+            this.triggerHudStatAction('distance');
             if (this.missionManager) {
               this.missionManager.onDoubleJumpPerformed();
             }
@@ -8211,6 +10213,7 @@
         audio.swoosh();
         AndroidBridge.vibrate(50);
         this.particles.createSpeedSonicRings(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
+        this.triggerHudStatAction('distance');
 
         if (this.speedUpSub) {
           const isMax = this.gameSpeed >= this.baseSpeed * 2.5;
@@ -8244,11 +10247,35 @@
         this.shakeMagnitude = magnitude;
       }
 
+      triggerHudStatAction(type) {
+        let el = null;
+        let animClass = '';
+        if (type === 'coin') {
+          el = this.hudStatCoin;
+          animClass = 'action-pulse-coin';
+        } else if (type === 'trophy' || type === 'score') {
+          el = this.hudStatTrophy;
+          animClass = 'action-pulse-trophy';
+        } else if (type === 'distance' || type === 'jump') {
+          el = this.hudStatDist;
+          animClass = 'action-pulse-distance';
+        }
+        if (!el) return;
+        el.classList.remove('action-pulse-coin', 'action-pulse-trophy', 'action-pulse-distance');
+        void el.offsetWidth; // Force CSS reflow to re-trigger
+        el.classList.add(animClass);
+      }
+
       updateHUD() {
         this.scoreEl.textContent = Math.floor(this.score);
         this.coinsEl.textContent = this.runCoins;
         this.distEl.textContent = `${Math.floor(this.distance)}m`;
         this.highDistEl.textContent = `High: ${this.highDistance}m`;
+
+        // Update fast pace breathing rhythm when sprinting at top speed or in Fast Start
+        if (this.hudBar) {
+          this.hudBar.classList.toggle('fast-pace', this.isFastStartActive() || this.gameSpeed >= 9.5);
+        }
 
         // Update difficulty HUD badge
         if (this.hudDiffBadge && this.hudDiffIcon && this.hudDiffText) {
@@ -8256,6 +10283,15 @@
           this.hudDiffBadge.className = `diff-hud-pill ${cfg.badgeClass}`;
           this.hudDiffIcon.textContent = cfg.icon;
           this.hudDiffText.textContent = cfg.name.toUpperCase();
+        }
+
+        // Update active biome weather HUD badge
+        if (this.hudWeatherBadge && this.hudWeatherIcon && this.hudWeatherText) {
+          const biome = this.getBlendedBiome();
+          const wType = biome.weather || 'clear';
+          this.hudWeatherBadge.className = `weather-hud-pill ${wType}`;
+          this.hudWeatherIcon.textContent = biome.weatherIcon || '☀️';
+          this.hudWeatherText.textContent = (biome.weatherName || 'CLEAR').toUpperCase();
         }
 
         // Update heart icons
@@ -8346,6 +10382,8 @@
               hudBar.classList.remove('hud-celebrating');
             }, 1600);
           }
+          this.triggerHudStatAction('trophy');
+          this.triggerHudStatAction('coin');
 
           // Dynamic haptic screen shake
           this.shake(8, 2.5);
@@ -8512,6 +10550,19 @@
           this.missionManager.onRunDistanceUpdate(this.distance);
         }
 
+        // Trophy celebration response when surpassing high score during the run
+        if (this.highScore > 0 && this.score > this.highScore && !this.hasTriggeredHighScorePop) {
+          this.hasTriggeredHighScorePop = true;
+          this.triggerHudStatAction('trophy');
+        }
+
+        // Distance milestone responsive pulse every 100m
+        const distHundred = Math.floor(this.distance / 100);
+        if (distHundred > this.lastDistMilestone) {
+          this.lastDistMilestone = distHundred;
+          this.triggerHudStatAction('distance');
+        }
+
         // Runner trail recording & ground friction sparks during Fast Start
         if (isFastStart) {
           if (!this.runnerTrails) this.runnerTrails = [];
@@ -8563,6 +10614,14 @@
           this.player.invulnerableTimer--;
         }
 
+        // Jump trail: small, fading dust sprites spawning at the runner's feet during initial and double jumps
+        if (!this.player.onGround && this.player.jumpTrailTimer > 0) {
+          const footX = this.player.x + this.player.w * 0.35 + (Math.random() - 0.5) * 8;
+          const footY = this.player.y + this.player.h;
+          this.particles.createJumpDustTrail(footX, footY, this.player.jumpTrailIsDouble);
+          this.player.jumpTrailTimer--;
+        }
+
         // Running leg animation
         if (this.player.onGround) {
           this.player.legAngle += this.gameSpeed * 0.12;
@@ -8572,6 +10631,7 @@
         }
 
         // Platform collision
+        const wasOnGround = this.player.onGround;
         this.player.onGround = false;
         const playerBottom = this.player.y + this.player.h;
         const playerRight = this.player.x + this.player.w;
@@ -8585,10 +10645,15 @@
             playerBottom <= p.y + 18 &&
             this.player.vy >= 0
           ) {
+            if (!wasOnGround) {
+              // Landing impact dust puff at runner's feet
+              this.particles.createDust(this.player.x + this.player.w / 2, p.y);
+            }
             this.player.y = p.y - this.player.h;
             this.player.vy = 0;
             this.player.onGround = true;
             this.player.jumpsLeft = 2;
+            this.player.jumpTrailTimer = 0;
             break;
           }
         }
@@ -8697,6 +10762,7 @@
               this.score += 10;
               audio.coin();
               this.particles.createCoinSparkle(c.x, c.y);
+              this.triggerHudStatAction('coin');
               if (this.missionManager) {
                 this.missionManager.onRunCoinUpdate(this.runCoins);
               }
@@ -8886,6 +10952,10 @@
 
         this.generateWorld();
         this.particles.update();
+        if (this.weatherManager) {
+          const blendedBiome = this.getBlendedBiome();
+          this.weatherManager.update(blendedBiome, this.gameSpeed);
+        }
         this.updateHUD();
       }
 
@@ -9031,6 +11101,16 @@
 
         // 14. Player Character (matching selected skin)
         this.drawPlayer(ctx);
+
+        // 15. Dynamic Biome Weather Precipitation (Rain, Snowflakes, Sandstorm grains, Splashes)
+        if (this.weatherManager) {
+          this.weatherManager.drawPrecipitation(ctx);
+        }
+
+        // 16. Atmospheric Weather Screen Overlays (Rain droplets on camera, frosted ice filigree, sand haze)
+        if (this.weatherManager) {
+          this.weatherManager.drawOverlays(ctx, this.width, this.height);
+        }
 
         ctx.restore();
       }
@@ -9223,6 +11303,29 @@
           ctx.beginPath();
           ctx.arc(x, y, size + 8 + ringPulse, 0, Math.PI * 2);
           ctx.stroke();
+        } else if (celestial.sunType === 'frost_moon') {
+          // Glacial ice moon with crystalline halo
+          const glow = ctx.createRadialGradient(x, y, size * 0.4, x, y, size * 3.4);
+          glow.addColorStop(0, 'rgba(224, 242, 254, 0.85)');
+          glow.addColorStop(0.4, 'rgba(186, 230, 253, 0.4)');
+          glow.addColorStop(0.8, 'rgba(56, 189, 248, 0.15)');
+          glow.addColorStop(1, 'rgba(11, 19, 41, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(x, y, size * 3.4, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Ice Moon Disk
+          ctx.fillStyle = '#E0F2FE';
+          ctx.beginPath();
+          ctx.arc(x, y, size, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Soft blue shadow crescent
+          ctx.fillStyle = celestial.skyTop;
+          ctx.beginPath();
+          ctx.arc(x - size * 0.4, y - size * 0.12, size * 0.9, 0, Math.PI * 2);
+          ctx.fill();
         }
         ctx.restore();
       }
@@ -10735,6 +12838,12 @@
       loop(time) {
         const dt = Math.min((time - this.lastTime) / 1000, 0.1);
         this.lastTime = time;
+
+        // Dynamically monitor frame rate for particle throttling on low-end hardware
+        if (dt > 0 && this.particles) {
+          const fps = 1 / dt;
+          this.particles.monitorPerformance(fps);
+        }
 
         if (!this.isConsentModalOpen) {
           this.update(dt);
