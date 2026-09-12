@@ -34,48 +34,77 @@
       image-rendering: -webkit-optimize-contrast;
     }
 
-    /* In-Game HUD matching image.png */
+    /* In-Game HUD matching image.png & ultra-wide notch safe areas */
     #hud {
       position: absolute;
       top: 0;
       left: 0;
+      right: 0;
       width: 100%;
-      padding: 10px 16px;
+      box-sizing: border-box;
+      /* Support for ultra-wide displays, notches, punch holes & status bar safe areas */
+      padding-top: max(10px, calc(env(safe-area-inset-top, 0px) + 6px));
+      padding-bottom: 8px;
+      padding-left: max(14px, calc(env(safe-area-inset-left, 0px) + 12px));
+      padding-right: max(14px, calc(env(safe-area-inset-right, 0px) + 12px));
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
+      gap: 10px;
       pointer-events: none;
       z-index: 10;
     }
+    .hud-spacer {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
     .hud-bar {
       margin: 0 auto;
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(30, 41, 59, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: 9999px;
-      padding: 6px 20px;
+      padding: 6px clamp(10px, 2vw, 20px);
       display: flex;
       align-items: center;
-      gap: 18px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      justify-content: center;
+      gap: clamp(8px, 1.8vw, 18px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: #fff;
+      flex-shrink: 1;
+      max-width: fit-content;
+      min-width: 0;
     }
     .hud-stat {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       font-weight: 800;
-      font-size: 15px;
-      letter-spacing: 0.5px;
+      font-size: clamp(13px, 3.2vw, 15px);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 1;
     }
     .hud-stat.distance-container {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      line-height: 1.1;
+      justify-content: center;
+      line-height: 1.15;
+      min-width: fit-content;
+      flex-shrink: 0;
+    }
+    .hud-stat.distance-container > div {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .hud-stat .high-score {
-      font-size: 10px;
+      font-size: clamp(9px, 2.2vw, 10px);
       font-weight: 600;
       color: #94A3B8;
       letter-spacing: 0;
@@ -86,10 +115,12 @@
 
     .hearts-box {
       display: flex;
-      gap: 5px;
+      gap: 4px;
+      align-items: center;
+      flex-shrink: 0;
     }
     .heart-icon {
-      font-size: 17px;
+      font-size: clamp(15px, 3.6vw, 17px);
       filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -100,29 +131,34 @@
 
     .pause-btn {
       pointer-events: auto;
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(30, 41, 59, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      width: 40px;
-      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      transition: transform 0.15s ease, background 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease, box-shadow 0.15s ease;
+      flex-shrink: 0;
     }
     .pause-btn:active {
       transform: scale(0.92);
       background: rgba(51, 65, 85, 0.95);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
-    /* Power-Up HUD Duration Indicator */
+    /* Power-Up HUD Duration Indicator adjusted for notch insets */
     #powerupContainer {
       position: absolute;
-      top: 56px;
+      top: max(58px, calc(58px + env(safe-area-inset-top, 0px)));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -131,6 +167,8 @@
       gap: 6px;
       z-index: 15;
       pointer-events: none;
+      width: 90%;
+      max-width: 360px;
     }
     .powerup-pill {
       background: rgba(15, 23, 42, 0.9);
@@ -1075,6 +1113,218 @@
       padding: 6px 16px;
       border-radius: 9999px;
       border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Main Menu Current Runner Showcase Widget */
+    .menu-char-widget {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 8px 14px 6px;
+      margin: 8px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 220px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+      position: relative;
+    }
+    .menu-char-widget:hover {
+      transform: scale(1.05);
+      border-color: rgba(56, 189, 248, 0.75);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55), 0 0 24px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.65));
+    }
+    .menu-char-widget:active {
+      transform: scale(0.97);
+    }
+    .menu-char-badge {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: #38BDF8;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
+    }
+    .menu-char-canvas-wrap {
+      width: 120px;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    .menu-char-dust-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 12px;
+      z-index: 1;
+    }
+    .char-dust-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .dust-p1 {
+      width: 3px;
+      height: 3px;
+      left: 20%;
+      bottom: 15%;
+      background: #38BDF8;
+      box-shadow: 0 0 6px #38BDF8;
+      animation: floatDustA 3.4s infinite ease-in-out;
+    }
+    .dust-p2 {
+      width: 2px;
+      height: 2px;
+      left: 75%;
+      bottom: 22%;
+      background: #818CF8;
+      box-shadow: 0 0 5px #818CF8;
+      animation: floatDustB 4.1s infinite ease-in-out 0.8s;
+    }
+    .dust-p3 {
+      width: 3.5px;
+      height: 3.5px;
+      left: 45%;
+      bottom: 10%;
+      background: #F59E0B;
+      box-shadow: 0 0 7px #F59E0B;
+      animation: floatDustA 3.8s infinite ease-in-out 1.5s;
+    }
+    .dust-p4 {
+      width: 2.5px;
+      height: 2.5px;
+      left: 82%;
+      bottom: 40%;
+      background: #34D399;
+      box-shadow: 0 0 5px #34D399;
+      animation: floatDustC 4.6s infinite ease-in-out 0.3s;
+    }
+    .dust-p5 {
+      width: 3px;
+      height: 3px;
+      left: 28%;
+      bottom: 30%;
+      background: #67E8F9;
+      box-shadow: 0 0 6px #67E8F9;
+      animation: floatDustB 3.2s infinite ease-in-out 2.1s;
+    }
+    .dust-p6 {
+      width: 2px;
+      height: 2px;
+      left: 60%;
+      bottom: 18%;
+      background: #F472B6;
+      box-shadow: 0 0 5px #F472B6;
+      animation: floatDustA 4.4s infinite ease-in-out 1.2s;
+    }
+    .dust-p7 {
+      width: 2.5px;
+      height: 2.5px;
+      left: 14%;
+      bottom: 45%;
+      background: #A78BFA;
+      box-shadow: 0 0 6px #A78BFA;
+      animation: floatDustC 3.9s infinite ease-in-out 1.9s;
+    }
+
+    @keyframes floatDustA {
+      0% {
+        transform: translate(0, 0) scale(0.6);
+        opacity: 0;
+      }
+      25% {
+        opacity: 0.85;
+      }
+      50% {
+        transform: translate(8px, -24px) scale(1);
+        opacity: 0.95;
+      }
+      75% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translate(-4px, -46px) scale(0.4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatDustB {
+      0% {
+        transform: translate(0, 0) scale(0.5);
+        opacity: 0;
+      }
+      30% {
+        opacity: 0.9;
+      }
+      60% {
+        transform: translate(-10px, -28px) scale(1.1);
+        opacity: 0.85;
+      }
+      80% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(6px, -50px) scale(0.3);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatDustC {
+      0% {
+        transform: translate(0, 0) scale(0.7);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.75;
+      }
+      50% {
+        transform: translate(12px, -20px) scale(1);
+        opacity: 0.9;
+      }
+      75% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(4px, -42px) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    #menuCharCanvas {
+      width: 120px;
+      height: 96px;
+      display: block;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+    }
+    .menu-char-name-badge {
+      margin-top: 2px;
+    }
+    #menuCharName {
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #FFFFFF;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+      transition: color 0.2s ease;
     }
 
     /* Daily Missions System Styles */
@@ -2796,6 +3046,27 @@
       border-radius: 14px;
       border: 1.5px dashed rgba(255, 255, 255, 0.16);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    @keyframes unlockGlowPulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 28px rgba(245, 158, 11, 0.95), inset 0 0 18px rgba(254, 240, 138, 0.7);
+        border-color: #F59E0B;
+      }
+      45% {
+        transform: scale(1.05);
+        box-shadow: 0 0 36px rgba(56, 189, 248, 0.9), inset 0 0 22px rgba(56, 189, 248, 0.6);
+        border-color: #38BDF8;
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+    }
+    .preview-canvas-wrapper.unlock-pulse {
+      animation: unlockGlowPulse 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     #customizerPreviewCanvas {
       width: 130px;
@@ -3064,6 +3335,188 @@
       }
     }
 
+    /* Skin Unlock Confirmation Modal */
+    .skin-confirm-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 60;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .skin-confirm-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .skin-confirm-card {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.98));
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 20px;
+      padding: 22px 20px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 30px rgba(56, 189, 248, 0.2);
+      transform: scale(0.92);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .skin-confirm-overlay.active .skin-confirm-card {
+      transform: scale(1);
+    }
+    .skin-confirm-icon-box {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.6) 70%);
+      border: 2px solid rgba(245, 158, 11, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+      animation: unlockIconPulse 2s infinite ease-in-out;
+    }
+    @keyframes unlockIconPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 16px rgba(245, 158, 11, 0.3); }
+      50% { transform: scale(1.06); box-shadow: 0 0 24px rgba(245, 158, 11, 0.55); }
+    }
+    .skin-confirm-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: #F8FAFC;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    .skin-confirm-question {
+      font-size: 14.5px;
+      line-height: 1.45;
+      color: #E2E8F0;
+      margin: 0;
+      font-weight: 600;
+    }
+    .skin-confirm-cost-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    .skin-confirm-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .skin-confirm-stat .stat-lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94A3B8;
+      font-weight: 700;
+    }
+    .skin-confirm-stat .stat-val {
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .skin-confirm-stat .price-val {
+      color: #FBBF24;
+    }
+    .skin-confirm-stat .balance-val {
+      color: #38BDF8;
+    }
+    .skin-confirm-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .skin-confirm-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .skin-confirm-btn {
+      flex: 1;
+      min-height: 44px;
+      height: 44px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+      touch-action: manipulation;
+    }
+    .skin-confirm-btn:active {
+      transform: scale(0.96);
+    }
+    .skin-confirm-btn.cancel {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #CBD5E1;
+    }
+    .skin-confirm-btn.cancel:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+    }
+    .skin-confirm-btn.confirm {
+      background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+      border: 1px solid rgba(254, 240, 138, 0.4);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    }
+    .skin-confirm-btn.confirm:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    }
+    @media (max-height: 420px) {
+      .skin-confirm-card {
+        padding: 14px 16px;
+        gap: 8px;
+        max-width: 290px;
+      }
+      .skin-confirm-icon-box {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+      }
+      .skin-confirm-title {
+        font-size: 14px;
+      }
+      .skin-confirm-question {
+        font-size: 12.5px;
+      }
+      .skin-confirm-cost-row {
+        padding: 6px 10px;
+      }
+      .skin-confirm-btn {
+        min-height: 38px;
+        height: 38px;
+        font-size: 12px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -3072,7 +3525,7 @@
 
     <!-- Top HUD Bar -->
     <div id="hud">
-      <div></div>
+      <div class="hud-spacer"></div>
       <div class="hud-bar">
         <div class="hud-stat">
           <span class="icon-trophy">🏆</span>
@@ -3210,6 +3663,27 @@
             <div class="stat-item">
               <span class="stat-label">Total Coins</span>
               <span class="stat-val" id="menuTotalCoins">0</span>
+            </div>
+          </div>
+
+          <!-- Current Equipped Runner Showcase Widget -->
+          <div class="menu-char-widget" id="menuCharWidget" title="Customize Runner Skins">
+            <span class="menu-char-badge">CURRENT RUNNER</span>
+            <div class="menu-char-canvas-wrap">
+              <!-- Decorative Floating Dust Particles (Showcase Preview Ambient Effect) -->
+              <div class="menu-char-dust-container" aria-hidden="true">
+                <span class="char-dust-particle dust-p1"></span>
+                <span class="char-dust-particle dust-p2"></span>
+                <span class="char-dust-particle dust-p3"></span>
+                <span class="char-dust-particle dust-p4"></span>
+                <span class="char-dust-particle dust-p5"></span>
+                <span class="char-dust-particle dust-p6"></span>
+                <span class="char-dust-particle dust-p7"></span>
+              </div>
+              <canvas id="menuCharCanvas" width="120" height="96"></canvas>
+            </div>
+            <div class="menu-char-name-badge">
+              <span id="menuCharName">Blaze Runner</span>
             </div>
           </div>
 
@@ -3483,6 +3957,30 @@
           <!-- Right: Skins Carousel / Grid -->
           <div class="customizer-skins-list" id="customizerSkinsList">
             <!-- Dynamically populated with skin cards by SkinManager -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Character Unlock Two-Step Confirmation Modal Overlay -->
+      <div id="skinConfirmOverlay" class="skin-confirm-overlay" style="display: none;">
+        <div class="skin-confirm-card" id="skinConfirmCard">
+          <div class="skin-confirm-icon-box" id="skinConfirmIcon">🔓</div>
+          <h3 class="skin-confirm-title" id="skinConfirmTitle">Confirm Unlock</h3>
+          <p class="skin-confirm-question" id="skinConfirmQuestion">Unlock Blaze Runner for 250 coins?</p>
+          <div class="skin-confirm-cost-row">
+            <div class="skin-confirm-stat">
+              <span class="stat-lbl">Price</span>
+              <span class="stat-val price-val" id="skinConfirmPriceVal">250 🪙</span>
+            </div>
+            <div class="skin-confirm-divider"></div>
+            <div class="skin-confirm-stat">
+              <span class="stat-lbl">Remaining</span>
+              <span class="stat-val balance-val" id="skinConfirmRemainingVal">1,250 🪙</span>
+            </div>
+          </div>
+          <div class="skin-confirm-actions">
+            <button class="skin-confirm-btn cancel" id="skinConfirmCancelBtn">Cancel</button>
+            <button class="skin-confirm-btn confirm" id="skinConfirmAcceptBtn">Unlock</button>
           </div>
         </div>
       </div>
@@ -4818,43 +5316,35 @@
       constructor(game) {
         this.game = game;
         this.skins = [
+          // BIPED MODELS (Classic runners with agile running legs & headgear)
           {
             id: 'classic',
-            name: 'Classic Blaze',
+            name: 'Blaze Runner',
+            modelType: 'biped',
+            w: 38,
+            h: 52,
             price: 0,
             rarity: 'common',
             icon: '🔥',
-            tagline: 'The signature fiery runner with iconic red headband',
+            tagline: 'The signature swift runner with energetic stride and fiery headband',
             bodyGrad: ['#FF8A3D', '#EA580C'],
             belly: 'rgba(255, 237, 213, 0.45)',
-            shoes: '#B45309',
+            shoes: '#9A3412',
             headband: '#EF4444',
             accessory: 'headband',
             pupils: '#1E293B',
             smile: '#9A3412'
           },
           {
-            id: 'neon',
-            name: 'Cyber Neon',
-            price: 150,
-            rarity: 'rare',
-            icon: '⚡',
-            tagline: 'Futuristic runner equipped with glowing cyan visor and cyber antenna',
-            bodyGrad: ['#06B6D4', '#0284C7'],
-            belly: 'rgba(224, 242, 254, 0.45)',
-            shoes: '#0369A1',
-            headband: '#8B5CF6',
-            accessory: 'visor',
-            pupils: '#38BDF8',
-            smile: '#075985'
-          },
-          {
             id: 'ninja',
             name: 'Shadow Shinobi',
-            price: 220,
+            modelType: 'biped',
+            w: 36,
+            h: 50,
+            price: 180,
             rarity: 'rare',
             icon: '🥷',
-            tagline: 'Silent stealth master with twin flutter ribbons and obsidian crest',
+            tagline: 'Silent assassin with flowing twin tails, obsidian armor, and stealth mask',
             bodyGrad: ['#334155', '#0F172A'],
             belly: 'rgba(148, 163, 184, 0.35)',
             shoes: '#020617',
@@ -4864,49 +5354,169 @@
             smile: '#020617'
           },
           {
-            id: 'frosty',
-            name: 'Frosty Peak',
-            price: 280,
+            id: 'paladin',
+            name: 'Aegis Knight',
+            modelType: 'biped',
+            w: 42,
+            h: 54,
+            price: 320,
             rarity: 'epic',
-            icon: '❄️',
-            tagline: 'Winter climber dressed in cozy knitted pompom beanie and warm scarf',
-            bodyGrad: ['#38BDF8', '#0284C7'],
-            belly: 'rgba(240, 249, 255, 0.6)',
-            shoes: '#075985',
-            headband: '#EC4899',
-            accessory: 'beanie',
-            pupils: '#0369A1',
-            smile: '#0369A1'
+            icon: '🛡️',
+            tagline: 'Armored vanguard clad in gleaming steel plate and golden crest',
+            bodyGrad: ['#CBD5E1', '#64748B'],
+            belly: 'rgba(241, 245, 249, 0.65)',
+            shoes: '#334155',
+            headband: '#F59E0B',
+            accessory: 'knight',
+            pupils: '#0EA5E9',
+            smile: '#1E293B'
+          },
+
+          // WHEEL MODELS (Rolling mechanical spheres & tires with real rotational spin)
+          {
+            id: 'cyber_wheel',
+            name: 'Volt Monowheel',
+            modelType: 'wheel',
+            w: 44,
+            h: 44,
+            price: 150,
+            rarity: 'rare',
+            icon: '⚡',
+            tagline: 'High-RPM neon gyro-wheel with rotating treads and plasma reactor hub',
+            rimGrad: ['#06B6D4', '#0284C7'],
+            treadColor: '#0F172A',
+            hubColor: '#38BDF8',
+            glowColor: '#00F0FF',
+            spokeCount: 5
           },
           {
-            id: 'slime',
-            name: 'Toxic Slime',
-            price: 350,
+            id: 'steampunk_cog',
+            name: 'Clockwork Cog',
+            modelType: 'wheel',
+            w: 42,
+            h: 42,
+            price: 260,
+            rarity: 'rare',
+            icon: '⚙️',
+            tagline: 'Heavy-duty brass gearwheel with meshing teeth and burnished copper rivets',
+            rimGrad: ['#F59E0B', '#B45309'],
+            treadColor: '#78350F',
+            hubColor: '#FDE68A',
+            glowColor: '#F59E0B',
+            spokeCount: 6
+          },
+          {
+            id: 'magma_roller',
+            name: 'Obsidian Roller',
+            modelType: 'wheel',
+            w: 46,
+            h: 46,
+            price: 450,
+            rarity: 'legendary',
+            icon: '🌋',
+            tagline: 'Cracked volcanic sphere spinning with intense thermal magma friction',
+            rimGrad: ['#EF4444', '#7F1D1D'],
+            treadColor: '#1C1917',
+            hubColor: '#F59E0B',
+            glowColor: '#DC2626',
+            spokeCount: 4
+          },
+
+          // HOVER MODELS (Anti-gravity drones & UFOs with bobbing motion and plasma thrusters)
+          {
+            id: 'aero_drone',
+            name: 'Vector Drone',
+            modelType: 'hover',
+            w: 46,
+            h: 36,
+            price: 220,
+            rarity: 'rare',
+            icon: '🛸',
+            tagline: 'Aerodynamic twin-nacelle drone stabilized by pulsing ion thrusters',
+            hullGrad: ['#0284C7', '#0369A1'],
+            accentColor: '#38BDF8',
+            thrusterColor: '#06B6D4',
+            domeColor: 'rgba(224, 242, 254, 0.85)',
+            glowColor: '#38BDF8'
+          },
+          {
+            id: 'cosmic_saucer',
+            name: 'Cosmic Saucer',
+            modelType: 'hover',
+            w: 50,
+            h: 36,
+            price: 360,
             rarity: 'epic',
+            icon: '🪐',
+            tagline: 'Intergalactic cruiser equipped with perimeter warning beacons and beam engine',
+            hullGrad: ['#8B5CF6', '#4C1D95'],
+            accentColor: '#C084FC',
+            thrusterColor: '#EC4899',
+            domeColor: 'rgba(245, 208, 254, 0.85)',
+            glowColor: '#A855F7'
+          },
+          {
+            id: 'phantom_jet',
+            name: 'Stealth Skimmer',
+            modelType: 'hover',
+            w: 48,
+            h: 34,
+            price: 480,
+            rarity: 'legendary',
+            icon: '🚀',
+            tagline: 'Supersonic anti-grav fighter with swept forward wings and hyper-flame',
+            hullGrad: ['#1E293B', '#020617'],
+            accentColor: '#10B981',
+            thrusterColor: '#34D399',
+            domeColor: 'rgba(209, 250, 229, 0.8)',
+            glowColor: '#059669'
+          },
+
+          // CUBE MODELS (Blocky/voxel & gelatinous characters with heavy squish-and-stretch)
+          {
+            id: 'slime_cube',
+            name: 'Bouncy Slime',
+            modelType: 'cube',
+            w: 40,
+            h: 40,
+            price: 240,
+            rarity: 'rare',
             icon: '🧪',
-            tagline: 'Mutated bio-hazard jumper with bubbling slime dollop and toxic drips',
-            bodyGrad: ['#A3E635', '#65A30D'],
-            belly: 'rgba(236, 252, 203, 0.45)',
-            shoes: '#4D7C0F',
-            headband: '#15803D',
-            accessory: 'slime',
-            pupils: '#14532D',
-            smile: '#3F6212'
+            tagline: 'Translucent bio-slime cube that rhythmically squishes around a glowing nucleus',
+            cubeGrad: ['#84CC16', '#4D7C0F'],
+            innerCore: '#D9F99D',
+            eyeColor: '#14532D',
+            glowColor: '#65A30D'
           },
           {
-            id: 'golden',
-            name: 'Golden Champion',
+            id: 'mecha_box',
+            name: 'Blockbot Unit',
+            modelType: 'cube',
+            w: 42,
+            h: 42,
+            price: 380,
+            rarity: 'epic',
+            icon: '🤖',
+            tagline: 'Voxel industrial automaton with glowing digital LED matrix visor',
+            cubeGrad: ['#475569', '#1E293B'],
+            innerCore: '#38BDF8',
+            eyeColor: '#00F0FF',
+            glowColor: '#0284C7'
+          },
+          {
+            id: 'golden_ingot',
+            name: 'Midas Cube',
+            modelType: 'cube',
+            w: 40,
+            h: 40,
             price: 500,
             rarity: 'legendary',
             icon: '👑',
-            tagline: 'Royal victor adorned with a jewel-encrusted crown and sparkling aura',
-            bodyGrad: ['#FDE047', '#D97706'],
-            belly: 'rgba(254, 243, 199, 0.65)',
-            shoes: '#B45309',
-            headband: '#DC2626',
-            accessory: 'crown',
-            pupils: '#78350F',
-            smile: '#92400E'
+            tagline: 'Pure mythical gold block stamped with imperial bevels and radiant aura',
+            cubeGrad: ['#FDE047', '#D97706'],
+            innerCore: '#FEF08A',
+            eyeColor: '#78350F',
+            glowColor: '#F59E0B'
           }
         ];
 
@@ -4919,6 +5529,9 @@
         this.previewTime = 0;
         this.previewCanvas = null;
         this.previewCtx = null;
+        this.previewParticles = new ParticleSystem();
+        this.unlockScalePulse = 1.0;
+        this.unlockShockwave = null;
       }
 
       loadUnlockedSkins() {
@@ -4974,6 +5587,7 @@
       }
 
       selectForPreview(skinId) {
+        this.closeConfirmDialog();
         this.previewSkinId = skinId;
         this.renderCustomizer();
       }
@@ -4983,15 +5597,26 @@
         this.selectedSkinId = skinId;
         this.previewSkinId = skinId;
         this.saveSelectedSkin(skinId);
-        if (this.game.player) {
+
+        const skin = this.getSkin(skinId);
+        if (this.game && this.game.player && skin) {
           this.game.player.skinId = skinId;
+          if (skin.w && skin.h) {
+            const oldBottom = this.game.player.y + this.game.player.h;
+            this.game.player.w = skin.w;
+            this.game.player.h = skin.h;
+            // Keep player feet planted correctly on the ground surface
+            if (this.game.player.onGround) {
+              this.game.player.y = oldBottom - skin.h;
+            }
+          }
         }
         audio.equip();
         AndroidBridge.vibrate(35);
         this.renderCustomizer();
       }
 
-      buySkin(skinId) {
+      buySkin(skinId, confirmed = false) {
         const skin = this.getSkin(skinId);
         if (!skin || this.isUnlocked(skinId)) return;
 
@@ -5016,6 +5641,12 @@
           return;
         }
 
+        // Two-step confirmation: only deduct coins and trigger effects if confirmed in modal
+        if (!confirmed) {
+          this.showConfirmDialog(skin);
+          return;
+        }
+
         // Deduct coins & unlock
         this.game.totalCoins -= skin.price;
         if (typeof this.game.saveStats === 'function') {
@@ -5030,35 +5661,176 @@
         this.saveUnlockedSkins(this.unlockedSkins);
 
         // Immediately equip purchased skin
-        this.selectedSkinId = skinId;
-        this.previewSkinId = skinId;
-        this.saveSelectedSkin(skinId);
-        if (this.game.player) {
-          this.game.player.skinId = skinId;
+        this.equipSkin(skinId);
+
+        // --- ENHANCED VISUAL FEEDBACK LOOP ---
+        // 1. Calculate character's coordinate in the customizer preview canvas
+        const canvas = this.previewCanvas || document.getElementById('customizerPreviewCanvas');
+        const charX = canvas ? canvas.width / 2 : 65;
+        const charY = canvas ? canvas.height / 2 + 8 : 68;
+
+        // 2. Spawn radiant celebratory particle burst & shockwave at character's coordinate
+        this.spawnUnlockParticles(charX, charY, skin);
+
+        // 3. Trigger glowing pulse animation on preview canvas wrapper container
+        const previewWrapper = document.getElementById('previewCanvasWrapper');
+        if (previewWrapper) {
+          previewWrapper.classList.remove('unlock-pulse');
+          void previewWrapper.offsetWidth;
+          previewWrapper.classList.add('unlock-pulse');
         }
 
+        // 4. Play purchase sound and haptic pulse
         audio.purchase();
-        audio.equip();
-        AndroidBridge.vibrate(80);
-        AndroidBridge.showToast(`🎉 Unlocked & Equipped ${skin.name}!`);
+        AndroidBridge.vibrate(75);
 
-        // Trigger confetti celebration
+        // 5. Trigger confetti celebration
         if (this.game.streakManager && typeof this.game.streakManager.spawnConfetti === 'function') {
           this.game.streakManager.spawnConfetti();
         }
 
-        // Instantly re-render Customizer UI to reflect 'Equipped' state
+        // 6. Instantly re-render Customizer UI to reflect 'Equipped' state and updated coin balance
         this.renderCustomizer();
+
+        // 7. Show success message & equip chime after visual particle burst has started playing
+        setTimeout(() => {
+          audio.equip();
+          AndroidBridge.vibrate(50);
+          AndroidBridge.showToast(`🎉 Unlocked & Equipped ${skin.name}!`);
+        }, 380);
+      }
+
+      showConfirmDialog(skin) {
+        const overlay = document.getElementById('skinConfirmOverlay');
+        if (!overlay) return;
+
+        const iconEl = document.getElementById('skinConfirmIcon');
+        if (iconEl) iconEl.textContent = skin.icon || '🔓';
+
+        const questionEl = document.getElementById('skinConfirmQuestion');
+        if (questionEl) {
+          questionEl.textContent = `Unlock ${skin.name} for ${skin.price} coins?`;
+        }
+
+        const priceEl = document.getElementById('skinConfirmPriceVal');
+        if (priceEl) priceEl.textContent = `${skin.price} 🪙`;
+
+        const balanceEl = document.getElementById('skinConfirmRemainingVal');
+        if (balanceEl) {
+          const remaining = Math.max(0, this.game.totalCoins - skin.price);
+          balanceEl.textContent = `${remaining} 🪙`;
+        }
+
+        const cancelBtn = document.getElementById('skinConfirmCancelBtn');
+        if (cancelBtn) {
+          cancelBtn.onclick = (e) => {
+            e.stopPropagation();
+            audio.click();
+            this.closeConfirmDialog();
+          };
+        }
+
+        const acceptBtn = document.getElementById('skinConfirmAcceptBtn');
+        if (acceptBtn) {
+          acceptBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.closeConfirmDialog();
+            this.buySkin(skin.id, true);
+          };
+        }
+
+        // Tap backdrop to cancel
+        overlay.onclick = (e) => {
+          if (e.target === overlay) {
+            audio.click();
+            this.closeConfirmDialog();
+          }
+        };
+
+        audio.click();
+        AndroidBridge.vibrate(25);
+        overlay.style.display = 'flex';
+        void overlay.offsetWidth;
+        overlay.classList.add('active');
+      }
+
+      closeConfirmDialog() {
+        const overlay = document.getElementById('skinConfirmOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('active');
+        setTimeout(() => {
+          if (!overlay.classList.contains('active')) {
+            overlay.style.display = 'none';
+          }
+        }, 220);
+      }
+
+      spawnUnlockParticles(x, y, skin) {
+        if (!this.previewParticles) {
+          this.previewParticles = new ParticleSystem();
+        }
+
+        // Palette matched to rarity with radiant golden sparks
+        const rarityPalette = {
+          common: ['#CBD5E1', '#94A3B8', '#F8FAFC', '#FDE047'],
+          rare: ['#38BDF8', '#0EA5E9', '#0284C7', '#FEF08A'],
+          epic: ['#C084FC', '#A855F7', '#7E22CE', '#FDE047'],
+          legendary: ['#FCD34D', '#F59E0B', '#D97706', '#FFFFFF', '#FEF08A']
+        };
+        const colors = rarityPalette[skin.rarity] || rarityPalette.common;
+
+        // 1. Spurt of 48 radiant particles bursting from character's center
+        for (let i = 0; i < 48; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 5.2 + 1.8;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const shape = Math.random() < 0.45 ? 'star' : (Math.random() < 0.75 ? 'circle' : 'square');
+
+          this.previewParticles.particles.push({
+            x: x + (Math.random() - 0.5) * 12,
+            y: y + (Math.random() - 0.5) * 12,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1.0, // initial upward lift
+            life: 1.0,
+            decay: Math.random() * 0.02 + 0.015,
+            color: color,
+            size: Math.random() * 4.5 + 2.5,
+            shape: shape,
+            rotation: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.25
+          });
+        }
+
+        // 2. Expanding radiant unlock shockwave ring
+        this.unlockShockwave = {
+          x: x,
+          y: y,
+          radius: 6,
+          maxRadius: 54,
+          alpha: 1.0,
+          color: colors[0] || '#38BDF8'
+        };
+
+        // 3. Dynamic character scale pulse
+        this.unlockScalePulse = 1.35;
       }
 
       openCustomizer() {
+        this.closeConfirmDialog();
         this.previewSkinId = this.selectedSkinId;
+        if (this.previewParticles) this.previewParticles.clear();
+        this.unlockShockwave = null;
+        this.unlockScalePulse = 1.0;
         this.renderCustomizer();
         this.startPreviewAnim();
       }
 
       closeCustomizer() {
+        this.closeConfirmDialog();
         this.stopPreviewAnim();
+        if (this.previewParticles) this.previewParticles.clear();
+        this.unlockShockwave = null;
+        this.unlockScalePulse = 1.0;
       }
 
       startPreviewAnim() {
@@ -5091,14 +5863,43 @@
 
         const skin = this.getSkin(this.previewSkinId);
         this.previewTime += 0.04;
-        const bounceY = Math.sin(this.previewTime * 7) * 3.5;
-        const legAngle = this.previewTime * 10;
+        const bounceY = (skin.modelType === 'hover') ? 0 : Math.sin(this.previewTime * 7) * 3.5;
+        const legAngle = this.previewTime * 8;
+
+        // Smoothly ease down unlock scale pulse if active
+        if (this.unlockScalePulse > 1.0) {
+          this.unlockScalePulse = Math.max(1.0, this.unlockScalePulse - 0.02);
+        }
+        const scale = 1.35 * (this.unlockScalePulse || 1.0);
+
+        // Draw expanding shockwave if active
+        if (this.unlockShockwave && this.unlockShockwave.alpha > 0.01) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(this.unlockShockwave.x, this.unlockShockwave.y, this.unlockShockwave.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = this.unlockShockwave.color;
+          ctx.lineWidth = 3 * this.unlockShockwave.alpha;
+          ctx.globalAlpha = this.unlockShockwave.alpha;
+          ctx.shadowColor = this.unlockShockwave.color;
+          ctx.shadowBlur = 12;
+          ctx.stroke();
+          ctx.restore();
+
+          this.unlockShockwave.radius += 2.2;
+          this.unlockShockwave.alpha -= 0.035;
+        }
 
         ctx.save();
-        ctx.translate(w / 2, h / 2 + 10 + bounceY);
-        ctx.scale(1.4, 1.4);
-        this.game.drawRunnerSkin(ctx, skin, legAngle, true, 34, 46);
+        ctx.translate(w / 2, h / 2 + 8 + bounceY);
+        ctx.scale(scale, scale);
+        this.game.drawRunnerSkin(ctx, skin, legAngle, true, skin.w || 38, skin.h || 50);
         ctx.restore();
+
+        // Update and draw preview particles
+        if (this.previewParticles && this.previewParticles.particles.length > 0) {
+          this.previewParticles.update();
+          this.previewParticles.draw(ctx);
+        }
       }
 
       renderCustomizer() {
@@ -5997,6 +6798,9 @@
         const menuCustomizerBtn = document.getElementById('menuCustomizerBtn');
         if (menuCustomizerBtn) menuCustomizerBtn.onclick = openCustomizer;
 
+        const menuCharWidget = document.getElementById('menuCharWidget');
+        if (menuCharWidget) menuCharWidget.onclick = openCustomizer;
+
         const goCustomizerBtn = document.getElementById('goCustomizerBtn');
         if (goCustomizerBtn) goCustomizerBtn.onclick = openCustomizer;
 
@@ -6047,9 +6851,12 @@
         }
         setHSToggleMode(this.hsToggleMode, false);
 
-        // App lifecycle listeners: schedule reminders when app is put in background
+        // App lifecycle listeners: pause active game & schedule reminders when app is put in background
         document.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'hidden') {
+            if (this.state === 'PLAYING') {
+              this.pauseGame();
+            }
             this.scheduleAppExitReminders();
           } else if (document.visibilityState === 'visible') {
             AndroidBridge.cancelAllNotifications();
@@ -6057,6 +6864,9 @@
         });
 
         window.addEventListener('pagehide', () => {
+          if (this.state === 'PLAYING') {
+            this.pauseGame();
+          }
           this.scheduleAppExitReminders();
         });
       }
@@ -6064,7 +6874,8 @@
       resize() {
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.dpr = window.devicePixelRatio || 1;
+        // Cap DPR at 2.0 to prevent high-density screen GPU buffer exhaustion (SIGKILL code -1)
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2.0);
 
         this.canvas.width = Math.floor(this.width * this.dpr);
         this.canvas.height = Math.floor(this.height * this.dpr);
@@ -8135,270 +8946,552 @@
         ctx.restore();
       }
 
-      drawRunnerSkin(ctx, skin, legAngle, onGround, bw, bh) {
+      drawRunnerSkin(ctx, skin, animTime, onGround, bw, bh) {
         ctx.save();
 
-        // Ground shadow
-        if (onGround) {
-          ctx.fillStyle = (skin.id === 'golden') ? 'rgba(245, 158, 11, 0.35)' : (skin.id === 'neon' ? 'rgba(6, 182, 212, 0.25)' : 'rgba(0,0,0,0.2)');
-          ctx.beginPath();
-          ctx.ellipse(0, bh / 2 + 2, bw * 0.42, 4, 0, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        const modelType = skin.modelType || 'biped';
 
-        // Running Legs / Feet
-        const legSwing = Math.sin(legAngle) * 8;
-        ctx.fillStyle = skin.shoes;
-        ctx.fillRect(-10 + legSwing, bh / 2 - 8, 6, 12);
-        ctx.fillRect(4 - legSwing, bh / 2 - 8, 6, 12);
+        switch (modelType) {
+          case 'wheel': {
+            const radius = Math.min(bw, bh) * 0.46;
 
-        // Body Capsule
-        const br = bw / 2;
-        const bodyGrad = ctx.createLinearGradient(0, -bh / 2, 0, bh / 2);
-        bodyGrad.addColorStop(0, skin.bodyGrad[0]);
-        bodyGrad.addColorStop(1, skin.bodyGrad[1]);
-        ctx.fillStyle = bodyGrad;
+            // 1. Ground Contact Shadow
+            if (onGround) {
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+              ctx.beginPath();
+              ctx.ellipse(0, radius + 4, radius * 0.85, 4, 0, 0, Math.PI * 2);
+              ctx.fill();
+            }
 
-        // Special skin aura effects (drawn before body for shadow/glow)
-        if (skin.id === 'golden') {
-          ctx.shadowColor = '#FBBF24';
-          ctx.shadowBlur = 12;
-        } else if (skin.id === 'neon') {
-          ctx.shadowColor = '#06B6D4';
-          ctx.shadowBlur = 10;
-        } else if (skin.id === 'slime') {
-          ctx.shadowColor = '#84CC16';
-          ctx.shadowBlur = 8;
-        }
+            // 2. Rotating Wheel Assembly (Tire, Treads, Rim, Spokes)
+            ctx.save();
+            ctx.rotate(animTime); // Real rotational spin driven by animTime
 
-        ctx.beginPath();
-        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [br, br, br, br]);
-        ctx.fill();
-        ctx.shadowBlur = 0; // reset shadow
+            // Outer tire / cog ring
+            const spokeCount = skin.spokeCount || 5;
+            const treadCount = spokeCount * 3;
+            ctx.fillStyle = skin.treadColor || '#0F172A';
+            for (let i = 0; i < treadCount; i++) {
+              const angle = (Math.PI * 2 / treadCount) * i;
+              ctx.save();
+              ctx.rotate(angle);
+              ctx.fillRect(-3, -radius - 3.5, 6, 5);
+              ctx.restore();
+            }
 
-        // Soft belly highlight
-        ctx.fillStyle = skin.belly;
-        ctx.beginPath();
-        ctx.roundRect(-bw * 0.35, -bh * 0.35, bw * 0.7, bh * 0.45, 10);
-        ctx.fill();
+            // Main wheel outer rim
+            const rimGrad = ctx.createRadialGradient(0, 0, radius * 0.3, 0, 0, radius);
+            rimGrad.addColorStop(0, skin.rimGrad ? skin.rimGrad[0] : '#38BDF8');
+            rimGrad.addColorStop(1, skin.rimGrad ? skin.rimGrad[1] : '#0284C7');
+            ctx.fillStyle = rimGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fill();
 
-        // Headband / Scarf / Mask Base Strip
-        if (skin.accessory === 'headband') {
-          // Red Runner Headband
-          ctx.fillStyle = skin.headband;
-          ctx.fillRect(-bw / 2 - 1, -bh / 2 + 10, bw + 2, 7);
+            // Inner rim track ring
+            ctx.strokeStyle = skin.glowColor || '#00F0FF';
+            ctx.lineWidth = 2.5;
+            ctx.shadowColor = skin.glowColor || '#00F0FF';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.72, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
 
-          // Trailing Headband Tails
-          ctx.beginPath();
-          ctx.moveTo(-bw / 2, -bh / 2 + 13);
-          ctx.lineTo(-bw / 2 - 14, -bh / 2 + 9 + Math.sin(legAngle * 1.5) * 3);
-          ctx.lineTo(-bw / 2 - 12, -bh / 2 + 18 + Math.sin(legAngle * 1.5) * 3);
-          ctx.closePath();
-          ctx.fill();
-        } else if (skin.accessory === 'visor') {
-          // Neon Cyber Visor Headband
-          ctx.fillStyle = skin.headband;
-          ctx.fillRect(-bw / 2 - 1, -bh / 2 + 7, bw + 2, 5);
+            // Rotating mechanical spokes
+            ctx.strokeStyle = skin.treadColor || '#1E293B';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < spokeCount; i++) {
+              const spokeAngle = (Math.PI * 2 / spokeCount) * i;
+              ctx.beginPath();
+              ctx.moveTo(0, 0);
+              ctx.lineTo(Math.cos(spokeAngle) * radius * 0.7, Math.sin(spokeAngle) * radius * 0.7);
+              ctx.stroke();
+            }
 
-          // Cyan Cyber Visor glass across eyes
-          ctx.fillStyle = '#06B6D4';
-          ctx.shadowColor = '#38BDF8';
-          ctx.shadowBlur = 8;
-          ctx.beginPath();
-          ctx.roundRect(-2, -bh / 2 + 11, bw / 2 + 4, 11, [3, 6, 6, 3]);
-          ctx.fill();
+            ctx.restore(); // End rotating context
 
-          // Visor scanline glint
-          const scanOffset = (Math.sin(legAngle * 2) + 1) * 0.5;
-          ctx.fillStyle = '#E0F2FE';
-          ctx.fillRect(-1 + scanOffset * (bw / 2 - 2), -bh / 2 + 12, 3, 9);
-          ctx.shadowBlur = 0;
+            // 3. Fixed Gyro Hub & Forward Sensor Eye (Does not rotate so the eye stays facing forward)
+            ctx.fillStyle = skin.hubColor || '#F8FAFC';
+            ctx.shadowColor = skin.glowColor || '#38BDF8';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
 
-          // Side Cyber Antenna / Earpiece
-          ctx.fillStyle = '#A855F7';
-          ctx.fillRect(-bw / 2 - 3, -bh / 2 + 8, 4, 8);
-          ctx.fillStyle = '#38BDF8';
-          ctx.beginPath();
-          ctx.arc(-bw / 2 - 2, -bh / 2 + 6, 2.5, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (skin.accessory === 'shinobi') {
-          // Shadow Shinobi Headband
-          ctx.fillStyle = skin.headband;
-          ctx.fillRect(-bw / 2 - 1, -bh / 2 + 9, bw + 2, 7);
+            // Forward glowing ocular lens / headlight
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(radius * 0.12, -radius * 0.05, radius * 0.14, 0, Math.PI * 2);
+            ctx.fill();
 
-          // Silver ninja crest on headband
-          ctx.fillStyle = '#94A3B8';
-          ctx.fillRect(-1, -bh / 2 + 10.5, 6, 4);
+            ctx.fillStyle = skin.glowColor || '#0284C7';
+            ctx.beginPath();
+            ctx.arc(radius * 0.16, -radius * 0.05, radius * 0.08, 0, Math.PI * 2);
+            ctx.fill();
 
-          // Twin Fluttering Dark Ribbon Tails
-          ctx.fillStyle = '#0F172A';
-          ctx.beginPath();
-          ctx.moveTo(-bw / 2, -bh / 2 + 11);
-          ctx.lineTo(-bw / 2 - 16, -bh / 2 + 7 + Math.sin(legAngle * 1.6) * 4);
-          ctx.lineTo(-bw / 2 - 13, -bh / 2 + 16 + Math.sin(legAngle * 1.6) * 4);
-          ctx.closePath();
-          ctx.fill();
+            // Specular catchlight on lens
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(radius * 0.18, -radius * 0.09, 1.5, 0, Math.PI * 2);
+            ctx.fill();
 
-          ctx.beginPath();
-          ctx.moveTo(-bw / 2, -bh / 2 + 13);
-          ctx.lineTo(-bw / 2 - 18, -bh / 2 + 15 + Math.sin(legAngle * 1.4) * 4);
-          ctx.lineTo(-bw / 2 - 14, -bh / 2 + 22 + Math.sin(legAngle * 1.4) * 4);
-          ctx.closePath();
-          ctx.fill();
-        } else if (skin.accessory === 'beanie') {
-          // Knitted Winter Beanie (covers head top)
-          ctx.fillStyle = '#0284C7';
-          ctx.beginPath();
-          ctx.arc(0, -bh / 2 + 6, bw / 2 + 1, Math.PI, 0);
-          ctx.fill();
+            // 4. Trailing Ground Friction Sparks when rolling on ground
+            if (onGround) {
+              const sparkOffset = Math.sin(animTime * 3) * 4;
+              ctx.fillStyle = skin.glowColor || '#F59E0B';
+              ctx.beginPath();
+              ctx.arc(-radius * 0.7 - sparkOffset, radius + 2, 2, 0, Math.PI * 2);
+              ctx.arc(-radius * 0.9 + sparkOffset, radius, 1.4, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            break;
+          }
 
-          // Beanie folded rib
-          ctx.fillStyle = '#38BDF8';
-          ctx.beginPath();
-          ctx.roundRect(-bw / 2 - 2, -bh / 2 + 3, bw + 4, 7, 3);
-          ctx.fill();
+          case 'hover': {
+            if (onGround) {
+              // --- GROUND IDLE / LEVITATION BREATHING ---
+              const groundBob = Math.sin(animTime * 2.2) * 3.8;
+              const groundSway = Math.sin(animTime * 1.4) * 0.035; // gentle hovering roll tilt
 
-          // Fluffy Pompom on Beanie
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(0, -bh / 2 - 1, 6, 0, Math.PI * 2);
-          ctx.fill();
+              // Soft pulsating ground shadow
+              const shadowAlpha = 0.28 - (groundBob / 32);
+              const shadowScale = 1 - (groundBob / 28);
+              ctx.fillStyle = `rgba(0, 0, 0, ${Math.max(0.12, shadowAlpha)})`;
+              ctx.beginPath();
+              ctx.ellipse(0, bh / 2 + 8, bw * 0.46 * shadowScale, 4.5 * shadowScale, 0, 0, Math.PI * 2);
+              ctx.fill();
 
-          // Fluttering Pink Winter Scarf
-          ctx.fillStyle = skin.headband;
-          ctx.beginPath();
-          ctx.roundRect(-bw / 2 - 1, bh / 2 - 15, bw + 2, 7, 3);
-          ctx.fill();
+              ctx.translate(0, groundBob);
+              ctx.rotate(groundSway);
 
-          // Scarf Tails behind
-          ctx.beginPath();
-          ctx.moveTo(-bw / 2, bh / 2 - 12);
-          ctx.lineTo(-bw / 2 - 14, bh / 2 - 14 + Math.sin(legAngle * 1.3) * 4);
-          ctx.lineTo(-bw / 2 - 12, bh / 2 - 6 + Math.sin(legAngle * 1.3) * 4);
-          ctx.closePath();
-          ctx.fill();
-        } else if (skin.accessory === 'slime') {
-          // Toxic Slime Visor / Headband
-          ctx.fillStyle = skin.headband;
-          ctx.fillRect(-bw / 2 - 1, -bh / 2 + 10, bw + 2, 6);
+              // Idling thruster: gentle low-output flame pulse
+              const idleFlicker = Math.sin(animTime * 8) * 1.8;
+              const flameLength = 8 + idleFlicker;
+              const thrustGrad = ctx.createLinearGradient(0, bh * 0.25, 0, bh * 0.25 + flameLength);
+              thrustGrad.addColorStop(0, '#FFFFFF');
+              thrustGrad.addColorStop(0.35, skin.thrusterColor || '#06B6D4');
+              thrustGrad.addColorStop(1, 'rgba(6, 182, 212, 0)');
 
-          // Slime Blob Dollop with dripping bubble
-          const slimeWobble = Math.sin(legAngle * 2) * 2;
-          ctx.fillStyle = '#84CC16';
-          ctx.beginPath();
-          ctx.arc(slimeWobble, -bh / 2 - 1, 7, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#BEF264';
-          ctx.beginPath();
-          ctx.arc(slimeWobble + 2, -bh / 2 - 3, 2.5, 0, Math.PI * 2);
-          ctx.fill();
+              ctx.fillStyle = thrustGrad;
+              ctx.shadowColor = skin.thrusterColor || '#06B6D4';
+              ctx.shadowBlur = 8;
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.16, bh * 0.22);
+              ctx.lineTo(0, bh * 0.22 + flameLength);
+              ctx.lineTo(bw * 0.16, bh * 0.22);
+              ctx.closePath();
+              ctx.fill();
+              ctx.shadowBlur = 0;
+            } else {
+              // --- AIRBORNE / JUMP HIGH-PROPULSION MODE ---
+              // Aggressive aerodynamic forward tilt
+              ctx.rotate(0.14);
+              ctx.translate(0, Math.sin(animTime * 5) * 1.2);
 
-          // Drip tail
-          ctx.fillStyle = '#65A30D';
-          ctx.beginPath();
-          ctx.arc(slimeWobble - 4, -bh / 2 + 5, 3, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (skin.accessory === 'crown') {
-          // Royal Crimson Headband
-          ctx.fillStyle = skin.headband;
-          ctx.fillRect(-bw / 2 - 1, -bh / 2 + 10, bw + 2, 6);
+              // High-altitude faint ground shadow
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+              ctx.beginPath();
+              ctx.ellipse(0, bh / 2 + 22, bw * 0.35, 3.5, 0, 0, Math.PI * 2);
+              ctx.fill();
 
-          // Royal Golden Crown on head!
-          const crownTop = -bh / 2 - 10;
-          ctx.fillStyle = '#FBBF24';
-          ctx.strokeStyle = '#D97706';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(-11, -bh / 2 + 1);
-          ctx.lineTo(-13, crownTop + 2);
-          ctx.lineTo(-6, -bh / 2 - 3);
-          ctx.lineTo(0, crownTop);
-          ctx.lineTo(6, -bh / 2 - 3);
-          ctx.lineTo(13, crownTop + 2);
-          ctx.lineTo(11, -bh / 2 + 1);
-          ctx.closePath();
-          ctx.fill();
-          ctx.stroke();
+              // Supercharged dual plasma afterburner flames
+              const boostFlicker = Math.sin(animTime * 16) * 4;
+              const boostLength = 24 + boostFlicker;
+              const boostGrad = ctx.createLinearGradient(0, bh * 0.22, 0, bh * 0.22 + boostLength);
+              boostGrad.addColorStop(0, '#FFFFFF');
+              boostGrad.addColorStop(0.25, skin.accentColor || '#38BDF8');
+              boostGrad.addColorStop(0.6, skin.thrusterColor || '#06B6D4');
+              boostGrad.addColorStop(1, 'rgba(6, 182, 212, 0)');
 
-          // Crown Jewels: Ruby in center, diamonds on sides
-          ctx.fillStyle = '#EF4444';
-          ctx.beginPath();
-          ctx.arc(0, crownTop + 4.5, 2.2, 0, Math.PI * 2);
-          ctx.fill();
+              ctx.fillStyle = boostGrad;
+              ctx.shadowColor = skin.thrusterColor || '#06B6D4';
+              ctx.shadowBlur = 16;
 
-          ctx.fillStyle = '#06B6D4';
-          ctx.beginPath();
-          ctx.arc(-8, crownTop + 5.5, 1.6, 0, Math.PI * 2);
-          ctx.arc(8, crownTop + 5.5, 1.6, 0, Math.PI * 2);
-          ctx.fill();
-        }
+              // Center primary rocket plume
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.22, bh * 0.22);
+              ctx.lineTo(0, bh * 0.22 + boostLength);
+              ctx.lineTo(bw * 0.22, bh * 0.22);
+              ctx.closePath();
+              ctx.fill();
 
-        // Big Cartoon Eyes (except Cyber Neon has visor over them)
-        if (skin.accessory !== 'visor') {
-          // Eyes
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(3, -4, 5.5, 0, Math.PI * 2);
-          ctx.arc(14, -4, 5.5, 0, Math.PI * 2);
-          ctx.fill();
+              // Twin booster trails from side nacelles
+              ctx.fillRect(-bw * 0.44, bh * 0.12, 3.5, boostLength * 0.6);
+              ctx.fillRect(bw * 0.40, bh * 0.12, 3.5, boostLength * 0.6);
+              ctx.shadowBlur = 0;
 
-          // Pupils
-          ctx.fillStyle = skin.pupils;
-          ctx.beginPath();
-          ctx.arc(5, -4, 3, 0, Math.PI * 2);
-          ctx.arc(16, -4, 3, 0, Math.PI * 2);
-          ctx.fill();
+              // Wingtip speed streamers trailing behind
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.54, -bh * 0.02);
+              ctx.lineTo(-bw * 0.54 - 14, -bh * 0.02 - 3);
+              ctx.moveTo(bw * 0.54, -bh * 0.02);
+              ctx.lineTo(bw * 0.54 + 10, -bh * 0.02 - 2);
+              ctx.stroke();
+            }
 
-          // Catchlight
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(6, -5.5, 1.2, 0, Math.PI * 2);
-          ctx.arc(17, -5.5, 1.2, 0, Math.PI * 2);
-          ctx.fill();
-        }
+            // Chassis Saucer / Drone Hull
+            const hullGrad = ctx.createLinearGradient(0, -bh * 0.35, 0, bh * 0.35);
+            hullGrad.addColorStop(0, skin.hullGrad ? skin.hullGrad[0] : '#38BDF8');
+            hullGrad.addColorStop(1, skin.hullGrad ? skin.hullGrad[1] : '#0369A1');
+            ctx.fillStyle = hullGrad;
 
-        // Cheerful Smile (unless ninja is serious!)
-        if (skin.id === 'ninja') {
-          // Serious shinobi mask line
-          ctx.strokeStyle = '#020617';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(5, 6);
-          ctx.lineTo(13, 6);
-          ctx.stroke();
-        } else {
-          ctx.strokeStyle = skin.smile;
-          ctx.lineWidth = 2.2;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          ctx.arc(8, 6, 4.5, 0.1, Math.PI - 0.1);
-          ctx.stroke();
-        }
+            // Main chassis saucer body
+            ctx.beginPath();
+            ctx.roundRect(-bw / 2, -bh * 0.18, bw, bh * 0.42, [bh * 0.2, bh * 0.2, bh * 0.15, bh * 0.15]);
+            ctx.fill();
 
-        // Sparkles for Golden Champion
-        if (skin.id === 'golden') {
-          const starTime = performance.now() * 0.005;
-          const s1 = (Math.sin(starTime) + 1) * 0.5;
-          const s2 = (Math.cos(starTime * 1.3) + 1) * 0.5;
-          ctx.fillStyle = '#FFFBEB';
-          ctx.beginPath();
-          ctx.arc(bw / 2 + 4, -bh / 2 + s1 * 10, 1.8 * s1, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(-bw / 2 - 3, bh / 4 - s2 * 12, 2 * s2, 0, Math.PI * 2);
-          ctx.fill();
-        }
+            // Lateral stabilizer winglets / thruster pods
+            ctx.fillStyle = skin.accentColor || '#38BDF8';
+            ctx.beginPath();
+            ctx.roundRect(-bw * 0.54, -bh * 0.08, bw * 0.2, bh * 0.22, 3);
+            ctx.roundRect(bw * 0.34, -bh * 0.08, bw * 0.2, bh * 0.22, 3);
+            ctx.fill();
 
-        // Toxic bubbles for Slime
-        if (skin.id === 'slime') {
-          const bTime = performance.now() * 0.004;
-          const b1 = (Math.sin(bTime) + 1) * 0.5;
-          const b2 = (Math.cos(bTime * 1.2) + 1) * 0.5;
-          ctx.fillStyle = 'rgba(190, 242, 100, 0.7)';
-          ctx.beginPath();
-          ctx.arc(-bw / 2 - 2, bh / 2 - b1 * 22, 2.2, 0, Math.PI * 2);
-          ctx.arc(bw / 2 + 5, bh / 4 - b2 * 18, 1.8, 0, Math.PI * 2);
-          ctx.fill();
+            // Cockpit Glass Canopy / Visor Dome
+            ctx.fillStyle = skin.domeColor || 'rgba(224, 242, 254, 0.85)';
+            ctx.beginPath();
+            ctx.arc(0, -bh * 0.12, bw * 0.24, Math.PI, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // Dynamic glint reflection on canopy (sweeps faster in jump)
+            const glintSweep = onGround ? (Math.sin(animTime * 1.5) * 2) : (Math.sin(animTime * 6) * 3);
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.arc(-2 + glintSweep, -bh * 0.14, bw * 0.16, Math.PI * 1.15, Math.PI * 1.6);
+            ctx.stroke();
+
+            // Forward Scanning Sensor Beam / Perimeter Beacons
+            const beamPulse = onGround ? (Math.sin(animTime * 3) + 1) * 0.5 : 1.0;
+            ctx.fillStyle = skin.glowColor || '#38BDF8';
+            ctx.shadowColor = skin.glowColor || '#38BDF8';
+            ctx.shadowBlur = onGround ? 8 : 14;
+            ctx.beginPath();
+            ctx.arc(bw * 0.28, 0, 3 + beamPulse, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            break;
+          }
+
+          case 'cube': {
+            if (onGround) {
+              // --- GROUND IDLE / BREATHING SQUISH CYCLE ---
+              // Rhythmic chest/body expansion & relaxation
+              const breathOsc = Math.sin(animTime * 2.4);
+              const squishX = 1 + breathOsc * 0.08;
+              const squishY = 1 - breathOsc * 0.08;
+
+              // Anchor bottom to floor so breathing squashes up from the ground
+              const groundAnchorY = (1 - squishY) * (bh * 0.45);
+              ctx.translate(0, groundAnchorY);
+
+              // Ground Shadow expands/contracts smoothly with the breathing cycle
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.26)';
+              ctx.beginPath();
+              ctx.ellipse(0, bh / 2 + 2, (bw / 2) * squishX * 0.95, 4.5, 0, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.scale(squishX, squishY);
+            } else {
+              // --- AIRBORNE / JUMP STRETCH & AERODYNAMICS ---
+              // Stretches vertically like a cartoon jump spring with forward slant
+              ctx.rotate(0.08);
+              const jumpStretchX = 0.86;
+              const jumpStretchY = 1.18;
+              ctx.scale(jumpStretchX, jumpStretchY);
+
+              // Faint distant shadow when airborne
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+              ctx.beginPath();
+              ctx.ellipse(0, bh / 2 + 16, bw * 0.36, 3, 0, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Jump speed wake lines under the cube
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.25, bh / 2 + 4);
+              ctx.lineTo(-bw * 0.25, bh / 2 + 14);
+              ctx.moveTo(bw * 0.25, bh / 2 + 4);
+              ctx.lineTo(bw * 0.25, bh / 2 + 14);
+              ctx.stroke();
+
+              // Mecha block micro-thruster jets on jump
+              if (skin.id === 'mecha_box') {
+                ctx.fillStyle = '#38BDF8';
+                ctx.shadowColor = '#00F0FF';
+                ctx.shadowBlur = 8;
+                ctx.fillRect(-bw * 0.3, bh / 2, 5, 8 + Math.sin(animTime * 12) * 3);
+                ctx.fillRect(bw * 0.18, bh / 2, 5, 8 + Math.sin(animTime * 12) * 3);
+                ctx.shadowBlur = 0;
+              }
+            }
+
+            // Main Cube Body
+            const cubeGrad = ctx.createLinearGradient(0, -bh / 2, 0, bh / 2);
+            cubeGrad.addColorStop(0, skin.cubeGrad ? skin.cubeGrad[0] : '#84CC16');
+            cubeGrad.addColorStop(1, skin.cubeGrad ? skin.cubeGrad[1] : '#4D7C0F');
+            ctx.fillStyle = cubeGrad;
+
+            if (skin.id === 'golden_ingot') {
+              ctx.shadowColor = '#FBBF24';
+              ctx.shadowBlur = onGround ? 12 : 18;
+            } else if (skin.id === 'mecha_box') {
+              ctx.shadowColor = '#0284C7';
+              ctx.shadowBlur = 8;
+            }
+
+            ctx.beginPath();
+            ctx.roundRect(-bw / 2, -bh / 2, bw, bh, 8);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Beveled Inset Panel / Floating Core
+            if (skin.id === 'slime_cube') {
+              // Floating translucent core nucleus (lags with inertia in air)
+              const coreWobbleY = onGround ? (Math.cos(animTime * 3.5) * 3) : -4;
+              ctx.fillStyle = skin.innerCore || '#D9F99D';
+              ctx.shadowColor = '#BEF264';
+              ctx.shadowBlur = 8;
+              ctx.beginPath();
+              ctx.arc(0, coreWobbleY, bw * 0.22, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.shadowBlur = 0;
+
+              // Glossy gelatin highlight bubble
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+              ctx.beginPath();
+              ctx.roundRect(-bw * 0.4, -bh * 0.4, bw * 0.32, bh * 0.22, 4);
+              ctx.fill();
+
+              // Airborne trailing slime drip bead
+              if (!onGround) {
+                ctx.fillStyle = skin.cubeGrad ? skin.cubeGrad[1] : '#4D7C0F';
+                ctx.beginPath();
+                ctx.arc(-bw * 0.15, bh / 2 + 6, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            } else if (skin.id === 'mecha_box') {
+              // Dark digital faceplate recess
+              ctx.fillStyle = '#0F172A';
+              ctx.beginPath();
+              ctx.roundRect(-bw * 0.38, -bh * 0.28, bw * 0.76, bh * 0.46, 5);
+              ctx.fill();
+
+              // Top industrial antenna with signal pulse
+              ctx.fillStyle = '#64748B';
+              ctx.fillRect(-2, -bh / 2 - 8, 4, 8);
+              ctx.fillStyle = skin.eyeColor || '#00F0FF';
+              ctx.beginPath();
+              ctx.arc(0, -bh / 2 - 8, 3, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              // Inset beveled gold border
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.roundRect(-bw * 0.38, -bh * 0.38, bw * 0.76, bh * 0.76, 5);
+              ctx.stroke();
+            }
+
+            // Expressive Eyes (with natural idle blink and wide jump gaze)
+            const isBlinking = onGround && (Math.sin(animTime * 0.9) > 0.93);
+
+            if (skin.id === 'mecha_box') {
+              // Glowing LED Pixel Matrix Eyes
+              ctx.fillStyle = skin.eyeColor || '#00F0FF';
+              ctx.shadowColor = skin.eyeColor || '#00F0FF';
+              ctx.shadowBlur = 6;
+              if (isBlinking) {
+                // Closed LED slit line
+                ctx.fillRect(-bw * 0.26, -bh * 0.08, 7, 2);
+                ctx.fillRect(bw * 0.08, -bh * 0.08, 7, 2);
+              } else if (!onGround) {
+                // Tall alert jump LEDs
+                ctx.fillRect(-bw * 0.26, -bh * 0.15, 7, 9);
+                ctx.fillRect(bw * 0.08, -bh * 0.15, 7, 9);
+              } else {
+                ctx.fillRect(-bw * 0.26, -bh * 0.12, 7, 7);
+                ctx.fillRect(bw * 0.08, -bh * 0.12, 7, 7);
+              }
+              ctx.shadowBlur = 0;
+            } else {
+              if (isBlinking) {
+                // Cute curved closed sleeping/blinking arcs
+                ctx.strokeStyle = skin.eyeColor || '#14532D';
+                ctx.lineWidth = 2.2;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.arc(-bw * 0.12, -bh * 0.06, 4, Math.PI * 0.15, Math.PI * 0.85);
+                ctx.arc(bw * 0.18, -bh * 0.06, 4, Math.PI * 0.15, Math.PI * 0.85);
+                ctx.stroke();
+              } else {
+                // Cartoon Eyes (wider when airborne)
+                const eyeRadius = onGround ? 5.5 : 6.2;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(-bw * 0.12, -bh * 0.08, eyeRadius, 0, Math.PI * 2);
+                ctx.arc(bw * 0.18, -bh * 0.08, eyeRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Pupils
+                ctx.fillStyle = skin.eyeColor || '#14532D';
+                ctx.beginPath();
+                ctx.arc(-bw * 0.1 + 1, -bh * 0.08, 3, 0, Math.PI * 2);
+                ctx.arc(bw * 0.2 + 1, -bh * 0.08, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Catchlight
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(-bw * 0.1 + 2, -bh * 0.08 - 1.5, 1.2, 0, Math.PI * 2);
+                ctx.arc(bw * 0.2 + 2, -bh * 0.08 - 1.5, 1.2, 0, Math.PI * 2);
+                ctx.fill();
+              }
+
+              // Cheerful / Thrilled Mouth
+              ctx.strokeStyle = skin.eyeColor || '#14532D';
+              ctx.lineWidth = 2;
+              ctx.lineCap = 'round';
+              ctx.beginPath();
+              if (!onGround) {
+                // Excited open 'O' mouth in the air
+                ctx.arc(bw * 0.03, bh * 0.11, 3.5, 0, Math.PI * 2);
+              } else {
+                // Gentle smile on the ground
+                ctx.arc(bw * 0.03, bh * 0.12, 4, 0.2, Math.PI - 0.2);
+              }
+              ctx.stroke();
+            }
+            break;
+          }
+
+          case 'biped':
+          default: {
+            // 1. Ground Shadow
+            if (onGround) {
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+              ctx.beginPath();
+              ctx.ellipse(0, bh / 2 + 2, bw * 0.42, 4, 0, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            // 2. Running Legs / Feet (swinging with animTime)
+            const legSwing = Math.sin(animTime) * 9;
+            ctx.fillStyle = skin.shoes || '#9A3412';
+            ctx.fillRect(-10 + legSwing, bh / 2 - 8, 6, 12);
+            ctx.fillRect(4 - legSwing, bh / 2 - 8, 6, 12);
+
+            // 3. Pill Capsule Body
+            const br = bw / 2;
+            const bodyGrad = ctx.createLinearGradient(0, -bh / 2, 0, bh / 2);
+            bodyGrad.addColorStop(0, skin.bodyGrad ? skin.bodyGrad[0] : '#FF8A3D');
+            bodyGrad.addColorStop(1, skin.bodyGrad ? skin.bodyGrad[1] : '#EA580C');
+            ctx.fillStyle = bodyGrad;
+
+            ctx.beginPath();
+            ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [br, br, br, br]);
+            ctx.fill();
+
+            // Soft belly highlight
+            ctx.fillStyle = skin.belly || 'rgba(255, 237, 213, 0.45)';
+            ctx.beginPath();
+            ctx.roundRect(-bw * 0.35, -bh * 0.32, bw * 0.7, bh * 0.44, 10);
+            ctx.fill();
+
+            // 4. Headgear & Accessories
+            if (skin.accessory === 'headband') {
+              // Red Runner Headband with trailing ribbons
+              ctx.fillStyle = skin.headband || '#EF4444';
+              ctx.fillRect(-bw / 2 - 1, -bh / 2 + 10, bw + 2, 7);
+
+              ctx.beginPath();
+              ctx.moveTo(-bw / 2, -bh / 2 + 13);
+              ctx.lineTo(-bw / 2 - 14, -bh / 2 + 9 + Math.sin(animTime * 1.5) * 3);
+              ctx.lineTo(-bw / 2 - 12, -bh / 2 + 18 + Math.sin(animTime * 1.5) * 3);
+              ctx.closePath();
+              ctx.fill();
+            } else if (skin.accessory === 'shinobi') {
+              // Shadow Shinobi Headband with silver crest & twin fluttering ribbon tails
+              ctx.fillStyle = skin.headband || '#1E293B';
+              ctx.fillRect(-bw / 2 - 1, -bh / 2 + 9, bw + 2, 7);
+
+              ctx.fillStyle = '#94A3B8';
+              ctx.fillRect(-1, -bh / 2 + 10.5, 6, 4);
+
+              ctx.fillStyle = '#0F172A';
+              ctx.beginPath();
+              ctx.moveTo(-bw / 2, -bh / 2 + 11);
+              ctx.lineTo(-bw / 2 - 16, -bh / 2 + 7 + Math.sin(animTime * 1.6) * 4);
+              ctx.lineTo(-bw / 2 - 13, -bh / 2 + 16 + Math.sin(animTime * 1.6) * 4);
+              ctx.closePath();
+              ctx.fill();
+
+              ctx.beginPath();
+              ctx.moveTo(-bw / 2, -bh / 2 + 13);
+              ctx.lineTo(-bw / 2 - 18, -bh / 2 + 15 + Math.sin(animTime * 1.4) * 4);
+              ctx.lineTo(-bw / 2 - 14, -bh / 2 + 22 + Math.sin(animTime * 1.4) * 4);
+              ctx.closePath();
+              ctx.fill();
+            } else if (skin.accessory === 'knight') {
+              // Aegis Knight golden brow crest and plume
+              ctx.fillStyle = skin.headband || '#F59E0B';
+              ctx.fillRect(-bw / 2 - 2, -bh / 2 + 8, bw + 4, 6);
+
+              // Golden knight plume
+              ctx.fillStyle = '#EF4444';
+              ctx.beginPath();
+              ctx.moveTo(-4, -bh / 2 + 8);
+              ctx.quadraticCurveTo(-12, -bh / 2 - 10 + Math.sin(animTime * 1.5) * 3, 0, -bh / 2 - 12);
+              ctx.quadraticCurveTo(8, -bh / 2 - 6, 4, -bh / 2 + 8);
+              ctx.closePath();
+              ctx.fill();
+            }
+
+            // 5. Big Expressive Cartoon Eyes
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(3, -4, 5.5, 0, Math.PI * 2);
+            ctx.arc(14, -4, 5.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupils
+            ctx.fillStyle = skin.pupils || '#1E293B';
+            ctx.beginPath();
+            ctx.arc(5, -4, 3, 0, Math.PI * 2);
+            ctx.arc(16, -4, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Catchlight
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(6, -5.5, 1.2, 0, Math.PI * 2);
+            ctx.arc(17, -5.5, 1.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 6. Smile or Mask Line
+            if (skin.accessory === 'shinobi') {
+              ctx.strokeStyle = '#020617';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(5, 6);
+              ctx.lineTo(13, 6);
+              ctx.stroke();
+            } else {
+              ctx.strokeStyle = skin.smile || '#9A3412';
+              ctx.lineWidth = 2.2;
+              ctx.lineCap = 'round';
+              ctx.beginPath();
+              ctx.arc(8, 6, 4.5, 0.1, Math.PI - 0.1);
+              ctx.stroke();
+            }
+            break;
+          }
         }
 
         ctx.restore();
@@ -8599,6 +9692,77 @@
         ctx.restore();
       }
 
+      drawMenuCharacter(time) {
+        if (!this.menuCharCanvas) {
+          this.menuCharCanvas = document.getElementById('menuCharCanvas');
+          if (this.menuCharCanvas) {
+            this.menuCharCtx = this.menuCharCanvas.getContext('2d');
+          }
+        }
+        if (!this.menuCharNameEl) {
+          this.menuCharNameEl = document.getElementById('menuCharName');
+        }
+        if (!this.menuCharCanvas || !this.menuCharCtx || !this.skinManager) return;
+
+        const canvas = this.menuCharCanvas;
+        const ctx = this.menuCharCtx;
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // 1. Clear preview canvas
+        ctx.clearRect(0, 0, w, h);
+
+        // 2. Fetch active skin
+        const skin = this.skinManager.getSelectedSkin();
+        if (!skin) return;
+
+        // 3. Update character name & tint by rarity color
+        if (this.menuCharNameEl) {
+          this.menuCharNameEl.textContent = skin.name;
+          const rarityColors = {
+            common: '#CBD5E1',
+            rare: '#38BDF8',
+            epic: '#C084FC',
+            legendary: '#FCD34D'
+          };
+          this.menuCharNameEl.style.color = rarityColors[skin.rarity] || '#FFFFFF';
+        }
+
+        // 4. Subtle hover/idle run bob animation using performance.now()
+        const now = (time !== undefined ? time : performance.now()) * 0.001;
+        let bounceY = 0;
+        let legAngle = 0;
+
+        if (skin.modelType === 'hover') {
+          bounceY = Math.sin(now * 3.2) * 5;
+          legAngle = 0;
+        } else if (skin.modelType === 'wheel') {
+          bounceY = Math.sin(now * 6.0) * 1.5;
+          legAngle = now * 7.5;
+        } else {
+          bounceY = Math.sin(now * 5.0) * 3.2;
+          legAngle = now * 6.5;
+        }
+
+        // 5. Draw soft ground shadow beneath character
+        ctx.save();
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        const shadowW = Math.max(16, (skin.w || 38) * 0.65);
+        const shadowScale = Math.max(0.7, 1 - (bounceY / 24));
+        ctx.beginPath();
+        ctx.ellipse(w / 2, h / 2 + 32, shadowW * shadowScale, 5 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // 6. Draw runner skin using procedural drawing engine
+        ctx.save();
+        ctx.translate(w / 2, h / 2 + 6 + bounceY);
+        const scale = 1.3;
+        ctx.scale(scale, scale);
+        this.drawRunnerSkin(ctx, skin, legAngle, true, skin.w || 38, skin.h || 50);
+        ctx.restore();
+      }
+
       loop(time) {
         const dt = Math.min((time - this.lastTime) / 1000, 0.1);
         this.lastTime = time;
@@ -8610,6 +9774,10 @@
           }
         }
         this.draw();
+
+        if (this.state === 'MENU') {
+          this.drawMenuCharacter(time);
+        }
 
         requestAnimationFrame((t) => this.loop(t));
       }
