@@ -15,17 +15,45 @@
       -webkit-tap-highlight-color: transparent;
     }
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
+      position: fixed;
+      inset: 0;
       background-color: #79BFE7;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     #gameContainer {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
+    }
+    /* Universal touch responsiveness & 300ms tap delay elimination */
+    button,
+    .btn,
+    .skin-card,
+    .streak-badge,
+    .menu-char-widget,
+    .diff-btn,
+    .streak-action-btn,
+    .tab-btn,
+    .icon-btn,
+    .category-chip,
+    .streak-day-cell,
+    .mission-item,
+    .hs-switch-btn,
+    [role="button"] {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #gameCanvas,
+    canvas {
+      touch-action: none;
     }
     canvas {
       display: block;
@@ -494,23 +522,55 @@
       }
     }
 
-    /* Screen Overlays (Splash, Menu, Pause, GameOver) */
+    /* Screen Overlays (Splash, Menu, Pause, GameOver, Customizer) */
     .overlay {
       position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: flex-start;
       z-index: 20;
-      background: rgba(15, 23, 42, 0.82);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: #fff;
       text-align: center;
-      padding: 20px;
+      padding: max(10px, env(safe-area-inset-top, 10px)) max(14px, env(safe-area-inset-right, 14px)) max(16px, env(safe-area-inset-bottom, 16px)) max(14px, env(safe-area-inset-left, 14px));
+      box-sizing: border-box;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+    /* Momentum-based scrolling & overscroll containment for all overlays and containers */
+    .overlay,
+    .menu-container,
+    .customizer-container,
+    .streak-card,
+    .consent-card,
+    .info-card,
+    .daily-missions-card,
+    .privacy-reader-content,
+    .customizer-skins-list,
+    .hs-records-list,
+    .hs-bar-container,
+    .distance-container,
+    .menu-char-dust-container,
+    [class*="container"] {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+    .overlay::before,
+    .overlay::after {
+      content: '';
+      margin: auto;
     }
     .overlay.active {
       opacity: 1;
@@ -603,6 +663,7 @@
     #gameOverScreen {
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       padding: 16px 14px;
       justify-content: flex-start;
     }
@@ -950,6 +1011,8 @@
       gap: 4px;
       max-height: 100px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
     }
     .hs-rank-row {
       display: flex;
@@ -1317,6 +1380,10 @@
     }
     .menu-char-name-badge {
       margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
     #menuCharName {
       font-size: 13.5px;
@@ -1326,6 +1393,81 @@
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
       transition: color 0.2s ease;
     }
+    .menu-char-hover-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(-4px) scale(0.92);
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0 5px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  max-height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  margin-top 0.22s ease,
+                  padding 0.22s ease;
+    }
+    .menu-char-widget:hover .menu-char-hover-badge,
+    .menu-char-widget:active .menu-char-hover-badge {
+      opacity: 1;
+      max-height: 24px;
+      margin-top: 4px;
+      padding: 2.5px 6px;
+      transform: translateY(0) scale(1);
+    }
+    .menu-char-equipped-lbl {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      color: #34D399;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 1.5px 5px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .menu-char-rarity-pill {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      padding: 1.5px 5.5px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .menu-char-rarity-pill.common {
+      background: rgba(148, 163, 184, 0.2);
+      color: #CBD5E1;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+    .menu-char-rarity-pill.rare {
+      background: rgba(6, 182, 212, 0.2);
+      color: #38BDF8;
+      border: 1px solid rgba(6, 182, 212, 0.45);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.3);
+    }
+    .menu-char-rarity-pill.epic {
+      background: rgba(168, 85, 247, 0.2);
+      color: #C084FC;
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      box-shadow: 0 0 6px rgba(192, 132, 252, 0.3);
+    }
+    .menu-char-rarity-pill.legendary {
+      background: rgba(245, 158, 11, 0.2);
+      color: #FCD34D;
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
 
     /* Daily Missions System Styles */
     .menu-container {
@@ -1333,11 +1475,17 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 24px;
       width: 100%;
       max-width: 920px;
-      max-height: 94vh;
+      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
       padding: 10px;
+      margin: auto 0;
+      box-sizing: border-box;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
     }
     .menu-main-col {
       display: flex;
@@ -1557,76 +1705,106 @@
       .menu-container {
         flex-direction: column;
         overflow-y: auto;
-        max-height: 92vh;
-        gap: 16px;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
+        padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+        gap: 14px;
       }
     }
-    @media (max-height: 420px) {
+    @media (max-height: 440px) {
       .game-logo {
-        font-size: 32px;
+        font-size: 28px;
         margin-bottom: 2px;
       }
       .subtitle {
-        font-size: 11px;
-        margin-bottom: 10px;
+        font-size: 10px;
+        margin-bottom: 6px;
       }
       .stats-card {
-        padding: 8px 16px;
-        gap: 16px;
-        margin-bottom: 12px;
+        padding: 6px 14px;
+        gap: 14px;
+        margin-bottom: 8px;
+      }
+      .menu-char-widget {
+        padding: 4px 10px 3px;
+        margin-bottom: 6px;
+        max-width: 200px;
+      }
+      .menu-char-canvas-wrap {
+        width: 84px;
+        height: 64px;
+      }
+      #menuCharCanvas {
+        width: 84px;
+        height: 64px;
+      }
+      .menu-char-badge {
+        font-size: 7.5px;
+        padding: 1px 6px;
+      }
+      #menuCharName {
+        font-size: 11px;
+      }
+      .diff-selector-card {
+        padding: 4px 8px;
+        margin-bottom: 6px;
+      }
+      .diff-btn {
+        padding: 4px 8px;
+        font-size: 11px;
       }
       .btn {
-        padding: 9px 18px;
-        font-size: 14px;
+        padding: 7px 14px;
+        font-size: 13px;
+        min-width: 110px;
       }
       .btn.btn-play {
-        padding: 10px 24px;
-        font-size: 15px;
+        padding: 8px 18px;
+        font-size: 14px;
       }
       .help-hint {
-        margin-top: 8px;
-        font-size: 11px;
-        padding: 4px 12px;
+        display: none;
       }
       .daily-missions-card {
-        padding: 10px 12px;
+        padding: 8px 12px;
         gap: 6px;
       }
       .mission-item {
-        padding: 6px 10px;
-        gap: 8px;
+        padding: 5px 8px;
+        gap: 6px;
       }
       .mission-icon-box {
-        width: 28px;
-        height: 28px;
-        font-size: 14px;
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
       }
       .streak-badge {
-        padding: 5px 10px;
-        margin-bottom: 8px;
+        padding: 4px 10px;
+        margin-bottom: 6px;
         border-radius: 10px;
       }
       .streak-flame-icon {
-        font-size: 18px;
-      }
-      .streak-count-text {
-        font-size: 11px;
-      }
-      .streak-desc-line {
-        font-size: 9.5px;
-      }
-      .streak-action-btn {
-        padding: 4px 8px;
-        font-size: 10px;
-      }
-      .streak-day-box {
-        padding: 6px 2px;
-      }
-      .day-box-icon {
         font-size: 16px;
       }
+      .streak-count-text {
+        font-size: 10.5px;
+      }
+      .streak-desc-line {
+        font-size: 9px;
+      }
+      .streak-action-btn {
+        padding: 3px 7px;
+        font-size: 9.5px;
+      }
+      .streak-day-box {
+        padding: 4px 2px;
+      }
+      .day-box-icon {
+        font-size: 14px;
+      }
       .day-box-coins {
-        font-size: 10px;
+        font-size: 9.5px;
       }
     }
 
@@ -1761,16 +1939,31 @@
     #streakModal {
       position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       background: rgba(10, 15, 29, 0.88);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 46;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 12px;
+      justify-content: flex-start;
+      padding: max(10px, env(safe-area-inset-top, 10px)) max(12px, env(safe-area-inset-right, 12px)) max(16px, env(safe-area-inset-bottom, 16px)) max(12px, env(safe-area-inset-left, 12px));
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      box-sizing: border-box;
+    }
+    #streakModal::before,
+    #streakModal::after {
+      content: '';
+      margin: auto;
     }
     #streakModal.active {
       opacity: 1;
@@ -1781,14 +1974,28 @@
     #consentModal {
       position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       background: rgba(10, 15, 29, 0.94);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       z-index: 1000;
       display: none;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 16px;
+      justify-content: flex-start;
+      padding: max(10px, env(safe-area-inset-top, 10px)) max(12px, env(safe-area-inset-right, 12px)) max(16px, env(safe-area-inset-bottom, 16px)) max(12px, env(safe-area-inset-left, 12px));
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      box-sizing: border-box;
+    }
+    #consentModal::before,
+    #consentModal::after {
+      content: '';
+      margin: auto;
     }
     #consentModal.active {
       display: flex;
@@ -1797,9 +2004,10 @@
       background: linear-gradient(165deg, #1E293B 0%, #0F172A 100%);
       border: 1.5px solid rgba(56, 189, 248, 0.35);
       border-radius: 22px;
-      padding: 24px 28px;
+      padding: 16px 22px;
       max-width: 480px;
       width: 95%;
+      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
       display: flex;
       flex-direction: column;
@@ -1807,6 +2015,10 @@
       color: #F8FAFC;
       box-sizing: border-box;
       animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      margin: auto 0;
     }
     .consent-icon {
       font-size: 38px;
@@ -1967,6 +2179,7 @@
       overflow-y: auto;
       max-height: 70vh;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       font-size: 13.5px;
       line-height: 1.65;
       color: #334155;
@@ -2020,15 +2233,20 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 20px;
       padding: 16px 20px;
+      padding-bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
       max-width: 640px;
       width: 95%;
-      max-height: 94vh;
+      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       text-align: left;
       color: #F8FAFC;
+      margin: auto 0;
+      box-sizing: border-box;
     }
     .streak-card-header {
       display: flex;
@@ -2208,16 +2426,31 @@
     #infoModal {
       position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       background: rgba(10, 15, 29, 0.88);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 45;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 10px 14px;
+      justify-content: flex-start;
+      padding: max(10px, env(safe-area-inset-top, 10px)) max(12px, env(safe-area-inset-right, 12px)) max(16px, env(safe-area-inset-bottom, 16px)) max(12px, env(safe-area-inset-left, 12px));
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      box-sizing: border-box;
+    }
+    #infoModal::before,
+    #infoModal::after {
+      content: '';
+      margin: auto;
     }
     #infoModal.active {
       opacity: 1;
@@ -2228,15 +2461,20 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 20px;
       padding: 16px 20px;
+      padding-bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
       max-width: 680px;
       width: 95%;
-      max-height: 94vh;
+      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       text-align: left;
       color: #F8FAFC;
+      margin: auto 0;
+      box-sizing: border-box;
     }
     .info-header {
       display: flex;
@@ -2923,12 +3161,16 @@
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       width: 95%;
       max-width: 880px;
-      max-height: 94vh;
-      padding: 14px 18px;
+      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
+      padding: 12px 16px;
+      padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       box-sizing: border-box;
+      margin: auto 0;
     }
     .customizer-header {
       display: flex;
@@ -3173,6 +3415,8 @@
     .customizer-skins-list {
       flex: 1;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
       gap: 10px;
@@ -3295,43 +3539,47 @@
       animation: shakeErr 0.35s ease;
     }
 
-    @media (max-height: 420px) {
+    @media (max-height: 440px) {
       .customizer-container {
-        padding: 8px 14px;
+        padding: 6px 12px;
+        padding-bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 8px));
       }
       .customizer-preview-pane {
-        flex: 0 0 200px;
-        padding: 8px;
+        flex: 0 0 175px;
+        padding: 6px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
       }
       .preview-canvas-wrapper {
-        width: 100px;
-        height: 90px;
+        width: 80px;
+        height: 72px;
       }
       #customizerPreviewCanvas {
-        width: 100px;
-        height: 90px;
+        width: 80px;
+        height: 72px;
       }
       .preview-skin-name {
-        font-size: 13px;
+        font-size: 12px;
       }
       .preview-tagline {
-        font-size: 9.5px;
+        display: none;
       }
       .btn-customizer-action {
-        padding: 7px 10px;
-        font-size: 11.5px;
+        padding: 6px 10px;
+        font-size: 11px;
       }
       .skin-card {
-        padding: 6px 8px;
-        min-height: 90px;
+        padding: 5px 6px;
+        min-height: 80px;
       }
       .skin-card-icon-box {
-        width: 30px;
-        height: 30px;
-        font-size: 18px;
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
       }
       .skin-card-name {
-        font-size: 11.5px;
+        font-size: 11px;
       }
     }
 
@@ -3517,6 +3765,62 @@
       }
     }
 
+    /* Orientation Lock Notice for Portrait Orientation on Mobile Devices */
+    #rotateDeviceOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 999999;
+      background: rgba(8, 12, 22, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+    @media (orientation: portrait) {
+      #rotateDeviceOverlay {
+        display: flex !important;
+      }
+      #gameContainer > *:not(#rotateDeviceOverlay) {
+        display: none !important;
+      }
+    }
+    .rotate-icon-anim {
+      width: 62px;
+      height: 62px;
+      margin-bottom: 20px;
+      animation: rotatePhonePrompt 2.2s infinite ease-in-out;
+      filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.6));
+    }
+    @keyframes rotatePhonePrompt {
+      0%, 15% { transform: rotate(0deg); }
+      45%, 85% { transform: rotate(-90deg); }
+      100% { transform: rotate(-90deg); }
+    }
+    .rotate-title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #38BDF8;
+      margin-bottom: 8px;
+      text-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+    }
+    .rotate-subtitle {
+      font-size: 13.5px;
+      color: #94A3B8;
+      max-width: 300px;
+      line-height: 1.5;
+    }
+
   </style>
 </head>
 <body>
@@ -3684,6 +3988,10 @@
             </div>
             <div class="menu-char-name-badge">
               <span id="menuCharName">Blaze Runner</span>
+              <div class="menu-char-hover-badge" id="menuCharHoverBadge">
+                <span class="menu-char-equipped-lbl">EQUIPPED</span>
+                <span class="menu-char-rarity-pill common" id="menuCharRarityBadge">COMMON</span>
+              </div>
             </div>
           </div>
 
@@ -4061,7 +4369,7 @@
           <button class="privacy-reader-close-btn" id="privacyReaderCloseBtn" aria-label="Close">✕</button>
         </div>
         <div class="privacy-reader-content" id="privacyReaderContent">
-          <div style="padding: 15px; font-family: sans-serif; line-height: 1.6; color: #333; overflow-y: auto; max-height: 70vh;">
+          <div style="padding: 15px; font-family: sans-serif; line-height: 1.6; color: #333; overflow-y: auto; max-height: 70vh; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;">
             <h2 style="text-align: center;">Terms of Service &amp; Privacy Policy</h2>
             <p style="text-align: center; font-size: 12px; color: #666;">Last Updated: September 10, 2026</p>
 
@@ -4313,6 +4621,16 @@
 
     <!-- Notification Toast -->
     <div id="adToast">Reward Applied!</div>
+
+    <!-- Orientation Lock Notice for Portrait Devices -->
+    <div id="rotateDeviceOverlay" aria-hidden="true">
+      <svg class="rotate-icon-anim" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+      </svg>
+      <div class="rotate-title">Please Rotate Your Device</div>
+      <div class="rotate-subtitle">Dashbound is designed to be played in landscape mode. Please rotate your device to continue running!</div>
+    </div>
   </div>
 
   <script>
@@ -4937,6 +5255,10 @@
         }
       }
 
+      onEnemyDefeated() {
+        this.onEnemyJumpedOver();
+      }
+
       onRunDistanceUpdate(dist) {
         const d = Math.floor(dist);
         let changed = false;
@@ -5316,13 +5638,12 @@
       constructor(game) {
         this.game = game;
         this.skins = [
-          // BIPED MODELS (Classic runners with agile running legs & headgear)
+          // ==================== THE CLASSICS (3) ====================
           {
             id: 'classic',
             name: 'Blaze Runner',
             modelType: 'biped',
-            w: 38,
-            h: 52,
+            w: 38, h: 52,
             price: 0,
             rarity: 'common',
             icon: '🔥',
@@ -5339,8 +5660,7 @@
             id: 'ninja',
             name: 'Shadow Shinobi',
             modelType: 'biped',
-            w: 36,
-            h: 50,
+            w: 36, h: 50,
             price: 180,
             rarity: 'rare',
             icon: '🥷',
@@ -5357,8 +5677,7 @@
             id: 'paladin',
             name: 'Aegis Knight',
             modelType: 'biped',
-            w: 42,
-            h: 54,
+            w: 42, h: 54,
             price: 320,
             rarity: 'epic',
             icon: '🛡️',
@@ -5372,151 +5691,352 @@
             smile: '#1E293B'
           },
 
-          // WHEEL MODELS (Rolling mechanical spheres & tires with real rotational spin)
+          // ==================== HUMANS / CYBORGS (6) ====================
           {
-            id: 'cyber_wheel',
-            name: 'Volt Monowheel',
-            modelType: 'wheel',
-            w: 44,
-            h: 44,
-            price: 150,
+            id: 'jaxen_vance',
+            name: 'Jaxen Vance',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 250,
             rarity: 'rare',
+            icon: '🦾',
+            tagline: 'Grit-hardened mercenary with a high-torque prosthetic arm and bionic optic',
+            bodyGrad: ['#64748B', '#334155'],
+            belly: 'rgba(148, 163, 184, 0.35)',
+            shoes: '#1E293B',
+            headband: 'transparent',
+            accessory: 'jaxen_cyberarm',
+            pupils: '#F59E0B',
+            smile: '#0F172A'
+          },
+          {
+            id: 'vex_cross',
+            name: 'Valerie "Vex" Cross',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 340,
+            rarity: 'epic',
             icon: '⚡',
-            tagline: 'High-RPM neon gyro-wheel with rotating treads and plasma reactor hub',
-            rimGrad: ['#06B6D4', '#0284C7'],
-            treadColor: '#0F172A',
-            hubColor: '#38BDF8',
-            glowColor: '#00F0FF',
-            spokeCount: 5
+            tagline: 'Cybernetic rogue with neon magenta augmentations and holographic goggles',
+            bodyGrad: ['#F43F5E', '#881337'],
+            belly: 'rgba(251, 113, 133, 0.45)',
+            shoes: '#0F172A',
+            headband: '#06B6D4',
+            accessory: 'vex_goggles',
+            pupils: '#22D3EE',
+            smile: '#4C0519'
           },
           {
-            id: 'steampunk_cog',
-            name: 'Clockwork Cog',
-            modelType: 'wheel',
-            w: 42,
-            h: 42,
-            price: 260,
-            rarity: 'rare',
-            icon: '⚙️',
-            tagline: 'Heavy-duty brass gearwheel with meshing teeth and burnished copper rivets',
-            rimGrad: ['#F59E0B', '#B45309'],
-            treadColor: '#78350F',
-            hubColor: '#FDE68A',
-            glowColor: '#F59E0B',
-            spokeCount: 6
-          },
-          {
-            id: 'magma_roller',
-            name: 'Obsidian Roller',
-            modelType: 'wheel',
-            w: 46,
-            h: 46,
-            price: 450,
-            rarity: 'legendary',
-            icon: '🌋',
-            tagline: 'Cracked volcanic sphere spinning with intense thermal magma friction',
-            rimGrad: ['#EF4444', '#7F1D1D'],
-            treadColor: '#1C1917',
-            hubColor: '#F59E0B',
-            glowColor: '#DC2626',
-            spokeCount: 4
-          },
-
-          // HOVER MODELS (Anti-gravity drones & UFOs with bobbing motion and plasma thrusters)
-          {
-            id: 'aero_drone',
-            name: 'Vector Drone',
-            modelType: 'hover',
-            w: 46,
-            h: 36,
-            price: 220,
-            rarity: 'rare',
-            icon: '🛸',
-            tagline: 'Aerodynamic twin-nacelle drone stabilized by pulsing ion thrusters',
-            hullGrad: ['#0284C7', '#0369A1'],
-            accentColor: '#38BDF8',
-            thrusterColor: '#06B6D4',
-            domeColor: 'rgba(224, 242, 254, 0.85)',
-            glowColor: '#38BDF8'
-          },
-          {
-            id: 'cosmic_saucer',
-            name: 'Cosmic Saucer',
-            modelType: 'hover',
-            w: 50,
-            h: 36,
+            id: 'marcus_unbroken',
+            name: 'Marcus the Unbroken',
+            modelType: 'biped',
+            w: 42, h: 54,
             price: 360,
             rarity: 'epic',
-            icon: '🪐',
-            tagline: 'Intergalactic cruiser equipped with perimeter warning beacons and beam engine',
-            hullGrad: ['#8B5CF6', '#4C1D95'],
-            accentColor: '#C084FC',
-            thrusterColor: '#EC4899',
-            domeColor: 'rgba(245, 208, 254, 0.85)',
-            glowColor: '#A855F7'
+            icon: '🎖️',
+            tagline: 'Seasoned battle commander equipped with heavy ammo bandolier and armored pauldron',
+            bodyGrad: ['#78350F', '#451A03'],
+            belly: 'rgba(217, 119, 6, 0.35)',
+            shoes: '#1C1917',
+            headband: '#B45309',
+            accessory: 'marcus_bandolier',
+            pupils: '#FDE047',
+            smile: '#292524'
           },
           {
-            id: 'phantom_jet',
-            name: 'Stealth Skimmer',
-            modelType: 'hover',
-            w: 48,
-            h: 34,
-            price: 480,
-            rarity: 'legendary',
-            icon: '🚀',
-            tagline: 'Supersonic anti-grav fighter with swept forward wings and hyper-flame',
-            hullGrad: ['#1E293B', '#020617'],
-            accentColor: '#10B981',
-            thrusterColor: '#34D399',
-            domeColor: 'rgba(209, 250, 229, 0.8)',
-            glowColor: '#059669'
+            id: 'dash_rossi',
+            name: 'Leo "Dash" Rossi',
+            modelType: 'biped',
+            w: 38, h: 50,
+            price: 150,
+            rarity: 'common',
+            icon: '🧢',
+            tagline: 'Spirited urban parkour prodigy sporting a backward cap and yellow race scarf',
+            bodyGrad: ['#3B82F6', '#1D4ED8'],
+            belly: 'rgba(191, 219, 254, 0.5)',
+            shoes: '#EF4444',
+            headband: 'transparent',
+            accessory: 'dash_cap',
+            pupils: '#0F172A',
+            smile: '#1E3A8A'
           },
-
-          // CUBE MODELS (Blocky/voxel & gelatinous characters with heavy squish-and-stretch)
           {
-            id: 'slime_cube',
-            name: 'Bouncy Slime',
-            modelType: 'cube',
-            w: 40,
-            h: 40,
-            price: 240,
+            id: 'elena_vance',
+            name: 'Dr. Elena Vance',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 290,
             rarity: 'rare',
-            icon: '🧪',
-            tagline: 'Translucent bio-slime cube that rhythmically squishes around a glowing nucleus',
-            cubeGrad: ['#84CC16', '#4D7C0F'],
-            innerCore: '#D9F99D',
-            eyeColor: '#14532D',
-            glowColor: '#65A30D'
+            icon: '🔬',
+            tagline: 'Brilliant biometric researcher with a floating cybernetic optic eyepiece HUD',
+            bodyGrad: ['#F8FAFC', '#94A3B8'],
+            belly: 'rgba(56, 189, 248, 0.3)',
+            shoes: '#334155',
+            headband: 'transparent',
+            accessory: 'elena_visor',
+            pupils: '#0284C7',
+            smile: '#475569'
           },
           {
-            id: 'mecha_box',
-            name: 'Blockbot Unit',
-            modelType: 'cube',
-            w: 42,
-            h: 42,
+            id: 'roxie_sparks',
+            name: 'Roxie Sparks',
+            modelType: 'biped',
+            w: 38, h: 52,
             price: 380,
             rarity: 'epic',
+            icon: '🎧',
+            tagline: 'Underground DJ runner with glowing neon-pink studio cans and electric personality',
+            bodyGrad: ['#EC4899', '#9D174D'],
+            belly: 'rgba(244, 114, 182, 0.45)',
+            shoes: '#18181B',
+            headband: 'transparent',
+            accessory: 'roxie_headphones',
+            pupils: '#F472B6',
+            smile: '#500724'
+          },
+
+          // ==================== ROBOTS (6) ====================
+          {
+            id: 'apex_9',
+            name: 'Apex-9',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 400,
+            rarity: 'epic',
             icon: '🤖',
-            tagline: 'Voxel industrial automaton with glowing digital LED matrix visor',
-            cubeGrad: ['#475569', '#1E293B'],
-            innerCore: '#38BDF8',
-            eyeColor: '#00F0FF',
-            glowColor: '#0284C7'
+            tagline: 'Autonomous combat android with sleek chrome casing and sweeping laser eye',
+            bodyGrad: ['#E2E8F0', '#475569'],
+            belly: 'rgba(239, 68, 68, 0.35)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'apex_visor',
+            pupils: '#EF4444',
+            smile: 'transparent'
           },
           {
-            id: 'golden_ingot',
-            name: 'Midas Cube',
-            modelType: 'cube',
-            w: 40,
-            h: 40,
+            id: 'rusty_bot',
+            name: 'Rusty',
+            modelType: 'biped',
+            w: 38, h: 50,
+            price: 160,
+            rarity: 'common',
+            icon: '🔩',
+            tagline: 'Clunky scrapheap automaton with a puffing chimney smokestack and welded plates',
+            bodyGrad: ['#D97706', '#78350F'],
+            belly: 'rgba(254, 243, 199, 0.3)',
+            shoes: '#451A03',
+            headband: 'transparent',
+            accessory: 'rusty_funnel',
+            pupils: '#FBBF24',
+            smile: '#451A03'
+          },
+          {
+            id: 'null_void',
+            name: 'Null-Void',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 520,
+            rarity: 'legendary',
+            icon: '🕳️',
+            tagline: 'Dark matter mechanoid harboring an active cosmic singularity portal in its chest',
+            bodyGrad: ['#09090B', '#18181B'],
+            belly: 'rgba(0, 0, 0, 0)',
+            shoes: '#27272A',
+            headband: 'transparent',
+            accessory: 'null_portal',
+            pupils: '#C084FC',
+            smile: 'transparent'
+          },
+          {
+            id: 'dj_b00m',
+            name: 'DJ B-00M',
+            modelType: 'biped',
+            w: 40, h: 52,
+            price: 420,
+            rarity: 'epic',
+            icon: '📻',
+            tagline: 'Boombox automaton blasting frequency audio waveforms across live equalizer LEDs',
+            bodyGrad: ['#8B5CF6', '#3B0764'],
+            belly: 'rgba(139, 92, 246, 0.25)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'boom_equalizer',
+            pupils: '#00F0FF',
+            smile: '#581C87'
+          },
+          {
+            id: 'orion_starbot',
+            name: 'Orion',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 460,
+            rarity: 'legendary',
+            icon: '🌌',
+            tagline: 'Astral navigational drone crowned with an orbiting golden solar ring halo',
+            bodyGrad: ['#1E1B4B', '#312E81'],
+            belly: 'rgba(199, 210, 254, 0.4)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'orion_solar',
+            pupils: '#38BDF8',
+            smile: '#1E1B4B'
+          },
+          {
+            id: 'bastion_prime',
+            name: 'Bastion-Prime',
+            modelType: 'biped',
+            w: 42, h: 54,
+            price: 350,
+            rarity: 'rare',
+            icon: '🏰',
+            tagline: 'Heavy mechanized fortress vanguard armed with dual shoulder blast shields',
+            bodyGrad: ['#475569', '#1E293B'],
+            belly: 'rgba(148, 163, 184, 0.35)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'bastion_plating',
+            pupils: '#F59E0B',
+            smile: 'transparent'
+          },
+
+          // ==================== ALIENS / HYBRIDS (5) ====================
+          {
+            id: 'kaelith_stareye',
+            name: 'Kaelith Star-Eye',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 480,
+            rarity: 'legendary',
+            icon: '👁️',
+            tagline: 'Mystical celestial hybrid gazing into infinity with a radiant third eye',
+            bodyGrad: ['#6366F1', '#3730A3'],
+            belly: 'rgba(224, 231, 255, 0.5)',
+            shoes: '#1E1B4B',
+            headband: 'transparent',
+            accessory: 'kaelith_third_eye',
+            pupils: '#A5B4FC',
+            smile: '#312E81'
+          },
+          {
+            id: 'gorgoroth',
+            name: 'Gorgoroth',
+            modelType: 'biped',
+            w: 40, h: 54,
+            price: 440,
+            rarity: 'epic',
+            icon: '👹',
+            tagline: 'Infernal volcanic brute crowned with curving obsidian horns and magma cracks',
+            bodyGrad: ['#DC2626', '#7F1D1D'],
+            belly: 'rgba(254, 240, 138, 0.4)',
+            shoes: '#450A0A',
+            headband: 'transparent',
+            accessory: 'gorgoroth_horns',
+            pupils: '#FACC15',
+            smile: '#450A0A'
+          },
+          {
+            id: 'sylph',
+            name: 'Sylph',
+            modelType: 'biped',
+            w: 36, h: 50,
+            price: 330,
+            rarity: 'rare',
+            icon: '🦋',
+            tagline: 'Ethereal forest fairy alien with wiggling bioluminescent moth antennae',
+            bodyGrad: ['#34D399', '#065F46'],
+            belly: 'rgba(167, 243, 208, 0.55)',
+            shoes: '#064E3B',
+            headband: 'transparent',
+            accessory: 'sylph_antennae',
+            pupils: '#064E3B',
+            smile: '#065F46'
+          },
+          {
+            id: 'zorblax_great',
+            name: 'Zorblax the Great',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 370,
+            rarity: 'epic',
+            icon: '👽',
+            tagline: 'Megalomaniacal alien overlord with an exposed glowing brain dome and eye-stalks',
+            bodyGrad: ['#4ADE80', '#15803D'],
+            belly: 'rgba(187, 247, 208, 0.5)',
+            shoes: '#052E16',
+            headband: 'transparent',
+            accessory: 'zorblax_crown',
+            pupils: '#000000',
+            smile: '#14532D'
+          },
+          {
+            id: 'nyx_shadow',
+            name: 'Nyx',
+            modelType: 'biped',
+            w: 38, h: 52,
             price: 500,
             rarity: 'legendary',
-            icon: '👑',
-            tagline: 'Pure mythical gold block stamped with imperial bevels and radiant aura',
-            cubeGrad: ['#FDE047', '#D97706'],
-            innerCore: '#FEF08A',
-            eyeColor: '#78350F',
-            glowColor: '#F59E0B'
+            icon: '🐙',
+            tagline: 'Cosmic entity of the deep void with writhing shadowy ethereal tentacles',
+            bodyGrad: ['#581C87', '#1E1B4B'],
+            belly: 'rgba(192, 132, 252, 0.3)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'nyx_tentacles',
+            pupils: '#E879F9',
+            smile: '#3B0764'
+          },
+
+          // ==================== SKELETONS / NECRO (3) ====================
+          {
+            id: 'bone_kzero',
+            name: '骨-K0 (Bone-KZero)',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 600,
+            rarity: 'legendary',
+            icon: '💀',
+            tagline: 'A cybernetic undead warrior with glowing neon ribs and cranial circuits',
+            bodyGrad: ['#1E293B', '#020617'],
+            belly: 'rgba(0, 0, 0, 0)',
+            shoes: '#475569',
+            headband: 'transparent',
+            accessory: 'cyber_skeleton',
+            pupils: '#38BDF8',
+            smile: 'transparent'
+          },
+          {
+            id: 'captain_skelly',
+            name: 'Captain Skelly',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 310,
+            rarity: 'rare',
+            icon: '🏴‍☠️',
+            tagline: 'Resurrected buccaneer sporting a skull-and-crossbones captain hat and eye-patch',
+            bodyGrad: ['#E2E8F0', '#94A3B8'],
+            belly: 'rgba(0, 0, 0, 0)',
+            shoes: '#451A03',
+            headband: 'transparent',
+            accessory: 'pirate_skull',
+            pupils: '#0F172A',
+            smile: '#475569'
+          },
+          {
+            id: 'baron_marrow',
+            name: 'Baron Marrow',
+            modelType: 'biped',
+            w: 38, h: 54,
+            price: 450,
+            rarity: 'epic',
+            icon: '🎩',
+            tagline: 'Aristocratic skeletal nobleman attired in a velvet top hat, gold monocle, and bowtie',
+            bodyGrad: ['#F1F5F9', '#64748B'],
+            belly: 'rgba(0, 0, 0, 0)',
+            shoes: '#09090B',
+            headband: 'transparent',
+            accessory: 'marrow_monocle',
+            pupils: '#F59E0B',
+            smile: 'transparent'
           }
         ];
 
@@ -5685,8 +6205,8 @@
         AndroidBridge.vibrate(75);
 
         // 5. Trigger confetti celebration
-        if (this.game.streakManager && typeof this.game.streakManager.spawnConfetti === 'function') {
-          this.game.streakManager.spawnConfetti();
+        if (this.game.particles) {
+          this.game.particles.createConfetti(this.game.width, this.game.height);
         }
 
         // 6. Instantly re-render Customizer UI to reflect 'Equipped' state and updated coin balance
@@ -6502,6 +7022,12 @@
 
       initEvents() {
         window.addEventListener('resize', () => this.resize());
+        window.addEventListener('orientationchange', () => {
+          setTimeout(() => this.resize(), 120);
+        });
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', () => this.resize());
+        }
 
         // Info Modal Open & Close Handlers
         const openInfoModal = (e) => {
@@ -6872,8 +7398,13 @@
       }
 
       resize() {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        const vp = window.visualViewport;
+        this.width = vp ? Math.round(vp.width) : window.innerWidth;
+        this.height = vp ? Math.round(vp.height) : window.innerHeight;
+        // Auto-pause running game if rotated to portrait
+        if (this.width < this.height && this.state === 'PLAYING') {
+          this.pauseGame();
+        }
         // Cap DPR at 2.0 to prevent high-density screen GPU buffer exhaustion (SIGKILL code -1)
         this.dpr = Math.min(window.devicePixelRatio || 1, 2.0);
 
@@ -9404,9 +9935,9 @@
             ctx.roundRect(-bw * 0.35, -bh * 0.32, bw * 0.7, bh * 0.44, 10);
             ctx.fill();
 
-            // 4. Headgear & Accessories
+            // 4. Headgear & Accessories (All 23 Characters)
             if (skin.accessory === 'headband') {
-              // Red Runner Headband with trailing ribbons
+              // 1. Blaze Runner: Red runner headband with trailing ribbons
               ctx.fillStyle = skin.headband || '#EF4444';
               ctx.fillRect(-bw / 2 - 1, -bh / 2 + 10, bw + 2, 7);
 
@@ -9417,7 +9948,7 @@
               ctx.closePath();
               ctx.fill();
             } else if (skin.accessory === 'shinobi') {
-              // Shadow Shinobi Headband with silver crest & twin fluttering ribbon tails
+              // 2. Shadow Shinobi: Headband with silver crest & twin fluttering ribbon tails
               ctx.fillStyle = skin.headband || '#1E293B';
               ctx.fillRect(-bw / 2 - 1, -bh / 2 + 9, bw + 2, 7);
 
@@ -9439,16 +9970,443 @@
               ctx.closePath();
               ctx.fill();
             } else if (skin.accessory === 'knight') {
-              // Aegis Knight golden brow crest and plume
+              // 3. Aegis Knight: Golden brow crest & waving helmet plume
               ctx.fillStyle = skin.headband || '#F59E0B';
               ctx.fillRect(-bw / 2 - 2, -bh / 2 + 8, bw + 4, 6);
 
-              // Golden knight plume
               ctx.fillStyle = '#EF4444';
               ctx.beginPath();
               ctx.moveTo(-4, -bh / 2 + 8);
               ctx.quadraticCurveTo(-12, -bh / 2 - 10 + Math.sin(animTime * 1.5) * 3, 0, -bh / 2 - 12);
               ctx.quadraticCurveTo(8, -bh / 2 - 6, 4, -bh / 2 + 8);
+              ctx.closePath();
+              ctx.fill();
+            } else if (skin.accessory === 'jaxen_cyberarm') {
+              // 4. Jaxen Vance: Cybernetic shoulder pauldron & glowing amber optic
+              ctx.fillStyle = '#94A3B8';
+              ctx.fillRect(-bw / 2 - 4, -bh * 0.1, 7, 14);
+              ctx.fillStyle = '#38BDF8';
+              ctx.fillRect(-bw / 2 - 2, -bh * 0.05, 3, 4);
+
+              // Left bionic eye frame
+              ctx.strokeStyle = '#F59E0B';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.arc(3, -4, 7, 0, Math.PI * 2);
+              ctx.stroke();
+            } else if (skin.accessory === 'vex_goggles') {
+              // 5. Valerie "Vex" Cross: Cyberpunk tactical visor goggles & spiked punk hair
+              ctx.fillStyle = '#0F172A';
+              ctx.fillRect(-bw / 2 - 2, -bh / 2 + 8, bw + 4, 10);
+              ctx.fillStyle = '#22D3EE';
+              ctx.fillRect(-bw / 2 + 2, -bh / 2 + 10, bw - 4, 6);
+
+              // Animated scanline flicker
+              const scanX = -bw / 2 + 4 + ((animTime * 20) % (bw - 8));
+              ctx.fillStyle = '#FFFFFF';
+              ctx.fillRect(scanX, -bh / 2 + 10, 2, 6);
+
+              // Punk hair tufts
+              ctx.fillStyle = '#F43F5E';
+              ctx.beginPath();
+              ctx.moveTo(-6, -bh / 2);
+              ctx.lineTo(-2, -bh / 2 - 9);
+              ctx.lineTo(2, -bh / 2);
+              ctx.lineTo(6, -bh / 2 - 7);
+              ctx.lineTo(10, -bh / 2);
+              ctx.closePath();
+              ctx.fill();
+            } else if (skin.accessory === 'marcus_bandolier') {
+              // 6. Marcus the Unbroken: Cross-chest ammo bandolier & combat shoulder guard
+              ctx.strokeStyle = '#292524';
+              ctx.lineWidth = 6;
+              ctx.beginPath();
+              ctx.moveTo(-bw / 2 + 2, -bh * 0.2);
+              ctx.lineTo(bw / 2 - 2, bh * 0.28);
+              ctx.stroke();
+
+              // Brass ammunition cartridges
+              ctx.fillStyle = '#F59E0B';
+              for (let i = 0; i < 4; i++) {
+                const bx = -bw * 0.28 + i * 7;
+                const by = -bh * 0.12 + i * 6.5;
+                ctx.fillRect(bx, by, 3.5, 4);
+              }
+
+              // Steel pauldron
+              ctx.fillStyle = '#78716C';
+              ctx.fillRect(-bw / 2 - 3, -bh * 0.22, 8, 10);
+            } else if (skin.accessory === 'dash_cap') {
+              // 7. Leo "Dash" Rossi: Backward baseball cap & yellow runner scarf
+              ctx.fillStyle = '#DC2626';
+              ctx.beginPath();
+              ctx.arc(0, -bh / 2 + 8, bw / 2 + 1, Math.PI, 0);
+              ctx.fill();
+
+              // Backward visor brim
+              ctx.beginPath();
+              ctx.moveTo(-bw / 2 - 1, -bh / 2 + 8);
+              ctx.lineTo(-bw / 2 - 9, -bh / 2 + 10);
+              ctx.lineTo(-bw / 2 - 1, -bh / 2 + 13);
+              ctx.closePath();
+              ctx.fill();
+
+              // Yellow neck bandana
+              ctx.fillStyle = '#FBBF24';
+              ctx.fillRect(-bw * 0.35, 2, bw * 0.7, 4);
+            } else if (skin.accessory === 'elena_visor') {
+              // 8. Dr. Elena Vance: Holographic HUD eyepiece monocle & lab collar
+              ctx.strokeStyle = '#38BDF8';
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.arc(14, -4, 7.5, 0, Math.PI * 2);
+              ctx.stroke();
+
+              // Floating reticle crosshair
+              ctx.fillStyle = '#0284C7';
+              ctx.fillRect(13, -12, 2, 4);
+              ctx.fillRect(13, 0, 2, 4);
+              ctx.fillRect(6, -5, 4, 2);
+              ctx.fillRect(18, -5, 4, 2);
+
+              // Lab coat lapels
+              ctx.fillStyle = '#FFFFFF';
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.3, 4);
+              ctx.lineTo(-bw * 0.1, 14);
+              ctx.lineTo(bw * 0.1, 14);
+              ctx.lineTo(bw * 0.3, 4);
+              ctx.closePath();
+              ctx.fill();
+            } else if (skin.accessory === 'roxie_headphones') {
+              // 9. Roxie Sparks: Giant glowing neon-pink DJ headphones
+              ctx.strokeStyle = '#18181B';
+              ctx.lineWidth = 4;
+              ctx.beginPath();
+              ctx.arc(0, -bh / 2 + 8, bw / 2 + 3, Math.PI, 0);
+              ctx.stroke();
+
+              // Neon ear-cups with dancing visualizer bars
+              ctx.fillStyle = '#EC4899';
+              ctx.fillRect(-bw / 2 - 5, -bh / 2 + 12, 6, 12);
+              ctx.fillRect(bw / 2 - 1, -bh / 2 + 12, 6, 12);
+
+              const eqH = 3 + Math.sin(animTime * 12) * 2;
+              ctx.fillStyle = '#F472B6';
+              ctx.fillRect(-bw / 2 - 3, -bh / 2 + 18 - eqH, 2, eqH);
+              ctx.fillRect(bw / 2 + 1, -bh / 2 + 18 - eqH, 2, eqH);
+            } else if (skin.accessory === 'apex_visor') {
+              // 10. Apex-9: Titanium armor brow & sweeping red laser eye
+              ctx.fillStyle = '#0F172A';
+              ctx.fillRect(-bw / 2 - 1, -bh / 2 + 10, bw + 2, 8);
+
+              // Sweeping red scanner visor
+              const sweepX = Math.sin(animTime * 4) * (bw * 0.28);
+              ctx.fillStyle = '#EF4444';
+              ctx.shadowColor = '#EF4444';
+              ctx.shadowBlur = 8;
+              ctx.fillRect(sweepX - 4, -bh / 2 + 12, 8, 4);
+              ctx.shadowBlur = 0;
+
+              // Dual communications antennae
+              ctx.strokeStyle = '#94A3B8';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.3, -bh / 2 + 10);
+              ctx.lineTo(-bw * 0.38, -bh / 2 - 4);
+              ctx.moveTo(bw * 0.3, -bh / 2 + 10);
+              ctx.lineTo(bw * 0.38, -bh / 2 - 4);
+              ctx.stroke();
+            } else if (skin.accessory === 'rusty_funnel') {
+              // 11. Rusty: Smokestack chimney with steam puffs & welded metal patches
+              ctx.fillStyle = '#78350F';
+              ctx.fillRect(-4, -bh / 2 - 8, 8, 10);
+              ctx.fillRect(-6, -bh / 2 - 10, 12, 3);
+
+              // Puffing steam cloud
+              const steamY = -bh / 2 - 14 - ((animTime * 8) % 10);
+              const steamScale = 2 + ((animTime * 8) % 10) * 0.3;
+              ctx.fillStyle = 'rgba(254, 243, 199, 0.4)';
+              ctx.beginPath();
+              ctx.arc(0, steamY, steamScale, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Welded bronze patch
+              ctx.fillStyle = '#B45309';
+              ctx.fillRect(-bw * 0.25, 4, 10, 8);
+              ctx.fillStyle = '#FDE68A';
+              ctx.fillRect(-bw * 0.22, 6, 2, 2);
+              ctx.fillRect(-bw * 0.1, 8, 2, 2);
+            } else if (skin.accessory === 'null_portal') {
+              // 12. Null-Void: Swirling dark matter cosmic singularity portal
+              const vortexR = 9 + Math.sin(animTime * 3) * 1.5;
+              ctx.fillStyle = '#09090B';
+              ctx.beginPath();
+              ctx.arc(0, 4, vortexR, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Accretion disk rings
+              ctx.strokeStyle = '#A855F7';
+              ctx.lineWidth = 2;
+              ctx.shadowColor = '#C084FC';
+              ctx.shadowBlur = 8;
+              ctx.beginPath();
+              ctx.arc(0, 4, vortexR + 2, animTime * 3, animTime * 3 + Math.PI * 1.5);
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            } else if (skin.accessory === 'boom_equalizer') {
+              // 13. DJ B-00M: Live audio visualizer equalizer LED bars & speaker grilles
+              const barCount = 5;
+              const barW = 3.5;
+              const startX = -((barCount * 6) / 2);
+              for (let i = 0; i < barCount; i++) {
+                const bH = 4 + Math.sin(animTime * 10 + i * 1.4) * 5;
+                ctx.fillStyle = i % 2 === 0 ? '#00F0FF' : '#E879F9';
+                ctx.fillRect(startX + i * 6, 8 - bH, barW, bH);
+              }
+
+              // Cheek speaker cones
+              ctx.strokeStyle = '#4C1D95';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.arc(-bw * 0.32, -4, 4, 0, Math.PI * 2);
+              ctx.arc(bw * 0.32, -4, 4, 0, Math.PI * 2);
+              ctx.stroke();
+            } else if (skin.accessory === 'orion_solar') {
+              // 14. Orion: Floating rotating golden solar ring halo
+              const haloY = -bh / 2 - 6;
+              ctx.save();
+              ctx.translate(0, haloY);
+              ctx.rotate(0.2);
+              ctx.strokeStyle = '#FBBF24';
+              ctx.lineWidth = 2.2;
+              ctx.shadowColor = '#FDE047';
+              ctx.shadowBlur = 8;
+              ctx.beginPath();
+              ctx.ellipse(0, 0, bw * 0.55, 6, 0, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+
+              // Orbiting star node
+              const starAngle = animTime * 4;
+              const nodeX = Math.cos(starAngle) * (bw * 0.55);
+              const nodeY = Math.sin(starAngle) * 6;
+              ctx.fillStyle = '#FFFFFF';
+              ctx.beginPath();
+              ctx.arc(nodeX, nodeY, 2.5, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.restore();
+            } else if (skin.accessory === 'bastion_plating') {
+              // 15. Bastion-Prime: Heavy shoulder blast shields & slotted castle crest
+              ctx.fillStyle = '#334155';
+              ctx.fillRect(-bw / 2 - 5, -bh * 0.18, 7, 16);
+              ctx.fillRect(bw / 2 - 2, -bh * 0.18, 7, 16);
+
+              // Hazard stripes
+              ctx.fillStyle = '#F59E0B';
+              ctx.fillRect(-bw / 2 - 4, -bh * 0.12, 5, 3);
+              ctx.fillRect(bw / 2 - 1, -bh * 0.12, 5, 3);
+
+              // Castle brow crest
+              ctx.fillStyle = '#1E293B';
+              ctx.fillRect(-bw * 0.35, -bh / 2, bw * 0.7, 5);
+            } else if (skin.accessory === 'kaelith_third_eye') {
+              // 16. Kaelith Star-Eye: Mystic glowing starlight third eye
+              ctx.fillStyle = '#A5B4FC';
+              ctx.shadowColor = '#818CF8';
+              ctx.shadowBlur = 8;
+              ctx.beginPath();
+              ctx.ellipse(0, -bh / 2 + 10, 4, 6, 0, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Starlight pupil
+              ctx.fillStyle = '#FFFFFF';
+              ctx.beginPath();
+              ctx.arc(0, -bh / 2 + 10, 2, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.shadowBlur = 0;
+            } else if (skin.accessory === 'gorgoroth_horns') {
+              // 17. Gorgoroth: Curved obsidian demon horns & magma chest fissures
+              ctx.fillStyle = '#18181B';
+              // Left horn
+              ctx.beginPath();
+              ctx.moveTo(-bw * 0.28, -bh / 2 + 6);
+              ctx.quadraticCurveTo(-bw * 0.55, -bh / 2 - 8, -bw * 0.45, -bh / 2 - 16);
+              ctx.quadraticCurveTo(-bw * 0.28, -bh / 2 - 6, -bw * 0.18, -bh / 2 + 6);
+              ctx.closePath();
+              ctx.fill();
+
+              // Right horn
+              ctx.beginPath();
+              ctx.moveTo(bw * 0.18, -bh / 2 + 6);
+              ctx.quadraticCurveTo(bw * 0.28, -bh / 2 - 6, bw * 0.45, -bh / 2 - 16);
+              ctx.quadraticCurveTo(bw * 0.55, -bh / 2 - 8, bw * 0.28, -bh / 2 + 6);
+              ctx.closePath();
+              ctx.fill();
+
+              // Glowing magma cracks
+              ctx.strokeStyle = '#FACC15';
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(-4, 2);
+              ctx.lineTo(0, 8);
+              ctx.lineTo(5, 4);
+              ctx.lineTo(2, 12);
+              ctx.stroke();
+            } else if (skin.accessory === 'sylph_antennae') {
+              // 18. Sylph: Wiggling fairy moth antennae with glowing tips
+              const waggle = Math.sin(animTime * 3) * 3;
+              ctx.strokeStyle = '#065F46';
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(-4, -bh / 2 + 6);
+              ctx.quadraticCurveTo(-10 + waggle, -bh / 2 - 6, -14 + waggle, -bh / 2 - 12);
+              ctx.moveTo(4, -bh / 2 + 6);
+              ctx.quadraticCurveTo(10 - waggle, -bh / 2 - 6, 14 - waggle, -bh / 2 - 12);
+              ctx.stroke();
+
+              // Bioluminescent antenna bulbs
+              ctx.fillStyle = '#6EE7B7';
+              ctx.shadowColor = '#34D399';
+              ctx.shadowBlur = 6;
+              ctx.beginPath();
+              ctx.arc(-14 + waggle, -bh / 2 - 12, 3, 0, Math.PI * 2);
+              ctx.arc(14 - waggle, -bh / 2 - 12, 3, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.shadowBlur = 0;
+            } else if (skin.accessory === 'zorblax_crown') {
+              // 19. Zorblax the Great: Translucent brain dome with twin eye-stalks
+              ctx.fillStyle = 'rgba(134, 239, 172, 0.65)';
+              ctx.beginPath();
+              ctx.arc(0, -bh / 2 + 5, bw * 0.45, Math.PI, 0);
+              ctx.fill();
+
+              // Pulsing cerebral veins
+              ctx.strokeStyle = '#15803D';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.arc(-4, -bh / 2 + 2, 4, 0.4, Math.PI - 0.4);
+              ctx.arc(4, -bh / 2 + 2, 4, 0.4, Math.PI - 0.4);
+              ctx.stroke();
+
+              // Eye-stalks
+              const stalkWobble = Math.sin(animTime * 4) * 2;
+              ctx.strokeStyle = '#166534';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(-6, -bh / 2);
+              ctx.lineTo(-8 + stalkWobble, -bh / 2 - 8);
+              ctx.moveTo(6, -bh / 2);
+              ctx.lineTo(8 - stalkWobble, -bh / 2 - 8);
+              ctx.stroke();
+
+              ctx.fillStyle = '#FEF08A';
+              ctx.beginPath();
+              ctx.arc(-8 + stalkWobble, -bh / 2 - 8, 2.5, 0, Math.PI * 2);
+              ctx.arc(8 - stalkWobble, -bh / 2 - 8, 2.5, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (skin.accessory === 'nyx_tentacles') {
+              // 20. Nyx: Shadowy cosmic tentacles waving from behind
+              ctx.strokeStyle = '#3B0764';
+              ctx.lineWidth = 3.5;
+              ctx.lineCap = 'round';
+              for (let i = 0; i < 4; i++) {
+                const side = i < 2 ? -1 : 1;
+                const offsetY = -bh * 0.15 + (i % 2) * 14;
+                const wave = Math.sin(animTime * 2.5 + i * 1.5) * 5;
+                ctx.beginPath();
+                ctx.moveTo(side * (bw / 2 - 2), offsetY);
+                ctx.quadraticCurveTo(side * (bw / 2 + 8), offsetY + wave, side * (bw / 2 + 14), offsetY - 4 + wave);
+                ctx.stroke();
+              }
+            } else if (skin.accessory === 'cyber_skeleton') {
+              // 21. 骨-K0 (Bone-KZero): Exposed cybernetic glowing ribcage & cranial circuits
+              ctx.strokeStyle = '#38BDF8';
+              ctx.shadowColor = '#00F0FF';
+              ctx.shadowBlur = 6;
+              ctx.lineWidth = 2;
+
+              // Spinal cord
+              ctx.beginPath();
+              ctx.moveTo(0, -bh * 0.1);
+              ctx.lineTo(0, bh * 0.3);
+              ctx.stroke();
+
+              // Rib pairs
+              for (let i = 0; i < 3; i++) {
+                const ribY = -bh * 0.05 + i * 6;
+                ctx.beginPath();
+                ctx.moveTo(-bw * 0.28, ribY);
+                ctx.lineTo(bw * 0.28, ribY);
+                ctx.stroke();
+              }
+              ctx.shadowBlur = 0;
+
+              // Skull teeth
+              ctx.fillStyle = '#E2E8F0';
+              for (let t = 0; t < 3; t++) {
+                ctx.fillRect(4 + t * 4, 5, 2.5, 3.5);
+              }
+            } else if (skin.accessory === 'pirate_skull') {
+              // 22. Captain Skelly: Buccaneer captain bicorne hat & eye-patch
+              ctx.fillStyle = '#18181B';
+              ctx.beginPath();
+              ctx.moveTo(-bw / 2 - 6, -bh / 2 + 10);
+              ctx.quadraticCurveTo(0, -bh / 2 - 14, bw / 2 + 6, -bh / 2 + 10);
+              ctx.lineTo(bw / 2 + 2, -bh / 2 + 6);
+              ctx.quadraticCurveTo(0, -bh / 2 - 6, -bw / 2 - 2, -bh / 2 + 6);
+              ctx.closePath();
+              ctx.fill();
+
+              // Hat skull emblem
+              ctx.fillStyle = '#FFFFFF';
+              ctx.beginPath();
+              ctx.arc(0, -bh / 2 + 1, 3.5, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Eye-patch over right eye
+              ctx.fillStyle = '#09090B';
+              ctx.beginPath();
+              ctx.arc(14, -4, 6.5, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.strokeStyle = '#18181B';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(6, -8);
+              ctx.lineTo(21, 0);
+              ctx.stroke();
+            } else if (skin.accessory === 'marrow_monocle') {
+              // 23. Baron Marrow: Aristocratic top hat, golden monocle & bowtie
+              ctx.fillStyle = '#0F172A';
+              // Hat brim
+              ctx.fillRect(-bw / 2 - 3, -bh / 2 + 4, bw + 6, 3.5);
+              // Hat crown
+              ctx.fillRect(-bw * 0.35, -bh / 2 - 14, bw * 0.7, 18);
+              // Red ribbon band
+              ctx.fillStyle = '#DC2626';
+              ctx.fillRect(-bw * 0.35, -bh / 2 + 0.5, bw * 0.7, 3.5);
+
+              // Golden monocle
+              ctx.strokeStyle = '#F59E0B';
+              ctx.lineWidth = 1.6;
+              ctx.beginPath();
+              ctx.arc(14, -4, 6.5, 0, Math.PI * 2);
+              ctx.stroke();
+
+              // Monocle chain dangling
+              ctx.beginPath();
+              ctx.moveTo(18, -1);
+              ctx.quadraticCurveTo(20, 8, 16, 12);
+              ctx.stroke();
+
+              // Aristocratic bowtie
+              ctx.fillStyle = '#EF4444';
+              ctx.beginPath();
+              ctx.moveTo(5, 7);
+              ctx.lineTo(1, 4);
+              ctx.lineTo(1, 10);
+              ctx.lineTo(9, 10);
+              ctx.lineTo(9, 4);
               ctx.closePath();
               ctx.fill();
             }
@@ -9482,8 +10440,8 @@
               ctx.moveTo(5, 6);
               ctx.lineTo(13, 6);
               ctx.stroke();
-            } else {
-              ctx.strokeStyle = skin.smile || '#9A3412';
+            } else if (skin.smile && skin.smile !== 'transparent') {
+              ctx.strokeStyle = skin.smile;
               ctx.lineWidth = 2.2;
               ctx.lineCap = 'round';
               ctx.beginPath();
@@ -9717,15 +10675,26 @@
         if (!skin) return;
 
         // 3. Update character name & tint by rarity color
-        if (this.menuCharNameEl) {
-          this.menuCharNameEl.textContent = skin.name;
-          const rarityColors = {
-            common: '#CBD5E1',
-            rare: '#38BDF8',
-            epic: '#C084FC',
-            legendary: '#FCD34D'
-          };
-          this.menuCharNameEl.style.color = rarityColors[skin.rarity] || '#FFFFFF';
+        if (this._lastRenderedMenuSkinId !== skin.id) {
+          this._lastRenderedMenuSkinId = skin.id;
+          if (this.menuCharNameEl) {
+            this.menuCharNameEl.textContent = skin.name;
+            const rarityColors = {
+              common: '#CBD5E1',
+              rare: '#38BDF8',
+              epic: '#C084FC',
+              legendary: '#FCD34D'
+            };
+            this.menuCharNameEl.style.color = rarityColors[skin.rarity] || '#FFFFFF';
+          }
+          if (!this.menuCharRarityEl) {
+            this.menuCharRarityEl = document.getElementById('menuCharRarityBadge');
+          }
+          if (this.menuCharRarityEl && skin.rarity) {
+            const r = skin.rarity.toLowerCase();
+            this.menuCharRarityEl.textContent = r.toUpperCase();
+            this.menuCharRarityEl.className = `menu-char-rarity-pill ${r}`;
+          }
         }
 
         // 4. Subtle hover/idle run bob animation using performance.now()
