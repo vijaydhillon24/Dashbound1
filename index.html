@@ -14,22 +14,35 @@
       -webkit-touch-callout: none;
       -webkit-tap-highlight-color: transparent;
     }
+    :root {
+      --app-width: 100vw;
+      --app-height: 100vh;
+      --game-width: 100vw;
+      --game-height: 100vh;
+    }
     html, body {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      width: 100%;
+      height: 100%;
+      width: var(--app-width, 100vw);
+      height: var(--app-height, 100dvh);
       overflow: hidden;
       position: fixed;
       inset: 0;
+      top: 0;
+      left: 0;
+      margin: 0;
+      padding: 0;
       background-color: #79BFE7;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     #gameContainer {
       position: relative;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      width: 100%;
+      height: 100%;
+      width: var(--app-width, 100vw);
+      height: var(--app-height, 100dvh);
       overflow: hidden;
+      box-sizing: border-box;
     }
     /* Universal touch responsiveness & 300ms tap delay elimination */
     button,
@@ -59,6 +72,10 @@
       display: block;
       width: 100%;
       height: 100%;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
       image-rendering: -webkit-optimize-contrast;
     }
 
@@ -490,6 +507,35 @@
       box-shadow: 0 0 8px #38BDF8;
     }
 
+    /* Pursuer Chase HUD Pill */
+    .powerup-pill.pursuer-pill {
+      border-color: #EF4444;
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.55), 0 0 12px rgba(244, 63, 94, 0.3) inset;
+      animation: pursuerPillPulse 0.9s infinite alternate;
+    }
+    @keyframes pursuerPillPulse {
+      0% { box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4), 0 0 8px rgba(244, 63, 94, 0.2) inset; }
+      100% { box-shadow: 0 4px 22px rgba(239, 68, 68, 0.85), 0 0 16px rgba(244, 63, 94, 0.5) inset; }
+    }
+    .powerup-pill.pursuer-pill .powerup-icon-badge {
+      background: linear-gradient(135deg, #DC2626, #EF4444);
+      border-color: #F87171;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.8);
+      animation: pursuerIconJitter 0.25s infinite alternate;
+    }
+    @keyframes pursuerIconJitter {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(1px, -1px); }
+    }
+    .powerup-pill.pursuer-pill .powerup-title {
+      color: #FCA5A5;
+      text-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+    }
+    .powerup-pill.pursuer-pill .powerup-bar {
+      background: linear-gradient(90deg, #DC2626 0%, #EF4444 50%, #F87171 100%);
+      box-shadow: 0 0 10px #EF4444;
+    }
+
     /* Speed Up! Dynamic Alert Banner Popup */
     .speed-up-popup {
       position: absolute;
@@ -705,8 +751,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      height: 100dvh;
-      max-height: 100dvh;
+      max-height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -722,16 +767,30 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
-      overflow: hidden; /* Page itself NEVER scrolls */
-      overscroll-behavior: none;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+    .overlay::before,
+    .overlay::after {
+      content: '';
+      margin: auto;
+      display: block;
+      flex-shrink: 0;
+      height: 0;
     }
     /* Clamped screens & cards */
     #startScreen,
     #pauseScreen,
     #gameOverScreen,
     #customizerScreen {
-      max-height: 100dvh;
-      overflow: hidden;
+      max-height: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
     /* Momentum-based scrolling & overscroll containment for dedicated inner lists */
     .menu-container,
@@ -842,30 +901,42 @@
 
     /* Game Over Overlay Screen with Horizontal Flex/Grid Layout */
     #gameOverScreen {
-      overflow: hidden;
-      padding: clamp(6px, 1.5vh, 14px) clamp(10px, 2vw, 16px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      padding: clamp(6px, 1.2vh, 12px) clamp(10px, 1.8vw, 16px);
       justify-content: center;
       align-items: center;
-      max-height: 100dvh;
+      max-height: 100%;
+      height: 100%;
       box-sizing: border-box;
     }
     #gameOverScreen::before,
     #gameOverScreen::after {
-      display: none;
+      content: '';
+      margin: auto;
+      display: block;
+      flex-shrink: 0;
+      height: 0;
     }
     .gameover-container {
       display: flex;
       flex-direction: row;
-      align-items: stretch;
+      align-items: center;
       justify-content: center;
-      gap: clamp(10px, 2vw, 24px);
+      gap: clamp(8px, 1.8vw, 20px);
       width: 100%;
       max-width: 920px;
-      max-height: 95dvh;
+      max-height: 100%;
       box-sizing: border-box;
       min-height: 0;
       flex-shrink: 1;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      margin: auto;
     }
     .gameover-left-col {
       display: flex;
@@ -1853,12 +1924,12 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 24px;
+      gap: clamp(10px, 2vw, 24px);
       width: 100%;
       max-width: 920px;
-      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
-      padding: 10px;
-      margin: auto 0;
+      max-height: 100%;
+      padding: clamp(6px, 1.2vh, 10px);
+      margin: auto;
       box-sizing: border-box;
       overflow-y: auto;
       overflow-x: hidden;
@@ -2079,15 +2150,15 @@
     .pop-anim {
       animation: popAnim 0.5s ease-out;
     }
-    @media (max-width: 720px) {
+    @media (max-width: 720px) and (orientation: landscape) and (min-height: 520px) {
       .menu-container {
         flex-direction: column;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
-        max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
-        padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
-        gap: 14px;
+        max-height: 100%;
+        padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+        gap: 12px;
       }
     }
     @media (max-height: 440px) {
@@ -2384,7 +2455,7 @@
       padding: 16px 22px;
       max-width: 480px;
       width: 95%;
-      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
+      max-height: 100%;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
       display: flex;
       flex-direction: column;
@@ -2395,7 +2466,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
-      margin: auto 0;
+      margin: auto;
     }
     .consent-icon {
       font-size: 38px;
@@ -2613,7 +2684,7 @@
       padding-bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
       max-width: 640px;
       width: 95%;
-      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
+      max-height: 100%;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
       display: flex;
       flex-direction: column;
@@ -2622,7 +2693,7 @@
       overscroll-behavior-y: contain;
       text-align: left;
       color: #F8FAFC;
-      margin: auto 0;
+      margin: auto;
       box-sizing: border-box;
     }
     .streak-card-header {
@@ -2841,7 +2912,7 @@
       padding-bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
       max-width: 680px;
       width: 95%;
-      max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
+      max-height: 100%;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
       display: flex;
       flex-direction: column;
@@ -2850,7 +2921,7 @@
       overscroll-behavior-y: contain;
       text-align: left;
       color: #F8FAFC;
-      margin: auto 0;
+      margin: auto;
       box-sizing: border-box;
     }
     .info-header {
@@ -3541,14 +3612,17 @@
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       width: 100%;
       max-width: 880px;
-      max-height: 95dvh;
-      height: 95dvh;
-      padding: clamp(8px, 1.5vh, 12px) clamp(10px, 1.8vw, 16px);
+      max-height: 100%;
+      height: 100%;
+      padding: clamp(6px, 1.2vh, 10px) clamp(10px, 1.8vw, 16px);
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Main modal itself NEVER scrolls */
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       box-sizing: border-box;
-      margin: auto 0;
+      margin: auto;
       min-height: 0;
       flex-shrink: 1;
     }
@@ -3702,6 +3776,21 @@
       width: 100%;
       margin: 8px 0;
       text-align: center;
+    }
+    .preview-stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.12));
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 8px;
+      padding: 3px 8px;
+      margin: 4px 0 2px;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #FDE047;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
     }
     .preview-title-row {
       display: flex;
@@ -3893,7 +3982,82 @@
       font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+    }
+    .skin-card-stat-bonus {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #FDE047;
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 1.5px 5px;
+      border-radius: 5px;
+      margin-bottom: 4px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .skin-bonus-hud-pill {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      border-radius: 9999px;
+      padding: 3px 9px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #FDE047;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 8px rgba(245, 158, 11, 0.25);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .menu-char-bonus-pill {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 9999px;
+      padding: 2px 8px;
+      margin-top: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      color: #FDE047;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .pause-skin-bonus-pill {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 10px;
+      padding: 6px 14px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #FDE047;
+    }
+    .go-skin-bonus-badge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #FDE047;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 3px 12px;
+      border-radius: 9999px;
+      margin-top: 5px;
+      letter-spacing: 0.5px;
     }
     .skin-card-bottom {
       display: flex;
@@ -3981,11 +4145,15 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       width: 100%;
       max-width: 680px;
-      max-height: 94dvh;
+      max-height: 100%;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
       box-sizing: border-box;
+      margin: auto;
       padding: clamp(10px, 1.8vh, 16px) clamp(14px, 2vw, 20px);
     }
     .upgrade-header {
@@ -4683,19 +4851,352 @@
       }
     }
 
-    /* Orientation Support: Fake Landscape auto-rotation on portrait mobile screens */
+    /* ==========================================================================
+       Advanced Settings & Accessibility Modal (Dark Glassmorphic Theme)
+       ========================================================================== */
+    #settingsModal {
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.84);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 125;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+      padding: clamp(10px, 2vw, 20px);
+      box-sizing: border-box;
+    }
+    #settingsModal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .settings-container {
+      background: rgba(15, 23, 42, 0.96);
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      width: 100%;
+      max-width: 660px;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      box-sizing: border-box;
+      margin: auto;
+      padding: clamp(10px, 1.8vh, 16px) clamp(14px, 2.2vw, 22px);
+      text-align: left;
+    }
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: clamp(6px, 1.2vh, 10px);
+      margin-bottom: clamp(8px, 1.4vh, 14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+    .settings-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .settings-title {
+      font-size: clamp(16px, 2.8vh, 21px);
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #FBBF24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+    .settings-subtitle {
+      font-size: clamp(9px, 1.5vh, 11.5px);
+      color: #94A3B8;
+      margin: 2px 0 0 0;
+    }
+    .settings-items-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(8px, 1.4vh, 12px);
+      padding: 4px 2px;
+    }
+    .settings-items-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    .settings-items-list::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.3);
+      border-radius: 4px;
+    }
+    .settings-card {
+      background: rgba(30, 41, 59, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: clamp(10px, 1.6vh, 14px) clamp(12px, 1.8vw, 16px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .settings-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(30, 41, 59, 0.9);
+    }
+    .settings-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .settings-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-icon {
+      font-size: clamp(18px, 2.5vh, 22px);
+      flex-shrink: 0;
+    }
+    .settings-card-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .settings-name {
+      font-size: clamp(13px, 1.8vh, 15px);
+      font-weight: 800;
+      color: #F8FAFC;
+      letter-spacing: 0.3px;
+    }
+    .settings-desc {
+      font-size: clamp(9.5px, 1.4vh, 11px);
+      color: #94A3B8;
+      line-height: 1.35;
+    }
+    .settings-control-col {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .settings-footer-note {
+      font-size: clamp(8.5px, 1.3vh, 10.5px);
+      color: #64748B;
+      text-align: center;
+      padding-top: clamp(8px, 1.4vh, 12px);
+      margin-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    /* Custom-styled CSS Toggle Switches */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      flex-shrink: 0;
+    }
+    .toggle-switch input.toggle-input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+      pointer-events: none;
+      margin: 0;
+    }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 41, 59, 0.95);
+      border: 1.5px solid rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: #94A3B8;
+      border-radius: 50%;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    /* Checked (ON) State */
+    .toggle-input:checked + .toggle-track {
+      background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%);
+      border-color: #38BDF8;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    }
+    .toggle-input:checked + .toggle-track .toggle-thumb {
+      transform: translateX(24px);
+      background: #FFFFFF;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+    .toggle-switch:active .toggle-thumb {
+      width: 24px;
+    }
+    .toggle-input:checked:active + .toggle-track .toggle-thumb {
+      transform: translateX(20px);
+    }
+
+    /* Status Badges */
+    .toggle-status-badge {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      min-width: 42px;
+      text-align: center;
+      transition: all 0.25s ease;
+      box-sizing: border-box;
+    }
+    .toggle-status-badge.on {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34D399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+    }
+    .toggle-status-badge.off {
+      background: rgba(148, 163, 184, 0.12);
+      color: #94A3B8;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .toggle-status-badge.perf-high {
+      background: rgba(56, 189, 248, 0.18);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+    }
+    .toggle-status-badge.perf-low {
+      background: rgba(245, 158, 11, 0.18);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+    }
+
+    /* Orientation Support: Precise Landscape auto-rotation on portrait mobile screens */
     @media (orientation: portrait) {
       #gameContainer {
         position: fixed;
         top: 50%;
         left: 50%;
-        width: 100vh;
-        width: 100dvh;
-        height: 100vw;
-        height: 100dvw;
+        width: var(--app-height, 100dvh);
+        height: var(--app-width, 100dvw);
+        max-width: var(--app-height, 100dvh);
+        max-height: var(--app-width, 100dvw);
         transform: translate(-50%, -50%) rotate(90deg);
         transform-origin: center center;
         overflow: hidden;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      /* In portrait mode, because #gameContainer is rotated 90deg, the game is in landscape!
+         Keep .menu-container in a balanced side-by-side row layout, never stacked vertically. */
+      .menu-container {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        max-height: 100% !important;
+        padding: clamp(4px, 1.5vw, 10px) !important;
+        gap: clamp(8px, 1.8vw, 16px) !important;
+        margin: auto !important;
+      }
+
+      .menu-main-col {
+        flex: 1 1 340px !important;
+        max-width: 400px !important;
+      }
+
+      .daily-missions-card {
+        flex: 1 1 360px !important;
+        max-width: 420px !important;
+        max-height: 92% !important;
+        padding: clamp(8px, 1.5vh, 12px) clamp(10px, 1.8vw, 14px) !important;
+        gap: 6px !important;
+      }
+
+      .gameover-container {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        max-height: 100% !important;
+        gap: clamp(8px, 1.5vw, 16px) !important;
+        margin: auto !important;
+      }
+
+      .customizer-container {
+        max-height: 100% !important;
+        height: 100% !important;
+        margin: auto !important;
+      }
+
+      /* Compact non-essential text elements in rotated landscape view to conserve vertical space */
+      .subtitle,
+      .customizer-subtitle,
+      .streak-desc-line,
+      .diff-info-desc,
+      .help-hint,
+      .missions-header-sub,
+      .hs-records-sub,
+      .hs-tier-milestones,
+      .hs-tier-subtitle,
+      .hs-tier-desc,
+      .preview-tagline,
+      .info-subtitle,
+      .tagline,
+      .coins-label,
+      .stat-desc,
+      .menu-char-dust-container,
+      #newRecordBadge {
+        display: none !important;
+      }
+
+      .game-logo {
+        font-size: clamp(22px, 5vw, 30px) !important;
+        margin-bottom: 2px !important;
+      }
+
+      .stats-card {
+        padding: 4px 12px !important;
+        gap: 12px !important;
+        margin-bottom: 6px !important;
+      }
+
+      .menu-char-widget {
+        padding: 3px 8px !important;
+        margin-bottom: 4px !important;
+        max-width: 210px !important;
+      }
+
+      .diff-selector-card {
+        padding: 4px 8px !important;
+        margin-bottom: 6px !important;
+      }
+
+      .diff-btn {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
       }
     }
 
@@ -4733,6 +5234,10 @@
         <div class="weather-hud-pill clear" id="hudWeatherBadge" title="Active Biome & Weather Condition">
           <span id="hudWeatherIcon">☀️</span>
           <span id="hudWeatherText">CLEAR</span>
+        </div>
+        <div class="skin-bonus-hud-pill" id="hudSkinBonusBadge" title="Active Skin Perk">
+          <span id="hudSkinBonusIcon">🪙</span>
+          <span id="hudSkinBonusText">+5% COIN</span>
         </div>
       </div>
       <div class="pause-btn" id="pauseBtn" title="Pause Game">
@@ -4792,6 +5297,19 @@
           </div>
           <div class="powerup-track">
             <div class="powerup-bar" id="shieldProgressBar" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="pursuerHud" class="powerup-pill pursuer-pill">
+        <div class="powerup-icon-badge">🚨</div>
+        <div class="powerup-content">
+          <div class="powerup-row">
+            <span class="powerup-title">PURSUER CHASE</span>
+            <span class="powerup-timer" id="pursuerTimerText">20.0s</span>
+          </div>
+          <div class="powerup-track">
+            <div class="powerup-bar" id="pursuerProgressBar" style="width: 100%;"></div>
           </div>
         </div>
       </div>
@@ -4887,6 +5405,10 @@
             </div>
             <div class="menu-char-name-badge">
               <span id="menuCharName">Blaze Runner</span>
+              <div class="menu-char-bonus-pill" id="menuCharBonusPill">
+                <span id="menuCharBonusIcon">🪙</span>
+                <span id="menuCharBonusLabel">+5% Coin Collection</span>
+              </div>
               <div class="menu-char-hover-badge" id="menuCharHoverBadge">
                 <span class="menu-char-equipped-lbl">EQUIPPED</span>
                 <span class="menu-char-rarity-pill common" id="menuCharRarityBadge">COMMON</span>
@@ -4928,7 +5450,9 @@
             <button class="btn btn-secondary" id="infoBtn">
               <span>ℹ️</span> <span>How to Play</span>
             </button>
-            <button class="btn btn-secondary" id="soundToggleBtn">🔊 Sound: ON</button>
+            <button class="btn btn-secondary" id="menuSettingsBtn" title="Advanced Settings & Accessibility">
+              <span>⚙️</span> <span>Settings</span>
+            </button>
           </div>
           <div class="help-hint" id="helpHintBtn" style="cursor: pointer;" title="Open Controls Guide">
             💡 Tap to Jump • Double Tap in air for Double Jump <span style="text-decoration: underline; margin-left: 4px; color: #FBBF24;">(Guide)</span>
@@ -4957,9 +5481,16 @@
 
     <!-- 3. Pause Menu -->
     <div id="pauseScreen" class="overlay">
-      <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 20px;">GAME PAUSED</h2>
+      <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">GAME PAUSED</h2>
+      <div id="pauseSkinBonusBadge" class="pause-skin-bonus-pill">
+        <span id="pauseSkinBonusIcon">🪙</span>
+        <span id="pauseSkinBonusLabel">Blaze Runner (+5% Coin Collection)</span>
+      </div>
       <div class="btn-row pause-btn-row">
         <button class="btn btn-play" id="resumeBtn">Resume</button>
+        <button class="btn btn-secondary" id="pauseSettingsBtn" title="Advanced Settings & Accessibility">
+          <span>⚙️</span> <span>Settings</span>
+        </button>
         <button class="btn btn-secondary" id="pauseRestartBtn">Restart</button>
         <button class="btn btn-warn" id="pauseMenuBtn">Return to Menu</button>
         <button class="btn btn-danger" id="pauseExitBtn">Exit App</button>
@@ -4974,6 +5505,8 @@
           <div class="gameover-header-group">
             <h2 class="gameover-title">GAME OVER</h2>
             <div id="newRecordBadge" style="display: none; background: #F59E0B; color: #000; font-weight: 800; font-size: 11px; padding: 3px 12px; border-radius: 9999px; margin-top: 4px; letter-spacing: 1px;">🎉 NEW BEST RECORD!</div>
+            <div id="pursuerCaughtBadge" style="display: none; background: linear-gradient(135deg, #DC2626, #EF4444); color: #FFF; font-weight: 800; font-size: 11px; padding: 4px 14px; border-radius: 9999px; margin-top: 6px; letter-spacing: 1px; box-shadow: 0 0 14px rgba(239, 68, 68, 0.7); text-shadow: 0 1px 2px #000;">🚨 CAUGHT BY THE PURSUER!</div>
+            <div id="goSkinBonusBadge" class="go-skin-bonus-badge">🪙 Blaze Runner: <strong>+5% Coin Collection</strong></div>
           </div>
 
           <div class="stats-card">
@@ -5177,6 +5710,10 @@
                 <span class="preview-skin-name" id="previewSkinName">Classic Blaze</span>
                 <span class="rarity-chip common" id="previewRarityChip">COMMON</span>
               </div>
+              <div class="preview-stat-pill" id="previewStatPill">
+                <span id="previewStatIcon">🪙</span>
+                <span id="previewStatLabel">+5% Coin Collection</span>
+              </div>
               <p class="preview-tagline" id="previewTagline">The signature fiery runner with iconic red headband</p>
             </div>
 
@@ -5252,6 +5789,121 @@
         <!-- Footer Note -->
         <div class="upgrade-footer-note">
           💡 Upgrades are permanently saved to your profile and apply across all future runs.
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Settings & Accessibility Modal -->
+    <div id="settingsModal" class="overlay">
+      <div class="settings-container">
+        <!-- Header -->
+        <div class="settings-header">
+          <div class="settings-header-left">
+            <button class="btn-icon-back" id="settingsBackBtn" title="Back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <span>BACK</span>
+            </button>
+            <div>
+              <h2 class="settings-title">SETTINGS & ACCESSIBILITY</h2>
+              <p class="settings-subtitle">Customize gameplay, visual comfort, and graphics performance</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Settings List -->
+        <div class="settings-items-list">
+          <!-- 1. Master Audio -->
+          <div class="settings-card">
+            <div class="settings-card-info">
+              <div class="settings-card-header">
+                <span class="settings-icon">🔊</span>
+                <div class="settings-card-title-group">
+                  <span class="settings-name">Master Audio</span>
+                  <span class="settings-desc">Sound effects, multi-stem synth music, and atmospheric audio</span>
+                </div>
+              </div>
+            </div>
+            <div class="settings-control-col">
+              <span class="toggle-status-badge on" id="statusMasterAudio">ON</span>
+              <label class="toggle-switch" for="toggleMasterAudio" aria-label="Toggle Master Audio">
+                <input type="checkbox" id="toggleMasterAudio" class="toggle-input" checked>
+                <span class="toggle-track">
+                  <span class="toggle-thumb"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 2. Screen Shake -->
+          <div class="settings-card">
+            <div class="settings-card-info">
+              <div class="settings-card-header">
+                <span class="settings-icon">📳</span>
+                <div class="settings-card-title-group">
+                  <span class="settings-name">Screen Shake</span>
+                  <span class="settings-desc">Camera shockwaves on landing, stomps, and hits. Turn OFF for motion comfort.</span>
+                </div>
+              </div>
+            </div>
+            <div class="settings-control-col">
+              <span class="toggle-status-badge on" id="statusScreenShake">ON</span>
+              <label class="toggle-switch" for="toggleScreenShake" aria-label="Toggle Screen Shake">
+                <input type="checkbox" id="toggleScreenShake" class="toggle-input" checked>
+                <span class="toggle-track">
+                  <span class="toggle-thumb"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 3. Flashing Effects -->
+          <div class="settings-card">
+            <div class="settings-card-info">
+              <div class="settings-card-header">
+                <span class="settings-icon">⚡</span>
+                <div class="settings-card-title-group">
+                  <span class="settings-name">Flashing Effects</span>
+                  <span class="settings-desc">Blinding lightning flashes during storms. Turn OFF for photosensitivity safety.</span>
+                </div>
+              </div>
+            </div>
+            <div class="settings-control-col">
+              <span class="toggle-status-badge on" id="statusFlashingEffects">ON</span>
+              <label class="toggle-switch" for="toggleFlashingEffects" aria-label="Toggle Flashing Effects">
+                <input type="checkbox" id="toggleFlashingEffects" class="toggle-input" checked>
+                <span class="toggle-track">
+                  <span class="toggle-thumb"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 4. Performance Mode -->
+          <div class="settings-card">
+            <div class="settings-card-info">
+              <div class="settings-card-header">
+                <span class="settings-icon">🚀</span>
+                <div class="settings-card-title-group">
+                  <span class="settings-name">Performance Mode</span>
+                  <span class="settings-desc">LOW mode reduces particle density to 20% and disables background clouds & stars for solid 60 FPS.</span>
+                </div>
+              </div>
+            </div>
+            <div class="settings-control-col">
+              <span class="toggle-status-badge perf-high" id="statusPerformanceMode">HIGH</span>
+              <label class="toggle-switch" for="togglePerformanceMode" aria-label="Toggle Performance Mode">
+                <input type="checkbox" id="togglePerformanceMode" class="toggle-input" checked>
+                <span class="toggle-track">
+                  <span class="toggle-thumb"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="settings-footer-note">
+          🔒 Preferences are automatically saved to your device under dashbound_settings.
         </div>
       </div>
     </div>
@@ -5798,6 +6450,70 @@
         this.init();
         if (this.muted || !this.ctx) return;
         this.playTone(600, 320, 'sine', 0.16, 0.18);
+      }
+      pursuerSiren() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          // Dual warning siren sweep
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.linearRampToValueAtTime(540, now + 0.3);
+          osc.frequency.linearRampToValueAtTime(280, now + 0.6);
+          osc.frequency.linearRampToValueAtTime(520, now + 0.9);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.24, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 1.15);
+          // Ominous sub-bass rumble
+          const sub = this.ctx.createOscillator();
+          const subGain = this.ctx.createGain();
+          sub.type = 'sine';
+          sub.frequency.setValueAtTime(65, now);
+          sub.frequency.exponentialRampToValueAtTime(40, now + 1.1);
+          subGain.gain.setValueAtTime(0.3, now);
+          subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+          sub.connect(subGain);
+          subGain.connect(this.ctx.destination);
+          sub.start(now);
+          sub.stop(now + 1.15);
+        } catch (e) {}
+      }
+      pursuerCatch() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        this.duckMusic(0.8, 0.1);
+        try {
+          const now = this.ctx.currentTime;
+          // Low destructive crunch
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(170, now);
+          osc.frequency.exponentialRampToValueAtTime(30, now + 0.45);
+          gain.gain.setValueAtTime(0.38, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.48);
+          // High-impact metallic clang
+          this.playTone(420, 95, 'square', 0.28, 0.3);
+        } catch (e) {}
+      }
+      pursuerEvaded() {
+        this.init();
+        if (this.muted || !this.ctx) return;
+        const notes = [440, 554, 659, 880, 1108, 1320];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, freq * 1.05, 'triangle', 0.18, 0.22), idx * 60);
+        });
       }
       missionComplete() {
         this.init();
@@ -6743,13 +7459,17 @@
         } catch (e) {}
       }
 
-      toggleMute() {
-        this.muted = !this.muted;
+      setMuted(muted) {
+        this.muted = !!muted;
         this.updateWeatherLoops();
         if (this.bgmMasterGain && this.ctx) {
           this.bgmMasterGain.gain.setTargetAtTime(this.muted ? 0.0001 : (this.bgmPlaying && !this.bgmPaused ? 0.72 : 0.0001), this.ctx.currentTime, 0.05);
         }
         return !this.muted;
+      }
+
+      toggleMute() {
+        return this.setMuted(!this.muted);
       }
     }
 
@@ -6939,7 +7659,8 @@
         ENEMIES_KILLED: 'dashbound_enemies_killed',
         TUTORIAL_SHOWN: 'dashbound_tutorial_shown',
         DIFFICULTY: 'dashbound_difficulty',
-        GHOST_TRAJECTORY: 'dashbound_ghost_trajectory'
+        GHOST_TRAJECTORY: 'dashbound_ghost_trajectory',
+        SETTINGS: 'dashbound_settings'
       },
       getInt: function(key, defaultVal = 0) {
         try {
@@ -6985,7 +7706,8 @@
 
     // 4. Particle System with Dynamic Low-End Android Device Adaptation
     class ParticleSystem {
-      constructor() {
+      constructor(game = null) {
+        this.game = game;
         this.particles = [];
         this.isLowEnd = ParticleSystem.detectLowEndDevice();
         // Set baseline density multiplier and particle capacity based on hardware tier
@@ -7000,6 +7722,19 @@
         this.currentWeather = 'clear';
         this.weatherIntensity = 0;
         this.activeBiome = null;
+      }
+
+      setPerformanceMode(mode) {
+        if (mode === 'LOW') {
+          this.density = 0.2;
+          this.maxParticles = 30;
+          if (this.particles.length > this.maxParticles) {
+            this.particles.splice(0, this.particles.length - this.maxParticles);
+          }
+        } else {
+          this.density = this.isLowEnd ? 0.45 : 1.0;
+          this.maxParticles = this.isLowEnd ? 55 : 160;
+        }
       }
 
       setWeather(weather, intensity = 1.0, biome = null) {
@@ -7112,6 +7847,11 @@
       }
 
       monitorPerformance(fps) {
+        if (this.game && this.game.settingsManager && this.game.settingsManager.get('performanceMode') === 'LOW') {
+          this.density = 0.2;
+          this.maxParticles = 30;
+          return;
+        }
         if (fps < 45) {
           this.lowFpsFrameCount++;
           this.highFpsFrameCount = 0;
@@ -7619,7 +8359,8 @@
             // Cooldown ~220 frames (~3.6s), with randomized strike trigger probability
             if (this.thunderCrackTimer > 220 && Math.random() < 0.02) {
               this.thunderCrackTimer = 0;
-              this.lightningFlash = 1.4; // Intense blinding flash
+              const allowFlash = !this.game || !this.game.settingsManager || this.game.settingsManager.get('flashingEffects');
+              this.lightningFlash = allowFlash ? 1.4 : 0; // Intense blinding flash (photosensitivity safe when OFF)
               audio.thunderCrack(); // Trigger procedurally generated thunder crack!
               if (this.game) {
                 this.game.shake(12, 5.5); // Shockwave camera shake
@@ -7631,7 +8372,8 @@
             this.lightningTimer++;
             if (this.lightningTimer > 500 && Math.random() < 0.012) {
               this.lightningTimer = 0;
-              this.lightningFlash = 0.9;
+              const allowFlash = !this.game || !this.game.settingsManager || this.game.settingsManager.get('flashingEffects');
+              this.lightningFlash = allowFlash ? 0.9 : 0;
               audio.thunderRumble();
             }
           }
@@ -7943,7 +8685,8 @@
           ctx.fillRect(0, 0, w, h);
 
           // Atmospheric distant lightning flash across the screen
-          if (this.lightningFlash > 0) {
+          const allowFlash = !this.game || !this.game.settingsManager || this.game.settingsManager.get('flashingEffects');
+          if (allowFlash && this.lightningFlash > 0) {
             ctx.fillStyle = `rgba(224, 242, 254, ${this.lightningFlash * 0.22 * this.intensity})`;
             ctx.fillRect(0, 0, w, h);
           }
@@ -8709,6 +9452,7 @@
             price: 0,
             rarity: 'common',
             icon: '🔥',
+            statBonus: { type: 'coin_collection', value: 0.05, label: '+5% Coins', icon: '🪙', desc: '+5% chance to find bonus coins' },
             tagline: 'The signature swift runner with energetic stride and fiery headband',
             bodyGrad: ['#FF8A3D', '#EA580C'],
             belly: 'rgba(255, 237, 213, 0.45)',
@@ -8726,6 +9470,7 @@
             price: 6000,
             rarity: 'rare',
             icon: '🥷',
+            statBonus: { type: 'jump_boost', value: 0.08, label: '+8% Jump Height', icon: '🥷', desc: '+8% higher leaping agility' },
             tagline: 'Silent assassin with flowing twin tails, obsidian armor, and stealth mask',
             bodyGrad: ['#334155', '#0F172A'],
             belly: 'rgba(148, 163, 184, 0.35)',
@@ -8744,6 +9489,7 @@
             diamondCost: 15,
             rarity: 'epic',
             icon: '🛡️',
+            statBonus: { type: 'shield_start', value: 1, label: 'Free Start Shield', icon: '🛡️', desc: 'Spawns with an energy shield ready' },
             tagline: 'Armored vanguard clad in gleaming steel plate and golden crest',
             bodyGrad: ['#CBD5E1', '#64748B'],
             belly: 'rgba(241, 245, 249, 0.65)',
@@ -8763,6 +9509,7 @@
             price: 500,
             rarity: 'common',
             icon: '🦾',
+            statBonus: { type: 'coin_collection', value: 0.06, label: '+6% Coins', icon: '🪙', desc: '+6% chance to find bonus coins' },
             tagline: 'Grit-hardened mercenary with a high-torque prosthetic arm and bionic optic',
             bodyGrad: ['#64748B', '#334155'],
             belly: 'rgba(148, 163, 184, 0.35)',
@@ -8780,6 +9527,7 @@
             price: 2500,
             rarity: 'rare',
             icon: '⚡',
+            statBonus: { type: 'speed_boost', value: 0.07, label: '+7% Sprint Speed', icon: '⚡', desc: '+7% higher base run speed' },
             tagline: 'Cybernetic rogue with neon magenta augmentations and holographic goggles',
             bodyGrad: ['#F43F5E', '#881337'],
             belly: 'rgba(251, 113, 133, 0.45)',
@@ -8797,6 +9545,7 @@
             price: 12500,
             rarity: 'epic',
             icon: '🎖️',
+            statBonus: { type: 'invulnerable_time', value: 0.5, label: '+0.5s Recovery', icon: '🎖️', desc: '+0.5s post-hit invulnerability' },
             tagline: 'Seasoned battle commander equipped with heavy ammo bandolier and armored pauldron',
             bodyGrad: ['#78350F', '#451A03'],
             belly: 'rgba(217, 119, 6, 0.35)',
@@ -8814,6 +9563,7 @@
             price: 800,
             rarity: 'common',
             icon: '🧢',
+            statBonus: { type: 'fast_start', value: 25, label: '+25m Fast Start', icon: '🏃', desc: '+25m invulnerable launch dash' },
             tagline: 'Spirited urban parkour prodigy sporting a backward cap and yellow race scarf',
             bodyGrad: ['#3B82F6', '#1D4ED8'],
             belly: 'rgba(191, 219, 254, 0.5)',
@@ -8831,6 +9581,7 @@
             price: 10000,
             rarity: 'epic',
             icon: '🔬',
+            statBonus: { type: 'score_mult', value: 0.10, label: '+10% Score Mult', icon: '🔬', desc: '+10% bonus research score gained' },
             tagline: 'Brilliant biometric researcher with a floating cybernetic optic eyepiece HUD',
             bodyGrad: ['#F8FAFC', '#94A3B8'],
             belly: 'rgba(56, 189, 248, 0.3)',
@@ -8848,6 +9599,7 @@
             price: 5000,
             rarity: 'rare',
             icon: '🎧',
+            statBonus: { type: 'magnet_range', value: 1.25, label: '+25% Magnet Range', icon: '🎧', desc: '+25% wider coin magnetic pull' },
             tagline: 'Underground DJ runner with glowing neon-pink studio cans and electric personality',
             bodyGrad: ['#EC4899', '#9D174D'],
             belly: 'rgba(244, 114, 182, 0.45)',
@@ -8868,6 +9620,7 @@
             diamondCost: 12,
             rarity: 'epic',
             icon: '🤖',
+            statBonus: { type: 'stomp_bonus', value: 2, label: '+2 Coins/Stomp', icon: '🤖', desc: '+2 bonus coins when stomping foes' },
             tagline: 'Autonomous combat android with sleek chrome casing and sweeping laser eye',
             bodyGrad: ['#E2E8F0', '#475569'],
             belly: 'rgba(239, 68, 68, 0.35)',
@@ -8885,6 +9638,7 @@
             price: 1000,
             rarity: 'common',
             icon: '🔩',
+            statBonus: { type: 'coin_collection', value: 0.08, label: '+8% Coins', icon: '🔩', desc: '+8% scrap coin scavenging chance' },
             tagline: 'Clunky scrapheap automaton with a puffing chimney smokestack and welded plates',
             bodyGrad: ['#D97706', '#78350F'],
             belly: 'rgba(254, 243, 199, 0.3)',
@@ -8903,6 +9657,7 @@
             diamondCost: 20,
             rarity: 'epic',
             icon: '🕳️',
+            statBonus: { type: 'magnet_duration', value: 3.5, label: '+3.5s Magnet Time', icon: '🕳️', desc: '+3.5s longer magnet power-up' },
             tagline: 'Dark matter mechanoid harboring an active cosmic singularity portal in its chest',
             bodyGrad: ['#09090B', '#18181B'],
             belly: 'rgba(0, 0, 0, 0)',
@@ -8920,6 +9675,7 @@
             price: 3500,
             rarity: 'rare',
             icon: '📻',
+            statBonus: { type: 'coin_collection', value: 0.10, label: '+10% Coins', icon: '📻', desc: '+10% audio vibration coin bonus' },
             tagline: 'Boombox automaton blasting frequency audio waveforms across live equalizer LEDs',
             bodyGrad: ['#8B5CF6', '#3B0764'],
             belly: 'rgba(139, 92, 246, 0.25)',
@@ -8938,6 +9694,7 @@
             diamondCost: 14,
             rarity: 'epic',
             icon: '🌌',
+            statBonus: { type: 'score_mult', value: 0.15, label: '+15% Score Mult', icon: '🌌', desc: '+15% astral alignment score bonus' },
             tagline: 'Astral navigational drone crowned with an orbiting golden solar ring halo',
             bodyGrad: ['#1E1B4B', '#312E81'],
             belly: 'rgba(199, 210, 254, 0.4)',
@@ -8956,6 +9713,7 @@
             diamondCost: 28,
             rarity: 'legendary',
             icon: '🏰',
+            statBonus: { type: 'shield_start', value: 1, label: 'Free Start Shield', icon: '🏰', desc: 'Deploys with fortress energy barrier' },
             tagline: 'Heavy mechanized fortress vanguard armed with dual shoulder blast shields',
             bodyGrad: ['#475569', '#1E293B'],
             belly: 'rgba(148, 163, 184, 0.35)',
@@ -8976,6 +9734,7 @@
             diamondCost: 16,
             rarity: 'epic',
             icon: '👁️',
+            statBonus: { type: 'diamond_chance', value: 0.15, label: '+15% Diamond Spawn', icon: '👁️', desc: '+15% chance for diamonds to appear' },
             tagline: 'Mystical celestial hybrid gazing into infinity with a radiant third eye',
             bodyGrad: ['#6366F1', '#3730A3'],
             belly: 'rgba(224, 231, 255, 0.5)',
@@ -8994,6 +9753,7 @@
             diamondCost: 25,
             rarity: 'legendary',
             icon: '👹',
+            statBonus: { type: 'stomp_bonus', value: 3, label: '+3 Coins/Stomp', icon: '👹', desc: '+3 bonus coins on enemy crushes' },
             tagline: 'Infernal volcanic brute crowned with curving obsidian horns and magma cracks',
             bodyGrad: ['#DC2626', '#7F1D1D'],
             belly: 'rgba(254, 240, 138, 0.4)',
@@ -9011,6 +9771,7 @@
             price: 7500,
             rarity: 'rare',
             icon: '🦋',
+            statBonus: { type: 'double_jump_float', value: 0.12, label: '-12% Gravity Float', icon: '🦋', desc: '12% lighter gravity for smoother gliding' },
             tagline: 'Ethereal forest fairy alien with wiggling bioluminescent moth antennae',
             bodyGrad: ['#34D399', '#065F46'],
             belly: 'rgba(167, 243, 208, 0.55)',
@@ -9029,6 +9790,7 @@
             diamondCost: 30,
             rarity: 'legendary',
             icon: '👽',
+            statBonus: { type: 'coin_collection', value: 0.15, label: '+15% Coins', icon: '👽', desc: '+15% alien tribute coin collection' },
             tagline: 'Megalomaniacal alien overlord with an exposed glowing brain dome and eye-stalks',
             bodyGrad: ['#4ADE80', '#15803D'],
             belly: 'rgba(187, 247, 208, 0.5)',
@@ -9047,6 +9809,7 @@
             diamondCost: 32,
             rarity: 'legendary',
             icon: '🐙',
+            statBonus: { type: 'score_mult', value: 0.20, label: '+20% Score Mult', icon: '🐙', desc: '+20% abyssal cosmic score multiplier' },
             tagline: 'Cosmic entity of the deep void with writhing shadowy ethereal tentacles',
             bodyGrad: ['#581C87', '#1E1B4B'],
             belly: 'rgba(192, 132, 252, 0.3)',
@@ -9067,6 +9830,7 @@
             diamondCost: 35,
             rarity: 'legendary',
             icon: '💀',
+            statBonus: { type: 'coin_collection', value: 0.20, label: '+20% Coins', icon: '💀', desc: '+20% cyber-necro coin salvage' },
             tagline: 'A cybernetic undead warrior with glowing neon ribs and cranial circuits',
             bodyGrad: ['#1E293B', '#020617'],
             belly: 'rgba(0, 0, 0, 0)',
@@ -9085,6 +9849,7 @@
             diamondCost: 22,
             rarity: 'legendary',
             icon: '🏴‍☠️',
+            statBonus: { type: 'diamond_chance', value: 0.20, label: '+20% Diamond Spawn', icon: '🏴‍☠️', desc: '+20% pirate treasure diamond finding' },
             tagline: 'Resurrected buccaneer sporting a skull-and-crossbones captain hat and eye-patch',
             bodyGrad: ['#E2E8F0', '#94A3B8'],
             belly: 'rgba(0, 0, 0, 0)',
@@ -9103,6 +9868,7 @@
             diamondCost: 30,
             rarity: 'legendary',
             icon: '🎩',
+            statBonus: { type: 'coin_collection', value: 0.25, label: '+25% Coins', icon: '🎩', desc: '+25% aristocratic gold accumulation' },
             tagline: 'Aristocratic skeletal nobleman attired in a velvet top hat, gold monocle, and bowtie',
             bodyGrad: ['#F1F5F9', '#64748B'],
             belly: 'rgba(0, 0, 0, 0)',
@@ -9204,6 +9970,12 @@
               this.game.player.y = oldBottom - skin.h;
             }
           }
+        }
+        if (this.game && this.game.playerStatsEngine) {
+          this.game.playerStatsEngine.applyStats();
+        }
+        if (skin && skin.statBonus && this.game && typeof this.game.showToast === 'function') {
+          this.game.showToast(`✨ Perk Activated: ${skin.statBonus.label}`);
         }
         audio.equip();
         AndroidBridge.vibrate(35);
@@ -9585,6 +10357,19 @@
         }
         if (tagEl) tagEl.textContent = currentSkin.tagline;
 
+        const statPillEl = document.getElementById('previewStatPill');
+        const statIconEl = document.getElementById('previewStatIcon');
+        const statLabelEl = document.getElementById('previewStatLabel');
+        if (statPillEl) {
+          if (currentSkin.statBonus) {
+            if (statIconEl) statIconEl.textContent = currentSkin.statBonus.icon;
+            if (statLabelEl) statLabelEl.textContent = `${currentSkin.statBonus.label} - ${currentSkin.statBonus.desc || ''}`;
+            statPillEl.style.display = 'inline-flex';
+          } else {
+            statPillEl.style.display = 'none';
+          }
+        }
+
         // Action button state
         const actBtn = document.getElementById('customizerActionBtn');
         if (actBtn) {
@@ -9649,6 +10434,11 @@
             costHtml = `<span class="skin-card-cost">${shortPrice} 🪙</span>`;
           }
 
+          let statBadgeHtml = '';
+          if (skin.statBonus) {
+            statBadgeHtml = `<div class="skin-card-stat-bonus" title="${skin.statBonus.desc || skin.statBonus.label}"><span>${skin.statBonus.icon}</span> <span>${skin.statBonus.label}</span></div>`;
+          }
+
           card.innerHTML = `
             <div class="skin-card-top">
               <div class="skin-card-icon-box">${skin.icon}</div>
@@ -9657,6 +10447,7 @@
             <div>
               <div class="skin-card-name">${skin.name}</div>
               <div class="skin-card-rarity" style="color: ${skin.rarity === 'legendary' ? '#FBBF24' : (skin.rarity === 'epic' ? '#C084FC' : (skin.rarity === 'rare' ? '#38BDF8' : '#94A3B8'))}">${skin.rarity}</div>
+              ${statBadgeHtml}
             </div>
             <div class="skin-card-bottom">
               <span style="color: #64748B; font-size: 10px;">${unlocked ? 'Unlocked' : 'Cost'}</span>
@@ -9935,6 +10726,414 @@
         });
       }
     }
+
+    // ==========================================================================
+    // 8. Player Stats & Skin Passive Bonuses Engine
+    // ==========================================================================
+    class PlayerStatsEngine {
+      constructor(game) {
+        this.game = game;
+      }
+
+      getEquippedSkin() {
+        if (!this.game || !this.game.skinManager) return null;
+        return this.game.skinManager.getSelectedSkin();
+      }
+
+      getActiveBonus() {
+        const skin = this.getEquippedSkin();
+        return (skin && skin.statBonus) ? skin.statBonus : null;
+      }
+
+      getBonusType() {
+        const b = this.getActiveBonus();
+        return b ? b.type : null;
+      }
+
+      getBonusValue() {
+        const b = this.getActiveBonus();
+        return b ? (b.value || 0) : 0;
+      }
+
+      getBonusLabel() {
+        const b = this.getActiveBonus();
+        return b ? b.label : '';
+      }
+
+      getBonusIcon() {
+        const b = this.getActiveBonus();
+        return b ? b.icon : '⚡';
+      }
+
+      getBonusDesc() {
+        const b = this.getActiveBonus();
+        return b ? (b.desc || b.label) : '';
+      }
+
+      // Passive bonus queries
+      getCoinBonus() {
+        const b = this.getActiveBonus();
+        if (!b) return 0;
+        if (b.type === 'coin_collection' || b.type === 'coin_mult') {
+          return b.value || 0;
+        }
+        return 0;
+      }
+
+      getScoreMultiplier() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'score_mult') {
+          return 1.0 + (b.value || 0);
+        }
+        return 1.0;
+      }
+
+      getSpeedMultiplier() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'speed_boost') {
+          return 1.0 + (b.value || 0);
+        }
+        return 1.0;
+      }
+
+      getJumpForceMultiplier() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'jump_boost') {
+          return 1.0 + (b.value || 0);
+        }
+        return 1.0;
+      }
+
+      getGravityMultiplier() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'double_jump_float') {
+          return 1.0 - (b.value || 0);
+        }
+        return 1.0;
+      }
+
+      getMagnetDurationBonus() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'magnet_duration') {
+          return b.value || 0;
+        }
+        return 0;
+      }
+
+      getMagnetRangeMult() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'magnet_range') {
+          return b.value || 1.0;
+        }
+        return 1.0;
+      }
+
+      getFastStartBonus() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'fast_start') {
+          return b.value || 0;
+        }
+        return 0;
+      }
+
+      getStompBonusCoins() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'stomp_bonus') {
+          return b.value || 0;
+        }
+        return 0;
+      }
+
+      getInvulnerableBonus() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'invulnerable_time') {
+          return b.value || 0;
+        }
+        return 0;
+      }
+
+      shouldStartWithShield() {
+        const b = this.getActiveBonus();
+        return !!(b && b.type === 'shield_start');
+      }
+
+      getDiamondChanceBonus() {
+        const b = this.getActiveBonus();
+        if (b && b.type === 'diamond_chance') {
+          return b.value || 0;
+        }
+        return 0;
+      }
+
+      applyStats() {
+        if (!this.game) return;
+        const g = this.game;
+
+        // Apply speed bonus to difficulty base speed
+        const diffConfig = (g.difficultyConfigs && g.difficultyConfigs[g.selectedDifficulty])
+          ? g.difficultyConfigs[g.selectedDifficulty]
+          : (g.difficultyConfigs ? g.difficultyConfigs.MEDIUM : { baseSpeed: 6.0 });
+        const speedMult = this.getSpeedMultiplier();
+        g.baseSpeed = (diffConfig.baseSpeed || 6.0) * speedMult;
+        if (g.state !== 'PLAYING') {
+          g.gameSpeed = g.baseSpeed;
+        }
+
+        // Apply jump & physics
+        g.jumpForce = -12.0 * this.getJumpForceMultiplier();
+        g.gravity = 0.54 * this.getGravityMultiplier();
+
+        // Apply magnet duration upgrade + skin bonus
+        if (g.upgradeManager) {
+          g.magnetMaxDuration = g.upgradeManager.getMagnetDuration() + this.getMagnetDurationBonus();
+          g.fastStartDistance = g.upgradeManager.getFastStartDistance() + this.getFastStartBonus();
+        } else {
+          g.magnetMaxDuration = 10.0 + this.getMagnetDurationBonus();
+          g.fastStartDistance = 50.0 + this.getFastStartBonus();
+        }
+
+        if (g.fastStartDistText && !g.isFastStartActive()) {
+          g.fastStartDistText.textContent = `${Math.round(g.fastStartDistance)}m`;
+        }
+
+        // Update HUD & UI badges
+        this.updateUI();
+      }
+
+      updateUI() {
+        if (!this.game) return;
+        const bonus = this.getActiveBonus();
+        const skin = this.getEquippedSkin();
+
+        // In-game HUD pill badge
+        const hudBadge = document.getElementById('hudSkinBonusBadge');
+        const hudIcon = document.getElementById('hudSkinBonusIcon');
+        const hudText = document.getElementById('hudSkinBonusText');
+        if (hudBadge && hudText && hudIcon) {
+          if (bonus) {
+            hudIcon.textContent = bonus.icon;
+            hudText.textContent = bonus.label;
+            hudBadge.style.display = 'inline-flex';
+            hudBadge.title = `Equipped Perk: ${skin ? skin.name : ''} - ${bonus.desc || bonus.label}`;
+          } else {
+            hudBadge.style.display = 'none';
+          }
+        }
+
+        // Pause screen badge
+        const pauseBadge = document.getElementById('pauseSkinBonusBadge');
+        const pauseIcon = document.getElementById('pauseSkinBonusIcon');
+        const pauseLabel = document.getElementById('pauseSkinBonusLabel');
+        if (pauseBadge && pauseLabel) {
+          if (bonus && skin) {
+            if (pauseIcon) pauseIcon.textContent = bonus.icon;
+            pauseLabel.textContent = `${skin.name} (${bonus.label})`;
+            pauseBadge.style.display = 'inline-flex';
+          } else {
+            pauseBadge.style.display = 'none';
+          }
+        }
+
+        // Game over screen badge
+        const goBadge = document.getElementById('goSkinBonusBadge');
+        if (goBadge) {
+          if (bonus && skin) {
+            goBadge.innerHTML = `<span>${bonus.icon}</span> <span>${skin.name}: <strong>${bonus.label}</strong></span>`;
+            goBadge.style.display = 'inline-flex';
+          } else {
+            goBadge.style.display = 'none';
+          }
+        }
+
+        // Main menu character showcase bonus pill
+        const menuBonusPill = document.getElementById('menuCharBonusPill');
+        const menuBonusIcon = document.getElementById('menuCharBonusIcon');
+        const menuBonusLabel = document.getElementById('menuCharBonusLabel');
+        if (menuBonusPill && menuBonusLabel && menuBonusIcon) {
+          if (bonus) {
+            menuBonusIcon.textContent = bonus.icon;
+            menuBonusLabel.textContent = bonus.label;
+            menuBonusPill.style.display = 'inline-flex';
+          } else {
+            menuBonusPill.style.display = 'none';
+          }
+        }
+      }
+    }
+
+    // ==========================================================================
+    // 9. Advanced Settings & Accessibility Manager
+    // ==========================================================================
+    class SettingsManager {
+      constructor(game) {
+        this.game = game;
+        this.isOpen = false;
+        this.settings = this.load();
+        this.initDOM();
+      }
+
+      load() {
+        const defaults = {
+          masterAudio: true,
+          screenShake: true,
+          flashingEffects: true,
+          performanceMode: 'HIGH'
+        };
+        const saved = Storage.getJSON(Storage.KEYS.SETTINGS, null);
+        if (!saved || typeof saved !== 'object') {
+          return defaults;
+        }
+        return {
+          masterAudio: saved.masterAudio !== undefined ? !!saved.masterAudio : defaults.masterAudio,
+          screenShake: saved.screenShake !== undefined ? !!saved.screenShake : defaults.screenShake,
+          flashingEffects: saved.flashingEffects !== undefined ? !!saved.flashingEffects : defaults.flashingEffects,
+          performanceMode: saved.performanceMode === 'LOW' ? 'LOW' : 'HIGH'
+        };
+      }
+
+      save() {
+        Storage.setJSON(Storage.KEYS.SETTINGS, this.settings);
+      }
+
+      get(key) {
+        return this.settings[key];
+      }
+
+      set(key, value) {
+        this.settings[key] = value;
+        this.save();
+        this.applySetting(key, value);
+        this.renderUI();
+      }
+
+      applySetting(key, value) {
+        if (key === 'masterAudio') {
+          audio.setMuted(!value);
+        } else if (key === 'performanceMode') {
+          if (this.game && this.game.particles) {
+            this.game.particles.setPerformanceMode(value);
+          }
+        }
+      }
+
+      applyAll() {
+        this.applySetting('masterAudio', this.settings.masterAudio);
+        this.applySetting('performanceMode', this.settings.performanceMode);
+      }
+
+      initDOM() {
+        this.modal = document.getElementById('settingsModal');
+        this.backBtn = document.getElementById('settingsBackBtn');
+
+        this.toggleMasterAudio = document.getElementById('toggleMasterAudio');
+        this.statusMasterAudio = document.getElementById('statusMasterAudio');
+
+        this.toggleScreenShake = document.getElementById('toggleScreenShake');
+        this.statusScreenShake = document.getElementById('statusScreenShake');
+
+        this.toggleFlashingEffects = document.getElementById('toggleFlashingEffects');
+        this.statusFlashingEffects = document.getElementById('statusFlashingEffects');
+
+        this.togglePerformanceMode = document.getElementById('togglePerformanceMode');
+        this.statusPerformanceMode = document.getElementById('statusPerformanceMode');
+
+        if (this.backBtn) {
+          this.backBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            this.closeModal();
+          };
+        }
+
+        if (this.modal) {
+          this.modal.onclick = (e) => {
+            if (e.target === this.modal) {
+              this.closeModal();
+            }
+          };
+        }
+
+        if (this.toggleMasterAudio) {
+          this.toggleMasterAudio.onchange = (e) => {
+            audio.click();
+            this.set('masterAudio', e.target.checked);
+          };
+        }
+
+        if (this.toggleScreenShake) {
+          this.toggleScreenShake.onchange = (e) => {
+            audio.click();
+            this.set('screenShake', e.target.checked);
+          };
+        }
+
+        if (this.toggleFlashingEffects) {
+          this.toggleFlashingEffects.onchange = (e) => {
+            audio.click();
+            this.set('flashingEffects', e.target.checked);
+          };
+        }
+
+        if (this.togglePerformanceMode) {
+          this.togglePerformanceMode.onchange = (e) => {
+            audio.click();
+            // Checked is HIGH, unchecked is LOW
+            const newMode = e.target.checked ? 'HIGH' : 'LOW';
+            this.set('performanceMode', newMode);
+          };
+        }
+
+        this.renderUI();
+      }
+
+      renderUI() {
+        if (this.toggleMasterAudio && this.statusMasterAudio) {
+          const isAudioOn = !!this.settings.masterAudio;
+          this.toggleMasterAudio.checked = isAudioOn;
+          this.statusMasterAudio.textContent = isAudioOn ? 'ON' : 'OFF';
+          this.statusMasterAudio.className = `toggle-status-badge ${isAudioOn ? 'on' : 'off'}`;
+        }
+
+        if (this.toggleScreenShake && this.statusScreenShake) {
+          const isShakeOn = !!this.settings.screenShake;
+          this.toggleScreenShake.checked = isShakeOn;
+          this.statusScreenShake.textContent = isShakeOn ? 'ON' : 'OFF';
+          this.statusScreenShake.className = `toggle-status-badge ${isShakeOn ? 'on' : 'off'}`;
+        }
+
+        if (this.toggleFlashingEffects && this.statusFlashingEffects) {
+          const isFlashOn = !!this.settings.flashingEffects;
+          this.toggleFlashingEffects.checked = isFlashOn;
+          this.statusFlashingEffects.textContent = isFlashOn ? 'ON' : 'OFF';
+          this.statusFlashingEffects.className = `toggle-status-badge ${isFlashOn ? 'on' : 'off'}`;
+        }
+
+        if (this.togglePerformanceMode && this.statusPerformanceMode) {
+          const isHigh = this.settings.performanceMode === 'HIGH';
+          this.togglePerformanceMode.checked = isHigh;
+          this.statusPerformanceMode.textContent = isHigh ? 'HIGH' : 'LOW';
+          this.statusPerformanceMode.className = `toggle-status-badge ${isHigh ? 'perf-high' : 'perf-low'}`;
+        }
+      }
+
+      openModal() {
+        audio.click();
+        this.isOpen = true;
+        this.renderUI();
+        if (this.modal) {
+          this.modal.classList.add('active');
+        }
+      }
+
+      closeModal() {
+        audio.click();
+        this.isOpen = false;
+        if (this.modal) {
+          this.modal.classList.remove('active');
+        }
+      }
+    }
+    window.SettingsManager = SettingsManager;
+
     const BIOMES = [
       {
         id: 'meadow',
@@ -10143,7 +11342,9 @@
         this.scaleY = 1;
         this.coordScale = 1;
         this.isPortrait = false;
+        this.isLandscape = true;
         this.dpr = window.devicePixelRatio || 1;
+        this.integerScale = 1;
 
         // Stats & Progress
         this.distance = 0; // in meters
@@ -10195,8 +11396,9 @@
         this.jumpForce = -12.0;
 
         // Player
+        this.defaultPlayerX = 120;
         this.player = {
-          x: 140,
+          x: 120,
           y: 0,
           w: 42,
           h: 56,
@@ -10220,7 +11422,7 @@
         this.spikes = [];
         this.barriers = [];
         this.powerups = [];
-        this.particles = new ParticleSystem();
+        this.particles = new ParticleSystem(this);
 
         // Energy Shield State
         this.hasShield = false;
@@ -10234,6 +11436,22 @@
         this.fastStartDistance = 50.0;
         this.wasFastStartActive = false;
         this.runnerTrails = [];
+
+        // Pursuer Chase Sequence State (Every 1,000m, 20s phase, instant Game Over on obstacle)
+        this.pursuerChaseActive = false;
+        this.pursuerChaseTimer = 0;
+        this.pursuerDuration = 20.0;
+        this.lastPursuerMilestone = 0;
+        this.pursuerCaught = false;
+        this.pursuerLunge = 0;
+        this.pursuerEntrance = 0;
+        this.pursuerW = 46;
+        this.pursuerCreep = 0;
+        this.pursuerX = -200;
+        this.pursuerY = 0;
+        this.pursuerTargetY = 0;
+        this.pursuerSegments = [];
+        this.initPursuer();
 
         // Progressive Difficulty Curve & Speed Scaling
         this.selectedDifficulty = Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
@@ -10298,12 +11516,20 @@
         // Permanent Meta-Progression Upgrade Manager
         this.upgradeManager = new UpgradeManager(this);
 
+        // Player Stats & Skin Passive Bonuses Engine
+        this.playerStatsEngine = new PlayerStatsEngine(this);
+
+        // Advanced Settings & Accessibility Manager
+        this.settingsManager = new SettingsManager(this);
+
         // Biome-Reactive Weather & Atmospheric Manager
         this.weatherManager = new WeatherManager(this);
 
         this.initDOM();
         this.initEvents();
         this.resize();
+        this.playerStatsEngine.applyStats();
+        this.settingsManager.applyAll();
 
         // Clear any pending notifications on game load / Main Menu initialization
         AndroidBridge.cancelAllNotifications();
@@ -10516,6 +11742,10 @@
         this.shieldHud = document.getElementById('shieldHud');
         this.shieldStatusText = document.getElementById('shieldStatusText');
         this.shieldProgressBar = document.getElementById('shieldProgressBar');
+        this.pursuerHud = document.getElementById('pursuerHud');
+        this.pursuerTimerText = document.getElementById('pursuerTimerText');
+        this.pursuerProgressBar = document.getElementById('pursuerProgressBar');
+        this.pursuerCaughtBadge = document.getElementById('pursuerCaughtBadge');
         this.missionCompleteHud = document.getElementById('missionCompleteHud');
         this.missionHudTimer = null;
         this.speedUpPopup = document.getElementById('speedUpPopup');
@@ -10553,6 +11783,10 @@
         });
         if (window.visualViewport) {
           window.visualViewport.addEventListener('resize', () => this.resize());
+          window.visualViewport.addEventListener('scroll', () => {
+            window.scrollTo(0, 0);
+            this.resize();
+          });
         }
 
         // Info Modal Open & Close Handlers
@@ -10670,7 +11904,7 @@
           const rect = this.canvas.getBoundingClientRect();
           const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
           const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-          const isPortrait = window.innerHeight > window.innerWidth;
+          const isPortrait = this.isPortrait !== undefined ? this.isPortrait : (window.innerHeight > window.innerWidth);
           let x, y;
           if (isPortrait) {
             // Rotated 90deg clockwise:
@@ -10690,7 +11924,7 @@
           const now = performance.now();
           if (now - lastJumpTapTime < 60) return; // Debounce simultaneous touch/pointer triggers
           lastJumpTapTime = now;
-          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || this.state === 'CUSTOMIZER') return;
+          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || (this.settingsManager && this.settingsManager.isOpen) || this.state === 'CUSTOMIZER') return;
           if (this.state === 'PLAYING') {
             this.playerJump();
           } else if (this.state === 'MENU') {
@@ -10741,7 +11975,7 @@
         window.addEventListener('keydown', (e) => {
           if (this.isConsentModalOpen) return;
           if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
-            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || this.state === 'CUSTOMIZER') return;
+            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || (this.settingsManager && this.settingsManager.isOpen) || this.state === 'CUSTOMIZER') return;
             e.preventDefault();
             audio.init();
             handleJump(e);
@@ -10751,7 +11985,9 @@
               this.playerStomp();
             }
           } else if (e.code === 'Escape' || e.code === 'KeyP') {
-            if (this.isTutorialOpen) {
+            if (this.settingsManager && this.settingsManager.isOpen) {
+              this.settingsManager.closeModal();
+            } else if (this.isTutorialOpen) {
               closeTutorial(e);
             } else if (this.state === 'CUSTOMIZER') {
               this.setScreen('MENU');
@@ -10794,12 +12030,25 @@
           };
         }
 
-        const soundBtn = document.getElementById('soundToggleBtn');
-        soundBtn.onclick = () => {
-          const unmuted = audio.toggleMute();
-          soundBtn.textContent = unmuted ? '🔊 Sound: ON' : '🔇 Sound: MUTED';
-          audio.click();
-        };
+        const menuSettingsBtn = document.getElementById('menuSettingsBtn');
+        if (menuSettingsBtn) {
+          menuSettingsBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            if (this.settingsManager) {
+              this.settingsManager.openModal();
+            }
+          };
+        }
+
+        const pauseSettingsBtn = document.getElementById('pauseSettingsBtn');
+        if (pauseSettingsBtn) {
+          pauseSettingsBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            if (this.settingsManager) {
+              this.settingsManager.openModal();
+            }
+          };
+        }
 
         this.pauseBtn.onclick = (e) => {
           e.stopPropagation();
@@ -11029,22 +12278,34 @@
 
       resize() {
         const vp = window.visualViewport;
-        const rawW = vp ? Math.round(vp.width) : window.innerWidth;
-        const rawH = vp ? Math.round(vp.height) : window.innerHeight;
+        const rawW = Math.round(vp ? vp.width : window.innerWidth);
+        const rawH = Math.round(vp ? vp.height : window.innerHeight);
 
-        const isPortrait = window.innerHeight > window.innerWidth;
+        // Update CSS custom variables on root element for exact viewport matching
+        document.documentElement.style.setProperty('--app-width', `${rawW}px`);
+        document.documentElement.style.setProperty('--app-height', `${rawH}px`);
+
+        const isPortrait = rawH > rawW;
+        const isLandscape = !isPortrait;
 
         // In CSS fake-landscape rotation, physical width and height swap on screen
-        const targetWidth = isPortrait ? Math.max(rawW, rawH) : rawW;
-        const targetHeight = isPortrait ? Math.min(rawW, rawH) : rawH;
+        const targetWidth = isPortrait ? rawH : rawW;
+        const targetHeight = isPortrait ? rawW : rawH;
+
+        document.documentElement.style.setProperty('--game-width', `${targetWidth}px`);
+        document.documentElement.style.setProperty('--game-height', `${targetHeight}px`);
+
+        // Prevent address bar scroll offsets from pushing content down
+        window.scrollTo(0, 0);
 
         // Track previous dimensions for smooth dynamic coordinate scaling
         const oldWidth = this.width;
         const oldHeight = this.height;
 
-        this.width = targetWidth;
-        this.height = targetHeight;
+        this.width = Math.round(targetWidth);
+        this.height = Math.round(targetHeight);
         this.isPortrait = isPortrait;
+        this.isLandscape = isLandscape;
 
         // Dynamic aspect ratio calculation
         this.aspectRatio = this.width / Math.max(1, this.height);
@@ -11056,12 +12317,31 @@
         this.scaleY = this.height / this.baseHeight;
         this.coordScale = Math.min(this.scaleX, this.scaleY);
 
-        // Cap DPR at 2.0 to prevent high-density screen GPU buffer exhaustion (SIGKILL code -1)
-        this.dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+        // Integer Scaling in landscape mode:
+        // High-density mobile displays frequently use non-integer DPRs (e.g. 2.625, 2.75, 3.375).
+        // Fractional scaling causes sub-pixel blurring, anti-aliasing artifacts, and pixel distortion.
+        // In landscape mode, enforce crisp integer scaling (e.g. 1x, 2x, 3x) so that each virtual pixel
+        // maps to an exact integer block of device pixels without sub-pixel blurring.
+        const rawDpr = window.devicePixelRatio || 1;
+        if (isLandscape) {
+          // Snap DPR to exact integer scale (minimum 1, capped at 3 to prevent GPU memory exhaustion)
+          this.integerScale = Math.max(1, Math.min(3, Math.round(rawDpr)));
+          this.dpr = this.integerScale;
+        } else {
+          // In portrait fake-rotation mode, preserve capped baseline DPR
+          this.dpr = Math.min(rawDpr, 2.0);
+          this.integerScale = Math.round(this.dpr);
+        }
 
-        this.canvas.width = Math.floor(this.width * this.dpr);
-        this.canvas.height = Math.floor(this.height * this.dpr);
+        this.canvas.width = Math.round(this.width * this.dpr);
+        this.canvas.height = Math.round(this.height * this.dpr);
         this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+        // Enforce nearest-neighbor pixelated rendering to eliminate sub-pixel blurring
+        this.ctx.imageSmoothingEnabled = false;
+        if ('webkitImageSmoothingEnabled' in this.ctx) this.ctx.webkitImageSmoothingEnabled = false;
+        if ('mozImageSmoothingEnabled' in this.ctx) this.ctx.mozImageSmoothingEnabled = false;
+        if ('msImageSmoothingEnabled' in this.ctx) this.ctx.msImageSmoothingEnabled = false;
 
         // Reposition sun proportionally to canvas dimensions
         if (this.sun) {
@@ -11260,6 +12540,11 @@
 
       setScreen(screen) {
         this.state = screen;
+        if (screen !== 'MENU' && screen !== 'PAUSED') {
+          if (this.settingsManager && this.settingsManager.isOpen) {
+            this.settingsManager.closeModal();
+          }
+        }
         if (screen !== 'MENU') {
           if (this.isInfoModalOpen) {
             this.isInfoModalOpen = false;
@@ -11315,6 +12600,10 @@
         this.resetPauseConfirmations();
         if (this.customizerScreen) {
           this.customizerScreen.classList.toggle('active', screen === 'CUSTOMIZER');
+        }
+
+        if (this.playerStatsEngine) {
+          this.playerStatsEngine.updateUI();
         }
 
         if (screen === 'CUSTOMIZER') {
@@ -11418,6 +12707,9 @@
         if (this.upgradeManager) {
           this.upgradeManager.applyUpgrades();
         }
+        if (this.playerStatsEngine) {
+          this.playerStatsEngine.applyStats();
+        }
 
         this.distance = 0;
         this.score = 0;
@@ -11434,6 +12726,17 @@
         this.initBackgroundDecor();
         this.wasFastStartActive = true;
         this.runnerTrails = [];
+
+        // Reset Pursuer Chase state
+        this.pursuerChaseActive = false;
+        this.pursuerChaseTimer = 0;
+        this.lastPursuerMilestone = 0;
+        this.pursuerCaught = false;
+        this.pursuerLunge = 0;
+        this.pursuerEntrance = 0;
+        this.initPursuer();
+        if (this.pursuerCaughtBadge) this.pursuerCaughtBadge.style.display = 'none';
+        if (this.pursuerHud) this.pursuerHud.classList.remove('active');
 
         // Reset progressive difficulty curve tracking
         this.lastSpeedTier = 0;
@@ -11480,8 +12783,11 @@
         this.barriers = [];
         this.activePatternQueue = [];
         this.hasShield = false;
+        if (this.playerStatsEngine && this.playerStatsEngine.shouldStartWithShield()) {
+          this.hasShield = true;
+        }
         if (this.shieldHud) {
-          this.shieldHud.classList.remove('active');
+          this.shieldHud.classList.toggle('active', this.hasShield);
         }
 
         // Reset Ghost Runner, Camera Framing, and Deep Parallax Skyline
@@ -11508,7 +12814,8 @@
         this.platforms.push(initialPlatform);
 
         // Position player on first platform
-        this.player.x = 120;
+        this.defaultPlayerX = 120;
+        this.player.x = this.defaultPlayerX;
         this.player.y = groundY - this.player.h;
         this.player.vy = 0;
         this.player.onGround = true;
@@ -11523,7 +12830,13 @@
         audio.startBGM();
         AndroidBridge.vibrate(60);
         this.particles.createSpeedSonicRings(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
-        this.showToast('⚡ FAST START: 2x Speed & Invulnerable! (50m)');
+        this.showToast(`⚡ FAST START: 2x Speed & Invulnerable! (${Math.round(this.fastStartDistance)}m)`);
+        if (this.hasShield && this.playerStatsEngine && this.playerStatsEngine.shouldStartWithShield()) {
+          const skin = this.skinManager ? this.skinManager.getSelectedSkin() : null;
+          setTimeout(() => {
+            this.showToast(`🛡️ ${skin ? skin.name : 'Vanguard'}: Free Energy Shield Deployed!`);
+          }, 1200);
+        }
 
         this.setScreen('PLAYING');
         this.updateHUD();
@@ -11589,6 +12902,16 @@
         this.hasShield = false;
         this.player.isStomping = false;
         this.player.groundedPlatform = null;
+        this.pursuerChaseActive = false;
+        this.pursuerChaseTimer = 0;
+        this.lastPursuerMilestone = 0;
+        this.pursuerCaught = false;
+        this.pursuerLunge = 0;
+        this.pursuerEntrance = 0;
+        this.initPursuer();
+        if (this.pursuerHud) {
+          this.pursuerHud.classList.remove('active');
+        }
         if (this.shieldHud) {
           this.shieldHud.classList.remove('active');
         }
@@ -11700,6 +13023,14 @@
           this.particles.create(px, py, 6, '#38BDF8', 3.5, 3.2, 'circle');
         }
         this.showToast('🛡️ Shield Absorbed Damage! (+0.5s Invulnerable)');
+        if (this.pursuerChaseActive) {
+          this.pursuerCreep = Math.min(100, (this.pursuerCreep || 0) + 40);
+          this.player.x = Math.max(30, this.player.x - 15);
+          const pursuerFront = this.pursuerX + (this.pursuerW || 46);
+          if (pursuerFront >= this.player.x) {
+            this.triggerPursuerCatch();
+          }
+        }
         this.updateHUD();
         return true;
       }
@@ -11713,6 +13044,34 @@
           return;
         }
 
+        // Pursuer Chase Phase: stumbling or taking damage causes player to lose ground and the Pursuer to surge closer
+        if (this.pursuerChaseActive) {
+          this.lives--;
+          if (this.missionManager) {
+            this.missionManager.onDamageTaken();
+          }
+          audio.hurt();
+          AndroidBridge.hapticHeavy();
+
+          this.shake(10, 16);
+          const invulBonus = this.playerStatsEngine ? this.playerStatsEngine.getInvulnerableBonus() : 0;
+          this.player.invulnerableTimer = 60 + Math.round(invulBonus * 30);
+          this.player.vy = -6;
+          this.particles.createHurtBurst(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
+
+          // Runner stumbles backward and Pursuer surges forward
+          this.player.x = Math.max(30, this.player.x - 30);
+          this.pursuerCreep = Math.min(120, (this.pursuerCreep || 0) + 55);
+
+          this.updateHUD();
+
+          const pursuerFront = this.pursuerX + (this.pursuerW || 46);
+          if (this.lives <= 0 || pursuerFront >= this.player.x) {
+            this.triggerPursuerCatch();
+          }
+          return;
+        }
+
         this.lives--;
         if (this.missionManager) {
           this.missionManager.onDamageTaken();
@@ -11721,7 +13080,8 @@
         AndroidBridge.hapticHeavy();
 
         this.shake(10, 16);
-        this.player.invulnerableTimer = 90; // ~1.5 seconds at 60fps
+        const invulBonus = this.playerStatsEngine ? this.playerStatsEngine.getInvulnerableBonus() : 0;
+        this.player.invulnerableTimer = 90 + Math.round(invulBonus * 60); // 1.5s base + skin bonus
         this.player.vy = -7;
         this.particles.createHurtBurst(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
 
@@ -11732,7 +13092,7 @@
         }
       }
 
-      triggerGameOver() {
+      triggerGameOver(caughtByPursuer = false) {
         this.state = 'GAMEOVER';
         audio.stopBGM();
         audio.gameOver();
@@ -11768,6 +13128,9 @@
         document.getElementById('goScore').textContent = Math.floor(this.score);
         document.getElementById('goCoins').textContent = `+${this.runCoins}`;
         document.getElementById('newRecordBadge').style.display = isNewRecord ? 'inline-block' : 'none';
+        if (this.pursuerCaughtBadge) {
+          this.pursuerCaughtBadge.style.display = caughtByPursuer ? 'inline-block' : 'none';
+        }
 
         const currentDiffConfig = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
         const goDiffEl = document.getElementById('goDiff');
@@ -12219,6 +13582,7 @@
           document.getElementById('adContinueBtn').classList.add('disabled');
           this.lives = 1;
           this.player.invulnerableTimer = 150; // extra invincibility shield
+          this.player.x = this.defaultPlayerX || 120;
           this.player.y = this.height - 180;
           this.player.vy = -6;
 
@@ -12321,6 +13685,11 @@
       }
 
       shake(duration, magnitude) {
+        if (this.settingsManager && !this.settingsManager.get('screenShake')) {
+          this.shakeTime = 0;
+          this.shakeMagnitude = 0;
+          return;
+        }
         this.shakeTime = duration;
         this.shakeMagnitude = magnitude;
       }
@@ -12418,6 +13787,23 @@
           } else {
             this.shieldHud.classList.remove('active');
           }
+        }
+
+        // Active Pursuer Chase Duration & Progress Indicator
+        if (this.pursuerHud) {
+          if (this.pursuerChaseActive && this.state === 'PLAYING') {
+            this.pursuerHud.classList.add('active');
+            const pct = Math.max(0, Math.min(100, (this.pursuerChaseTimer / this.pursuerDuration) * 100));
+            if (this.pursuerProgressBar) this.pursuerProgressBar.style.width = `${pct}%`;
+            if (this.pursuerTimerText) this.pursuerTimerText.textContent = `${this.pursuerChaseTimer.toFixed(1)}s`;
+          } else {
+            this.pursuerHud.classList.remove('active');
+          }
+        }
+
+        // Update Passive Skin Perk HUD Badge
+        if (this.playerStatsEngine) {
+          this.playerStatsEngine.updateUI();
         }
       }
 
@@ -12598,7 +13984,8 @@
             const coinCount = Math.floor(Math.random() * 4) + 3; // 3 to 6 coins create a prominent curved leap
             const startX = newPlatform.x + 30;
             const coinSpacing = (newPlatform.w - 60) / (coinCount - 1);
-            const spawnDiamondIndex = Math.random() < 0.25 ? Math.floor(Math.random() * coinCount) : -1;
+            const diamondBonus = this.playerStatsEngine ? this.playerStatsEngine.getDiamondChanceBonus() : 0;
+            const spawnDiamondIndex = Math.random() < (0.25 + diamondBonus) ? Math.floor(Math.random() * coinCount) : -1;
             const arcPeakHeight = Math.min(55, 32 + (coinCount * 4)); // Parabolic curve peaking 44-55px above platform
 
             for (let c = 0; c < coinCount; c++) {
@@ -12731,10 +14118,36 @@
           }
         }
 
+        // During Pursuer Chase phase, game speed increases by 15%
+        if (this.pursuerChaseActive) {
+          this.gameSpeed *= 1.15;
+        }
+
         // Distance & score accumulation
         const stepDist = (this.gameSpeed * 0.06);
         this.distance += stepDist;
-        this.score += stepDist * 1.5;
+        const scoreMult = this.playerStatsEngine ? this.playerStatsEngine.getScoreMultiplier() : 1.0;
+        this.score += stepDist * 1.5 * scoreMult;
+
+        // Pursuer Chase sequence: every 1,000m, trigger a 20-second phase
+        const currentPursuerMilestone = Math.floor(this.distance / 1000);
+        if (currentPursuerMilestone > this.lastPursuerMilestone && !this.pursuerChaseActive && this.state === 'PLAYING') {
+          this.lastPursuerMilestone = currentPursuerMilestone;
+          this.startPursuerChase();
+        }
+
+        // Pursuer Chase timer countdown
+        if (this.pursuerChaseActive) {
+          this.pursuerChaseTimer -= dt;
+          if (this.pursuerChaseTimer <= 0) {
+            this.endPursuerChase(true);
+          }
+        }
+
+        // Update Pursuer procedural physics & kinematics
+        if (this.pursuerChaseActive || this.pursuerLunge > 0 || this.pursuerEntrance > 0 || (this.pursuerSegments && this.pursuerSegments.length > 0)) {
+          this.updatePursuer(dt);
+        }
         if (this.missionManager) {
           this.missionManager.onRunDistanceUpdate(this.distance);
           this.missionManager.updateSurvivalDuration(dt);
@@ -12795,6 +14208,13 @@
         // Player physics
         this.player.vy += this.gravity;
         this.player.y += this.player.vy;
+
+        // Smooth spring-back (Lerp) towards horizontal anchor point to counteract drift
+        const anchorX = this.defaultPlayerX || 120;
+        this.player.x += (anchorX - this.player.x) * 0.05;
+
+        // Clamp player X within safe visible screen boundaries
+        this.player.x = Math.max(20, Math.min(this.width - this.player.w - 20, this.player.x));
 
         // Squash/Stretch recovery
         this.player.scaleX += (1 - this.player.scaleX) * 0.15;
@@ -12864,22 +14284,31 @@
 
         // Pit fall death handling
         if (this.player.y > this.height + 40) {
+          const anchorX = this.defaultPlayerX || 120;
           if (this.isFastStartActive()) {
             // Invulnerable Fast Start rescue: rocket runner safely back onto runway
-            const safePlatform = this.platforms.find(p => p.x + p.w > this.player.x + 10) || this.platforms[0];
+            const safePlatform = this.platforms.find(p => p.x + p.w > anchorX && p.x < this.width - 40) ||
+                                 this.platforms.find(p => p.x + p.w > 40) ||
+                                 this.platforms[0];
             if (safePlatform) {
-              this.player.x = safePlatform.x + 40;
+              const minSpawnX = Math.max(safePlatform.x + 20, 60);
+              const maxSpawnX = Math.min(safePlatform.x + safePlatform.w - this.player.w - 20, this.width - this.player.w - 60);
+              this.player.x = (maxSpawnX >= minSpawnX) ? Math.max(minSpawnX, Math.min(maxSpawnX, anchorX)) : Math.max(60, Math.min(this.width - this.player.w - 60, safePlatform.x + 40));
               this.player.y = safePlatform.y - this.player.h - 40;
               this.player.vy = -6;
               this.particles.createSpeedSonicRings(this.player.x, this.player.y);
             }
           } else {
             this.takeDamage(this.player.x);
-            if (this.lives > 0) {
+            if (this.state === 'PLAYING' && this.lives > 0) {
               // Find a safe upcoming platform to bounce back to
-              const safePlatform = this.platforms.find(p => p.x + p.w > this.player.x + 30) || this.platforms[0];
+              const safePlatform = this.platforms.find(p => p.x + p.w > anchorX && p.x < this.width - 40) ||
+                                   this.platforms.find(p => p.x + p.w > 40) ||
+                                   this.platforms[0];
               if (safePlatform) {
-                this.player.x = safePlatform.x + 50;
+                const minSpawnX = Math.max(safePlatform.x + 20, 60);
+                const maxSpawnX = Math.min(safePlatform.x + safePlatform.w - this.player.w - 20, this.width - this.player.w - 60);
+                this.player.x = (maxSpawnX >= minSpawnX) ? Math.max(minSpawnX, Math.min(maxSpawnX, anchorX)) : Math.max(60, Math.min(this.width - this.player.w - 60, safePlatform.x + 40));
                 this.player.y = safePlatform.y - this.player.h - 40;
                 this.player.vy = -6;
               }
@@ -12977,8 +14406,9 @@
             const dx = px - c.x;
             const dy = py - c.y;
             const dist = Math.hypot(dx, dy);
-            if (dist < 800) {
-              const pullSpeed = Math.min(30, Math.max(12, (1 - dist / 800) * 26 + 10));
+            const magnetRadius = 800 * (this.playerStatsEngine ? this.playerStatsEngine.getMagnetRangeMult() : 1.0);
+            if (dist < magnetRadius) {
+              const pullSpeed = Math.min(30, Math.max(12, (1 - dist / magnetRadius) * 26 + 10));
               const angle = Math.atan2(dy, dx);
               c.x += Math.cos(angle) * pullSpeed;
               c.y += Math.sin(angle) * pullSpeed;
@@ -13010,11 +14440,22 @@
                 }
               } else {
                 let coinGain = 1;
+                let skinBonusCoin = false;
+                const skinCoinBonus = this.playerStatsEngine ? this.playerStatsEngine.getCoinBonus() : 0;
+                if (skinCoinBonus > 0 && Math.random() < skinCoinBonus) {
+                  coinGain += 1;
+                  skinBonusCoin = true;
+                }
                 const doubleChance = this.upgradeManager ? this.upgradeManager.getCoinDoubleChance() : 0;
                 if (doubleChance > 0 && Math.random() < doubleChance) {
-                  coinGain = 2;
+                  coinGain = skinBonusCoin ? (coinGain + 1) : 2;
                   this.particles.createCelebrationExplosion(c.x, c.y, 14);
                   this.showToast('🪙 2x Double Gold!');
+                } else if (skinBonusCoin) {
+                  this.particles.createCelebrationExplosion(c.x, c.y, 12);
+                  const skin = this.skinManager ? this.skinManager.getSelectedSkin() : null;
+                  const label = (skin && skin.statBonus) ? skin.statBonus.label : '+Bonus Coin';
+                  this.showToast(`✨ ${label}!`);
                 }
                 this.runCoins += coinGain;
                 this.score += 10 * coinGain;
@@ -13108,7 +14549,8 @@
                 Storage.setInt(Storage.KEYS.ENEMIES_KILLED, this.totalEnemiesKilled);
 
                 // Reward bonus score and coins
-                const stompCoins = 3;
+                const stompBonus = this.playerStatsEngine ? this.playerStatsEngine.getStompBonusCoins() : 0;
+                const stompCoins = 3 + stompBonus;
                 const stompScore = 50;
                 this.runCoins += stompCoins;
                 this.totalCoins += stompCoins;
@@ -13118,7 +14560,7 @@
                 audio.jump();
                 audio.coin();
                 AndroidBridge.hapticMedium();
-                this.showToast('💥 STOMP! +50 pts & 3 coins');
+                this.showToast(`💥 STOMP! +50 pts & ${stompCoins} coins${stompBonus > 0 ? ' (Perk +'+stompBonus+')' : ''}`);
                 if (this.missionManager && typeof this.missionManager.onEnemyDefeated === 'function') {
                   this.missionManager.onEnemyDefeated();
                 }
@@ -13290,9 +14732,15 @@
           targetCamY = Math.min(115, excess * 0.54);
         }
 
+        // Camera zooms in slightly during Pursuer Chase (coordScale)
+        if (this.pursuerChaseActive) {
+          targetZoom *= 1.15;
+        }
+
         const camEase = 0.08;
         this.cameraZoom += (targetZoom - this.cameraZoom) * camEase;
         this.cameraOffsetY += (targetCamY - this.cameraOffsetY) * camEase;
+        this.effectiveCoordScale = this.coordScale * this.cameraZoom;
 
         // ----------------------------------------------------
         // Personal Best Ghost Runner Recording & Replay Logic
@@ -13365,13 +14813,17 @@
 
         // Apply screen shake
         ctx.save();
-        if (this.shakeTime > 0) {
+        const shakeEnabled = !this.settingsManager || this.settingsManager.get('screenShake');
+        if (this.shakeTime > 0 && shakeEnabled) {
           this.shakeTime--;
           const ox = (Math.random() - 0.5) * this.shakeMagnitude;
           const oy = (Math.random() - 0.5) * this.shakeMagnitude;
           ctx.translate(ox, oy);
+        } else {
+          this.shakeTime = 0;
         }
 
+        const isLowPerf = this.settingsManager && this.settingsManager.get('performanceMode') === 'LOW';
         const biome = this.getBlendedBiome();
 
         // 1. Dynamic Sky Gradient (Transitions with distance progression)
@@ -13383,7 +14835,7 @@
         ctx.fillRect(0, 0, this.width, this.height);
 
         // 2. Twinkling Background Stars (Night / Cyber zones)
-        if (biome.starsOpacity > 0.05) {
+        if (!isLowPerf && biome.starsOpacity > 0.05) {
           ctx.save();
           const time = performance.now();
           for (const s of this.stars) {
@@ -13453,8 +14905,10 @@
         this.drawDistantSkyline(ctx, biome);
 
         // 5. Dynamic Clouds with adaptive tints
-        for (const c of this.clouds) {
-          this.drawCloud(ctx, c, biome.cloudColor, biome.cloudShadow);
+        if (!isLowPerf) {
+          for (const c of this.clouds) {
+            this.drawCloud(ctx, c, biome.cloudColor, biome.cloudShadow);
+          }
         }
 
         // 6. Parallax Background Trees (Styles & foliage adapt to progression)
@@ -13525,6 +14979,11 @@
           ctx.restore();
         }
 
+        // 13.5 Giant Procedural Pursuer Entity (Glowing Mechanical Worm / Cyber-Leviathan)
+        if (this.pursuerChaseActive || this.pursuerLunge > 0 || this.pursuerEntrance > 0 || (this.state === 'GAMEOVER' && this.pursuerCaught)) {
+          this.drawPursuer(ctx);
+        }
+
         // 14. Player Character (matching selected skin)
         this.drawPlayer(ctx);
 
@@ -13535,6 +14994,11 @@
 
         // Restore Dynamic Altitude Camera Framing Matrix Transformation
         ctx.restore();
+
+        // 15.5 Pursuer Chase Screen-Space Threat Vignette
+        if (this.pursuerChaseActive) {
+          this.drawPursuerScreenVignette(ctx);
+        }
 
         // 16. Atmospheric Weather Screen Overlays (Rain droplets on camera, frosted ice filigree, sand haze)
         if (this.weatherManager) {
@@ -13551,6 +15015,445 @@
         this.particles.createMagnetSparkle(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
         this.showToast(`🧲 Coin Magnet Active! (${Math.round(this.magnetMaxDuration)}s)`);
         this.updateHUD();
+      }
+
+      // =====================================================================
+      // PURSUER CHASE SEQUENCE ENGINE (Procedural Mechanical Worm / Cyber-Ship)
+      // =====================================================================
+      initPursuer() {
+        this.pursuerW = 46;
+        this.pursuerCreep = 0;
+        this.pursuerX = -200;
+        this.pursuerY = this.height * 0.5;
+        this.pursuerTargetY = this.height * 0.5;
+        this.pursuerEntrance = 0;
+        this.pursuerLunge = 0;
+        this.pursuerJawAngle = 0.25;
+        this.pursuerSegments = [];
+        const segmentCount = 18;
+        for (let i = 0; i < segmentCount; i++) {
+          this.pursuerSegments.push({
+            x: -200 - i * 22,
+            y: this.height * 0.5,
+            radius: Math.max(10, 36 - i * 1.5),
+            angle: 0
+          });
+        }
+      }
+
+      startPursuerChase() {
+        this.pursuerChaseActive = true;
+        this.pursuerChaseTimer = this.pursuerDuration;
+        this.pursuerCaught = false;
+        this.pursuerEntrance = 0;
+        this.pursuerLunge = 0;
+        this.pursuerCreep = 0;
+        this.pursuerW = 46;
+        this.pursuerX = -200;
+        this.pursuerY = this.player.y;
+        this.pursuerTargetY = this.player.y;
+
+        // Initialize segments in a menacing trail off the left edge
+        if (!this.pursuerSegments || this.pursuerSegments.length === 0) {
+          this.initPursuer();
+        } else {
+          for (let i = 0; i < this.pursuerSegments.length; i++) {
+            this.pursuerSegments[i].x = this.pursuerX - i * 22;
+            this.pursuerSegments[i].y = this.pursuerY;
+          }
+        }
+
+        audio.pursuerSiren();
+        AndroidBridge.hapticHeavy();
+        this.shake(14, 24);
+        this.showToast('🚨 PURSUER DETECTED! SURVIVE 20 SECONDS!');
+        this.updateHUD();
+      }
+
+      endPursuerChase(evaded = true) {
+        if (!this.pursuerChaseActive && !evaded) return;
+        this.pursuerChaseActive = false;
+        this.pursuerChaseTimer = 0;
+
+        if (evaded && !this.pursuerCaught) {
+          audio.pursuerEvaded();
+          AndroidBridge.hapticSuccess();
+          this.score += 100;
+          this.showToast('🏆 PURSUER EVADED! +100 BONUS SCORE');
+          if (this.particles) {
+            this.particles.createCelebrationExplosion(Math.max(60, this.pursuerX), this.pursuerY, 40);
+          }
+        }
+        this.updateHUD();
+      }
+
+      triggerPursuerCatch() {
+        if (this.state !== 'PLAYING') return;
+        this.pursuerCaught = true;
+        this.pursuerChaseActive = false;
+        this.pursuerLunge = 1.0;
+
+        // Instantly snap pursuer head onto runner for the catastrophic lunge
+        this.pursuerX = this.player.x - 10;
+        this.pursuerY = this.player.y + this.player.h * 0.5;
+
+        audio.pursuerCatch();
+        AndroidBridge.hapticHeavy();
+        this.shake(22, 34);
+
+        const px = this.player.x + this.player.w / 2;
+        const py = this.player.y + this.player.h / 2;
+        if (this.particles) {
+          this.particles.createHurtBurst(px, py);
+          for (let i = 0; i < 22; i++) {
+            this.particles.create(px, py, 7, '#EF4444', 5.2, 4.0, 'star');
+            this.particles.create(px, py, 6, '#F97316', 4.5, 3.5, 'circle');
+            this.particles.create(px, py, 5, '#FDE047', 3.8, 3.0, 'diamond');
+          }
+        }
+
+        // Instant Game Over (without losing hearts)
+        this.triggerGameOver(true);
+      }
+
+      updatePursuer(dt) {
+        const time = performance.now();
+
+        if (this.pursuerChaseActive) {
+          // 1. Entrance & Stalking positioning with safe visual offset
+          this.pursuerEntrance = Math.min(1.0, this.pursuerEntrance + dt * 1.4);
+
+          // Safe visual offset: front of the Pursuer idles at X = -20 to 0 (hovering on the left edge)
+          // The pursuer head & mandibles extend this.pursuerW (46px) ahead of pursuerX
+          const idleFrontX = -10 + Math.sin(time * 0.003) * 10; // oscillates smoothly between -20 and 0
+          const baseTargetX = idleFrontX - this.pursuerW;
+
+          // Decay obstacle/stumble catch-up surge over time when running cleanly
+          if (this.pursuerCreep > 0) {
+            this.pursuerCreep = Math.max(0, this.pursuerCreep - dt * 20);
+          }
+
+          // Rubber-banding: if player slows down or falls behind their anchor, pursuer visually creeps closer
+          const anchorX = this.defaultPlayerX || 120;
+          const playerLag = Math.max(0, anchorX - this.player.x);
+
+          const offscreenStartX = -200 - this.pursuerW;
+          const entranceTargetX = offscreenStartX + (baseTargetX - offscreenStartX) * this.pursuerEntrance;
+          const stalkTargetX = entranceTargetX + (this.pursuerCreep || 0) + (playerLag * 0.6);
+
+          // Interpolate smoothly towards stalkTargetX (boss never physically pushes the player)
+          this.pursuerX += (stalkTargetX - this.pursuerX) * Math.min(1, dt * 3.2);
+
+          // 2. Catch-up Mechanic: if front bounding-box overlaps player's bounding-box, trigger Caught Game Over
+          const pursuerFront = this.pursuerX + this.pursuerW;
+          if (pursuerFront >= this.player.x) {
+            this.triggerPursuerCatch();
+            return;
+          }
+
+          // 3. Target Y: menacingly tracks the player's altitude with organic undulation
+          const undulation = Math.sin(time * 0.005) * 28 + Math.cos(time * 0.0028) * 12;
+          this.pursuerTargetY = (this.player.y + this.player.h * 0.5) + undulation;
+          // Clamp target inside vertical bounds
+          this.pursuerTargetY = Math.max(40, Math.min(this.height - 40, this.pursuerTargetY));
+          this.pursuerY += (this.pursuerTargetY - this.pursuerY) * Math.min(1, dt * 4.2);
+
+          // Animate mechanical jaws snapping with aggression
+          this.pursuerJawAngle = 0.22 + Math.abs(Math.sin(time * 0.007)) * 0.28;
+
+          // Emit procedural jet-plasma thruster particles from rear segments
+          if (this.particles && Math.random() < 0.65 && this.pursuerSegments.length > 0) {
+            const tail = this.pursuerSegments[this.pursuerSegments.length - 1];
+            this.particles.create(tail.x - 12, tail.y + (Math.random() - 0.5) * 14, 5, '#EF4444', 3.5, 2.0, 'circle');
+            this.particles.create(tail.x - 8, tail.y + (Math.random() - 0.5) * 10, 4, '#F97316', 3.0, 1.8, 'diamond');
+          }
+        } else if (this.pursuerCaught) {
+          // During Game Over lunge: lock onto player and clamp jaws
+          this.pursuerJawAngle = 0.08;
+          this.pursuerX = this.player.x - 8;
+          this.pursuerY = this.player.y + this.player.h * 0.5;
+        } else {
+          // Retreat smoothly off-screen when chase ends
+          this.pursuerX -= 340 * dt;
+        }
+
+        // Kinematic inverse constraint update for the worm segments
+        if (this.pursuerSegments && this.pursuerSegments.length > 0) {
+          // Head segment
+          this.pursuerSegments[0].x = this.pursuerX;
+          this.pursuerSegments[0].y = this.pursuerY;
+          this.pursuerSegments[0].angle = Math.atan2(this.pursuerTargetY - this.pursuerY, 30);
+
+          const segDist = 20;
+          for (let i = 1; i < this.pursuerSegments.length; i++) {
+            const prev = this.pursuerSegments[i - 1];
+            const curr = this.pursuerSegments[i];
+
+            const dx = prev.x - curr.x;
+            const dy = prev.y - curr.y;
+            const angle = Math.atan2(dy, dx);
+            curr.angle = angle;
+
+            // Maintain distance spacing
+            curr.x = prev.x - Math.cos(angle) * segDist;
+            curr.y = prev.y - Math.sin(angle) * segDist;
+          }
+        }
+      }
+
+      drawPursuer(ctx) {
+        if (!this.pursuerSegments || this.pursuerSegments.length === 0) return;
+        ctx.save();
+        const time = performance.now();
+
+        // 1. Draw procedural worm body segments from tail to head
+        for (let i = this.pursuerSegments.length - 1; i >= 0; i--) {
+          const seg = this.pursuerSegments[i];
+          const radius = seg.radius;
+          const pulse = (Math.sin(time * 0.006 - i * 0.45) + 1) * 0.5;
+
+          ctx.save();
+          ctx.translate(seg.x, seg.y);
+          ctx.rotate(seg.angle);
+
+          // Side articulated cyber-spikes / stabilizer fins
+          const finLength = radius * (1.2 + pulse * 0.25);
+          ctx.fillStyle = '#7F1D1D';
+          ctx.strokeStyle = '#EF4444';
+          ctx.lineWidth = 1.5;
+
+          // Top fin
+          ctx.beginPath();
+          ctx.moveTo(-radius * 0.3, -radius * 0.8);
+          ctx.lineTo(-radius * 0.8, -radius - finLength);
+          ctx.lineTo(radius * 0.3, -radius * 0.8);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Bottom fin
+          ctx.beginPath();
+          ctx.moveTo(-radius * 0.3, radius * 0.8);
+          ctx.lineTo(-radius * 0.8, radius + finLength);
+          ctx.lineTo(radius * 0.3, radius * 0.8);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Outer armor ring gradient (chitinous dark cyber-alloy)
+          const segGrad = ctx.createRadialGradient(-radius * 0.2, -radius * 0.2, 2, 0, 0, radius);
+          segGrad.addColorStop(0, '#374151');
+          segGrad.addColorStop(0.65, '#1F2937');
+          segGrad.addColorStop(1, '#111827');
+          ctx.fillStyle = segGrad;
+          ctx.strokeStyle = (i % 2 === 0) ? '#DC2626' : '#EF4444';
+          ctx.lineWidth = 2.4;
+
+          ctx.beginPath();
+          ctx.ellipse(0, 0, radius * 1.15, radius, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Internal glowing plasma power core
+          const coreGlow = 0.5 + pulse * 0.5;
+          ctx.fillStyle = `rgba(239, 68, 68, ${coreGlow})`;
+          ctx.shadowColor = '#EF4444';
+          ctx.shadowBlur = 10 * coreGlow;
+          ctx.beginPath();
+          ctx.arc(0, 0, radius * 0.38, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Cyber-energy conduit lines across segment
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = `rgba(254, 202, 202, ${0.4 + pulse * 0.5})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(-radius * 0.6, 0);
+          ctx.lineTo(radius * 0.6, 0);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+
+        // 2. Draw Apex Cyber-Maw (Pursuer Head & Mechanical Mandibles)
+        const head = this.pursuerSegments[0];
+        ctx.save();
+        ctx.translate(head.x, head.y);
+        ctx.rotate(head.angle);
+
+        const headW = 54;
+        const headH = 46;
+        const jawOpen = this.pursuerJawAngle || 0.25;
+
+        // Glowing internal maw inferno
+        ctx.shadowColor = '#DC2626';
+        ctx.shadowBlur = 24;
+        const mawGrad = ctx.createRadialGradient(8, 0, 4, 12, 0, 32);
+        mawGrad.addColorStop(0, '#FEF08A');
+        mawGrad.addColorStop(0.35, '#F97316');
+        mawGrad.addColorStop(0.8, '#DC2626');
+        mawGrad.addColorStop(1, 'rgba(153, 27, 27, 0)');
+        ctx.fillStyle = mawGrad;
+        ctx.beginPath();
+        ctx.arc(10, 0, 26, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Upper Mechanical Mandible Jaw
+        ctx.save();
+        ctx.rotate(-jawOpen);
+        ctx.fillStyle = '#1E293B';
+        ctx.strokeStyle = '#EF4444';
+        ctx.lineWidth = 2.4;
+        ctx.shadowColor = '#EF4444';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(-headW * 0.4, -headH * 0.4);
+        ctx.lineTo(headW * 0.45, -headH * 0.6);
+        ctx.lineTo(headW * 0.85, -headH * 0.15); // Razor tip
+        ctx.lineTo(headW * 0.2, -headH * 0.05); // Serrated inner tooth
+        ctx.lineTo(headW * 0.05, -headH * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Upper mandible teeth
+        ctx.fillStyle = '#FEE2E2';
+        for (let t = 0; t < 3; t++) {
+          const tx = headW * 0.2 + t * 14;
+          const ty = -headH * 0.12 - t * 4;
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.lineTo(tx + 6, ty + 8);
+          ctx.lineTo(tx - 3, ty + 6);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+
+        // Lower Mechanical Mandible Jaw
+        ctx.save();
+        ctx.rotate(jawOpen);
+        ctx.fillStyle = '#1E293B';
+        ctx.strokeStyle = '#EF4444';
+        ctx.lineWidth = 2.4;
+        ctx.shadowColor = '#EF4444';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(-headW * 0.4, headH * 0.4);
+        ctx.lineTo(headW * 0.45, headH * 0.6);
+        ctx.lineTo(headW * 0.85, headH * 0.15); // Razor tip
+        ctx.lineTo(headW * 0.2, headH * 0.05); // Serrated inner tooth
+        ctx.lineTo(headW * 0.05, headH * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Lower mandible teeth
+        ctx.fillStyle = '#FEE2E2';
+        for (let t = 0; t < 3; t++) {
+          const tx = headW * 0.2 + t * 14;
+          const ty = headH * 0.12 + t * 4;
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.lineTo(tx + 6, ty - 8);
+          ctx.lineTo(tx - 3, ty - 6);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+
+        // Armored Central Cranium Helmet
+        ctx.shadowBlur = 0;
+        const cranGrad = ctx.createLinearGradient(-headW * 0.4, 0, headW * 0.3, 0);
+        cranGrad.addColorStop(0, '#0F172A');
+        cranGrad.addColorStop(0.6, '#1E293B');
+        cranGrad.addColorStop(1, '#334155');
+        ctx.fillStyle = cranGrad;
+        ctx.strokeStyle = '#DC2626';
+        ctx.lineWidth = 2.5;
+
+        ctx.beginPath();
+        ctx.moveTo(-headW * 0.4, -headH * 0.45);
+        ctx.lineTo(headW * 0.15, -headH * 0.35);
+        ctx.lineTo(headW * 0.35, 0);
+        ctx.lineTo(headW * 0.15, headH * 0.35);
+        ctx.lineTo(-headW * 0.4, headH * 0.45);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Multi-cluster Glowing Cyber-Optic Eyes
+        const eyePulse = (Math.sin(time * 0.009) + 1) * 0.5;
+        const eyes = [
+          { x: headW * 0.05, y: -headH * 0.22, r: 4.5 },
+          { x: headW * 0.18, y: -headH * 0.12, r: 3.5 },
+          { x: headW * 0.05, y: headH * 0.22, r: 4.5 },
+          { x: headW * 0.18, y: headH * 0.12, r: 3.5 },
+          { x: -headW * 0.08, y: 0, r: 5.0 }
+        ];
+
+        for (const eye of eyes) {
+          ctx.shadowColor = '#EF4444';
+          ctx.shadowBlur = 12 + eyePulse * 8;
+          ctx.fillStyle = '#EF4444';
+          ctx.beginPath();
+          ctx.arc(eye.x, eye.y, eye.r, 0, Math.PI * 2);
+          ctx.fill();
+
+          // High-intensity white pupil glint
+          ctx.fillStyle = '#FFFFFF';
+          ctx.beginPath();
+          ctx.arc(eye.x + 1, eye.y - 1, eye.r * 0.45, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+        ctx.restore();
+      }
+
+      drawPursuerScreenVignette(ctx) {
+        ctx.save();
+        const time = performance.now();
+        const pulse = (Math.sin(time * 0.008) + 1) * 0.5;
+
+        // 1. Threat warning vignette on the left border
+        const leftVignetteWidth = Math.min(180, this.width * 0.28);
+        const leftGrad = ctx.createLinearGradient(0, 0, leftVignetteWidth, 0);
+        leftGrad.addColorStop(0, `rgba(220, 38, 38, ${0.45 + pulse * 0.35})`);
+        leftGrad.addColorStop(0.5, `rgba(239, 68, 68, ${0.2 + pulse * 0.15})`);
+        leftGrad.addColorStop(1, 'rgba(220, 38, 38, 0)');
+
+        ctx.fillStyle = leftGrad;
+        ctx.fillRect(0, 0, leftVignetteWidth, this.height);
+
+        // 2. Corner warning flashes
+        const cornerSize = 90;
+        const cornerGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, cornerSize);
+        cornerGrad.addColorStop(0, `rgba(239, 68, 68, ${0.35 + pulse * 0.25})`);
+        cornerGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        ctx.fillStyle = cornerGrad;
+        ctx.fillRect(0, 0, cornerSize, cornerSize);
+
+        // Bottom left corner
+        const cornerGradB = ctx.createRadialGradient(0, this.height, 5, 0, this.height, cornerSize);
+        cornerGradB.addColorStop(0, `rgba(239, 68, 68, ${0.35 + pulse * 0.25})`);
+        cornerGradB.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        ctx.fillStyle = cornerGradB;
+        ctx.fillRect(0, this.height - cornerSize, cornerSize, cornerSize);
+
+        // 3. Subtle hazard stripes along the left edge
+        ctx.strokeStyle = `rgba(254, 240, 138, ${0.25 + pulse * 0.25})`;
+        ctx.lineWidth = 3;
+        const stripeSpacing = 28;
+        const offset = (time * 0.04) % stripeSpacing;
+        for (let y = -stripeSpacing + offset; y < this.height + stripeSpacing; y += stripeSpacing) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(14, y + 14);
+          ctx.stroke();
+        }
+
+        ctx.restore();
       }
 
       drawPowerup(ctx, p) {
@@ -16076,6 +17979,18 @@
             const r = skin.rarity.toLowerCase();
             this.menuCharRarityEl.textContent = r.toUpperCase();
             this.menuCharRarityEl.className = `menu-char-rarity-pill ${r}`;
+          }
+          const bonusPill = document.getElementById('menuCharBonusPill');
+          const bonusIcon = document.getElementById('menuCharBonusIcon');
+          const bonusLabel = document.getElementById('menuCharBonusLabel');
+          if (bonusPill && bonusLabel && bonusIcon) {
+            if (skin.statBonus) {
+              bonusIcon.textContent = skin.statBonus.icon;
+              bonusLabel.textContent = skin.statBonus.label;
+              bonusPill.style.display = 'inline-flex';
+            } else {
+              bonusPill.style.display = 'none';
+            }
           }
         }
 
