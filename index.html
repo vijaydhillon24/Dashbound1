@@ -5581,7 +5581,7 @@
                   <span id="hsLocalDeltaText">0 m vs PB</span>
                 </div>
                 <div class="hs-metric-box best">
-                  <div class="hs-metric-tag">PERSONAL BEST</div>
+                  <div class="hs-metric-tag" id="hsLocalBestTag">PERSONAL BEST</div>
                   <div class="hs-metric-val" id="hsLocalBestDist">0 m</div>
                 </div>
               </div>
@@ -11354,6 +11354,7 @@
         this.maxLives = 3;
 
         // Local storage persistence via Centralized Storage Manager
+        this.selectedDifficulty = Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
         this.highDistance = 0;
         this.highScore = 0;
         this.totalCoins = 0;
@@ -11412,6 +11413,7 @@
           jumpTrailTimer: 0,
           jumpTrailIsDouble: false,
           isStomping: false,
+          coyoteTimer: 0,
           groundedPlatform: null
         };
 
@@ -11545,17 +11547,35 @@
       }
 
       loadStats() {
-        this.highDistance = Storage.getInt(Storage.KEYS.HIGH_DIST, 0);
-        this.highScore = Storage.getInt(Storage.KEYS.HIGH_SCORE, 0);
+        const diff = this.selectedDifficulty || Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
+        const diffHighDistKey = `${Storage.KEYS.HIGH_DIST}_${diff}`;
+        const diffHighScoreKey = `${Storage.KEYS.HIGH_SCORE}_${diff}`;
+
+        let loadedHighDist = Storage.getInt(diffHighDistKey, -1);
+        let loadedHighScore = Storage.getInt(diffHighScoreKey, -1);
+
+        // Fallback to legacy single key for MEDIUM if difficulty-specific key not yet populated
+        if (loadedHighDist === -1) {
+          loadedHighDist = (diff === 'MEDIUM') ? Storage.getInt(Storage.KEYS.HIGH_DIST, 0) : 0;
+          Storage.setInt(diffHighDistKey, loadedHighDist);
+        }
+        if (loadedHighScore === -1) {
+          loadedHighScore = (diff === 'MEDIUM') ? Storage.getInt(Storage.KEYS.HIGH_SCORE, 0) : 0;
+          Storage.setInt(diffHighScoreKey, loadedHighScore);
+        }
+
+        this.highDistance = loadedHighDist;
+        this.highScore = loadedHighScore;
         this.totalCoins = Storage.getInt(Storage.KEYS.TOTAL_COINS, 0);
         this.diamonds = Storage.getInt(Storage.KEYS.DIAMONDS, 0);
         this.totalEnemiesKilled = Storage.getInt(Storage.KEYS.ENEMIES_KILLED, 0);
-        this.savedGhostTrajectory = Storage.getJSON(Storage.KEYS.GHOST_TRAJECTORY, null);
+        this.savedGhostTrajectory = Storage.getJSON(`${Storage.KEYS.GHOST_TRAJECTORY}_${diff}`, null) || Storage.getJSON(Storage.KEYS.GHOST_TRAJECTORY, null);
       }
 
       saveStats() {
-        Storage.setInt(Storage.KEYS.HIGH_DIST, this.highDistance);
-        Storage.setInt(Storage.KEYS.HIGH_SCORE, this.highScore);
+        const diff = this.selectedDifficulty || Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
+        Storage.setInt(`${Storage.KEYS.HIGH_DIST}_${diff}`, this.highDistance);
+        Storage.setInt(`${Storage.KEYS.HIGH_SCORE}_${diff}`, this.highScore);
         Storage.setInt(Storage.KEYS.TOTAL_COINS, this.totalCoins);
         Storage.setInt(Storage.KEYS.DIAMONDS, this.diamonds || 0);
         Storage.setInt(Storage.KEYS.ENEMIES_KILLED, this.totalEnemiesKilled || 0);
@@ -12407,17 +12427,79 @@
       }
 
       initBackgroundDecor() {
-        // Dynamic Clouds
+        // Multi-tiered animated floating clouds with parallax depth layers
         this.clouds = [];
-        for (let i = 0; i < 7; i++) {
+        const cloudCount = 10;
+        for (let i = 0; i < cloudCount; i++) {
+          // 3 depth layers: 0 = distant cirrus (slow), 1 = mid cumulus, 2 = foreground fluffy (fast)
+          const layer = i % 3;
+          let w, h, baseY, parallaxFactor, windDrift, alpha, bobAmp, bobSpeed, pulseAmp;
+
+          if (layer === 0) {
+            // Distant high clouds: slow subtle drift, higher in the sky
+            w = 75 + Math.random() * 45;
+            h = 22 + Math.random() * 10;
+            baseY = 20 + Math.random() * (this.height * 0.18);
+            parallaxFactor = 0.022;
+            windDrift = 0.08 + Math.random() * 0.06;
+            alpha = 0.45 + Math.random() * 0.18;
+            bobAmp = 3.5 + Math.random() * 2.5;
+            bobSpeed = 0.0012 + Math.random() * 0.0008;
+            pulseAmp = 0.02;
+          } else if (layer === 1) {
+            // Mid-sky cumulus: balanced scale and natural floating bob
+            w = 110 + Math.random() * 55;
+            h = 32 + Math.random() * 16;
+            baseY = 35 + Math.random() * (this.height * 0.24);
+            parallaxFactor = 0.052;
+            windDrift = 0.16 + Math.random() * 0.12;
+            alpha = 0.70 + Math.random() * 0.15;
+            bobAmp = 6.0 + Math.random() * 3.5;
+            bobSpeed = 0.0018 + Math.random() * 0.0010;
+            pulseAmp = 0.035;
+          } else {
+            // Foreground fluffy clouds: large puffy silhouette with sunlit rim highlights
+            w = 155 + Math.random() * 70;
+            h = 44 + Math.random() * 20;
+            baseY = 55 + Math.random() * (this.height * 0.22);
+            parallaxFactor = 0.088;
+            windDrift = 0.26 + Math.random() * 0.18;
+            alpha = 0.88 + Math.random() * 0.10;
+            bobAmp = 8.5 + Math.random() * 4.5;
+            bobSpeed = 0.0024 + Math.random() * 0.0012;
+            pulseAmp = 0.05;
+          }
+
+          // Procedural multi-puff cluster geometry for organic cloud shapes
+          const puffs = [
+            { xRatio: 0.18, yRatio: 0.55, rRatio: 0.82 },
+            { xRatio: 0.38, yRatio: 0.35, rRatio: 1.15 },
+            { xRatio: 0.62, yRatio: 0.42, rRatio: 1.05 },
+            { xRatio: 0.82, yRatio: 0.60, rRatio: 0.78 },
+            { xRatio: 0.50, yRatio: 0.65, rRatio: 0.95 }
+          ];
+
           this.clouds.push({
-            x: Math.random() * this.width,
-            y: Math.random() * (this.height * 0.35) + 30,
-            w: Math.random() * 80 + 90,
-            h: Math.random() * 25 + 30,
-            speed: Math.random() * 0.2 + 0.1
+            x: (i / cloudCount) * this.width + (Math.random() - 0.5) * 80,
+            baseY,
+            y: baseY,
+            w,
+            h,
+            layer,
+            parallaxFactor,
+            windDrift,
+            alpha,
+            bobAmp,
+            bobSpeed,
+            bobPhase: Math.random() * Math.PI * 2,
+            pulseSpeed: 0.0015 + Math.random() * 0.0015,
+            pulseAmp,
+            puffs
           });
         }
+
+        // Sort clouds by layer so distant clouds draw behind near clouds
+        this.clouds.sort((a, b) => a.layer - b.layer);
 
         // Twinkling Background Stars (Night/Cyber Zones)
         this.stars = [];
@@ -12447,6 +12529,29 @@
             color: initialBiome.treeColors[i % initialBiome.treeColors.length],
             trunk: initialBiome.treeTrunk
           });
+        }
+      }
+
+      updateClouds(dt, scrollAmount = 0) {
+        const time = performance.now();
+        const frameDt = Math.max(0.001, Math.min(dt || 0.016, 0.1));
+
+        for (const cloud of this.clouds) {
+          // Horizontal displacement combining atmospheric wind drift and parallax scroll speed
+          cloud.x -= (cloud.windDrift * frameDt * 60) + (scrollAmount * cloud.parallaxFactor);
+
+          // Organic sinusoidal floating animation (vertical bobbing altitude)
+          cloud.y = cloud.baseY + Math.sin(time * cloud.bobSpeed + cloud.bobPhase) * cloud.bobAmp;
+
+          // Seamless screen wrap-around when cloud drifts off the left screen edge
+          if (cloud.x + cloud.w * 1.3 < -80) {
+            cloud.x = this.width + 40 + Math.random() * 60;
+            // Slightly re-randomize altitude within layer bounds when respawning
+            const heightSpan = cloud.layer === 0 ? 0.18 : (cloud.layer === 1 ? 0.24 : 0.22);
+            const heightOffset = cloud.layer === 0 ? 20 : (cloud.layer === 1 ? 35 : 55);
+            cloud.baseY = heightOffset + Math.random() * (this.height * heightSpan);
+            cloud.bobPhase = Math.random() * Math.PI * 2;
+          }
         }
       }
 
@@ -12647,6 +12752,8 @@
         this.baseSpeed = config.baseSpeed;
         this.baseMinObstacleDist = config.baseMinObstacleDist;
         this.applyDifficultyUI();
+        this.loadStats();
+        this.updateHUD();
       }
 
       applyDifficultyUI() {
@@ -12821,6 +12928,7 @@
         this.player.onGround = true;
         this.player.groundedPlatform = initialPlatform;
         this.player.isStomping = false;
+        this.player.coyoteTimer = 0;
         this.player.jumpsLeft = 2;
         this.player.invulnerableTimer = 0;
         this.player.jumpTrailTimer = 0;
@@ -12943,7 +13051,12 @@
           // Calculate precise foot coordinates at jump launch point
           const footX = this.player.x + this.player.w / 2;
           const footY = this.player.y + this.player.h;
-          const isDoubleJump = (this.player.jumpsLeft < 2);
+          const isGroundJump = (this.player.onGround || (this.player.coyoteTimer && this.player.coyoteTimer > 0));
+          const isDoubleJump = !isGroundJump;
+
+          if (this.player.coyoteTimer > 0) {
+            this.player.coyoteTimer = 0;
+          }
 
           this.player.vy = this.jumpForce;
           this.player.scaleX = 0.75;
@@ -13106,6 +13219,8 @@
           // If the run sets a new High Distance, compress and save this trajectory array to localStorage (capped at max 1,500 data points)
           if (this.currentTrajectory && this.currentTrajectory.length > 0) {
             const cappedTrajectory = this.currentTrajectory.slice(0, 1500);
+            const diff = this.selectedDifficulty || Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
+            Storage.setJSON(`${Storage.KEYS.GHOST_TRAJECTORY}_${diff}`, cappedTrajectory);
             Storage.setJSON(Storage.KEYS.GHOST_TRAJECTORY, cappedTrajectory);
             this.savedGhostTrajectory = cappedTrajectory;
           }
@@ -13359,11 +13474,13 @@
       renderHighScoreBenchmark(currentDist, prevHighDist, isNewRecord) {
         const dist = Math.floor(currentDist);
         const bestDist = Math.max(dist, this.highDistance);
+        const diffName = (this.selectedDifficulty || 'MEDIUM').toUpperCase();
 
-        // Record into local runs history
+        // Record into local runs history per difficulty
+        const runsStorageKey = `dashbound_local_top_runs_${diffName}`;
         let localRuns = [];
         try {
-          localRuns = JSON.parse(localStorage.getItem('dashbound_local_top_runs') || '[]');
+          localRuns = JSON.parse(localStorage.getItem(runsStorageKey) || '[]');
         } catch (e) {
           localRuns = [];
         }
@@ -13376,13 +13493,17 @@
         localRuns.sort((a, b) => b.dist - a.dist);
         // Keep top 5 and mark which one is the current run
         const top5 = localRuns.slice(0, 5);
-        localStorage.setItem('dashbound_local_top_runs', JSON.stringify(
+        localStorage.setItem(runsStorageKey, JSON.stringify(
           top5.map(r => ({ dist: r.dist, score: r.score, date: r.date === 'Just now' ? 'Recent' : r.date }))
         ));
 
         // 1. Local Benchmark Updates
         const localCurrentEl = document.getElementById('hsLocalCurrentDist');
         const localBestEl = document.getElementById('hsLocalBestDist');
+        const localBestTag = document.getElementById('hsLocalBestTag') || document.querySelector('.hs-metric-box.best .hs-metric-tag');
+        if (localBestTag) {
+          localBestTag.textContent = `PERSONAL BEST (${diffName})`;
+        }
         const localBadge = document.getElementById('hsLocalDeltaBadge');
         const localDeltaSign = document.getElementById('hsLocalDeltaSign');
         const localDeltaText = document.getElementById('hsLocalDeltaText');
@@ -13718,6 +13839,12 @@
         this.coinsEl.textContent = this.runCoins;
         this.distEl.textContent = `${Math.floor(this.distance)}m`;
         this.highDistEl.textContent = `High: ${this.highDistance}m`;
+
+        // Update Main Menu stats card if present
+        const menuHighDist = document.getElementById('menuHighDist');
+        const menuHighScore = document.getElementById('menuHighScore');
+        if (menuHighDist) menuHighDist.textContent = `${this.highDistance} m`;
+        if (menuHighScore) menuHighScore.textContent = this.highScore;
 
         // Update fast pace breathing rhythm when sprinting at top speed or in Fast Start
         if (this.hudBar) {
@@ -14209,9 +14336,19 @@
         this.player.vy += this.gravity;
         this.player.y += this.player.vy;
 
-        // Smooth spring-back (Lerp) towards horizontal anchor point to counteract drift
-        const anchorX = this.defaultPlayerX || 120;
-        this.player.x += (anchorX - this.player.x) * 0.05;
+        // Smooth spring-back (Lerp) towards horizontal anchor point to counteract drift,
+        // but ONLY if the player is NOT currently grounded on a moving platform with horizontal motion
+        const isGroundedOnHorizontalMovingPlatform = (
+          this.player.onGround &&
+          this.player.groundedPlatform &&
+          this.player.groundedPlatform.type === 'moving' &&
+          this.player.groundedPlatform.moveAxis === 'horizontal'
+        );
+
+        if (!isGroundedOnHorizontalMovingPlatform) {
+          const anchorX = this.defaultPlayerX || 120;
+          this.player.x += (anchorX - this.player.x) * 0.05;
+        }
 
         // Clamp player X within safe visible screen boundaries
         this.player.x = Math.max(20, Math.min(this.width - this.player.w - 20, this.player.x));
@@ -14280,6 +14417,22 @@
 
         if (!this.player.onGround) {
           this.player.groundedPlatform = null;
+
+          // Coyote Time: if the player just ran off an edge (wasOnGround but not landing on any platform, falling with positive vy)
+          if (wasOnGround && this.player.vy > 0) {
+            this.player.coyoteTimer = 8; // approx 0.13 seconds at 60fps
+          }
+        } else {
+          // Reset coyoteTimer while grounded
+          this.player.coyoteTimer = 0;
+        }
+
+        // Coyote Timer countdown & air-jump allowance clamping
+        if (this.player.coyoteTimer > 0) {
+          this.player.coyoteTimer--;
+          if (this.player.coyoteTimer === 0 && this.player.jumpsLeft === 2) {
+            this.player.jumpsLeft = 1; // deduct ground jump after coyote window expires
+          }
         }
 
         // Pit fall death handling
@@ -14682,16 +14835,63 @@
           }
         }
 
-        // Move background parallax
-        for (const cloud of this.clouds) {
-          cloud.x -= cloud.speed + (scrollAmount * 0.05);
-          if (cloud.x + cloud.w < -50) {
-            cloud.x = this.width + 50;
-            cloud.y = Math.random() * (this.height * 0.35) + 30;
-            cloud.w = Math.random() * 80 + 90;
-            cloud.h = Math.random() * 25 + 30;
+        // Pursuer obstacle crush check: instantly remove obstacles and items that pass behind the boss face, with particle juice
+        if (this.pursuerChaseActive) {
+          const pursuerFrontX = this.pursuerX + this.pursuerW;
+
+          // 1. Enemies: emit spiky red energy burst upon being crushed
+          for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const e = this.enemies[i];
+            if (e.x < pursuerFrontX) {
+              if (this.particles) {
+                this.particles.create(e.x, e.y, 8, '#EF4444', 3.5, 3.5, 'star');
+                this.particles.create(e.x, e.y, 5, '#DC2626', 2.8, 3.0, 'circle');
+              }
+              this.enemies.splice(i, 1);
+            }
+          }
+
+          // 2. Spikes: emit stone/gray shard burst upon being crushed
+          for (let i = this.spikes.length - 1; i >= 0; i--) {
+            const s = this.spikes[i];
+            if (s.x < pursuerFrontX) {
+              if (this.particles) {
+                this.particles.create(s.x, s.y, 7, '#94A3B8', 3.2, 3.0, 'circle');
+                this.particles.create(s.x, s.y, 4, '#64748B', 2.6, 2.5, 'diamond');
+              }
+              this.spikes.splice(i, 1);
+            }
+          }
+
+          // 3. Barriers: emit stone / energy debris burst upon being crushed
+          for (let i = this.barriers.length - 1; i >= 0; i--) {
+            const b = this.barriers[i];
+            if (b.x < pursuerFrontX) {
+              if (this.particles) {
+                const debrisColor = b.type === 'stone' ? '#78716C' : '#06B6D4';
+                this.particles.create(b.x + (b.w ? b.w / 2 : 0), b.y + (b.h ? b.h / 2 : 0), 8, debrisColor, 3.4, 3.2, b.type === 'stone' ? 'circle' : 'star');
+              }
+              this.barriers.splice(i, 1);
+            }
+          }
+
+          // 4. Coins: quietly remove without particles
+          for (let i = this.coins.length - 1; i >= 0; i--) {
+            if (this.coins[i].x < pursuerFrontX) {
+              this.coins.splice(i, 1);
+            }
+          }
+
+          // 5. Powerups: quietly remove without particles
+          for (let i = this.powerups.length - 1; i >= 0; i--) {
+            if (this.powerups[i].x < pursuerFrontX) {
+              this.powerups.splice(i, 1);
+            }
           }
         }
+
+        // Move background parallax
+        this.updateClouds(dt, scrollAmount);
         // 3rd Deep Parallax Background Layer (scrolls at scrollAmount * 0.08)
         this.distantSkylineX = (this.distantSkylineX || 0) + scrollAmount * 0.08;
 
@@ -15860,29 +16060,65 @@
 
       drawCloud(ctx, c, cloudColor = 'rgba(255, 255, 255, 0.85)', cloudShadow = 'rgba(186, 230, 253, 0.45)') {
         ctx.save();
+        const time = performance.now();
         const x = c.x;
-        const y = c.y;
+        const y = c.y !== undefined ? c.y : (c.baseY + Math.sin(time * (c.bobSpeed || 0.002) + (c.bobPhase || 0)) * (c.bobAmp || 6));
         const w = c.w;
         const h = c.h;
-        const r = h / 2;
+        const alpha = c.alpha !== undefined ? c.alpha : 0.8;
 
-        // Soft cloud shadow underbelly
+        // Subtle organic puff breathing/expansion oscillation
+        const pulse = 1.0 + Math.sin(time * (c.pulseSpeed || 0.002) + (c.bobPhase || 0)) * (c.pulseAmp || 0.03);
+
+        ctx.globalAlpha = alpha;
+
+        const puffs = c.puffs || [
+          { xRatio: 0.18, yRatio: 0.55, rRatio: 0.82 },
+          { xRatio: 0.38, yRatio: 0.35, rRatio: 1.15 },
+          { xRatio: 0.62, yRatio: 0.42, rRatio: 1.05 },
+          { xRatio: 0.82, yRatio: 0.60, rRatio: 0.78 },
+          { xRatio: 0.50, yRatio: 0.65, rRatio: 0.95 }
+        ];
+
+        // 1. Soft volumetric cloud shadow underbelly
         ctx.fillStyle = cloudShadow;
         ctx.beginPath();
-        ctx.arc(x + r, y + r + 3, r, 0, Math.PI * 2);
-        ctx.arc(x + w * 0.4, y + r * 0.7 + 3, r * 1.3, 0, Math.PI * 2);
-        ctx.arc(x + w * 0.7, y + r * 0.9 + 3, r * 1.1, 0, Math.PI * 2);
-        ctx.arc(x + w - r, y + r + 3, r, 0, Math.PI * 2);
+        const shadowOffsetY = 3.6 * pulse;
+        for (const p of puffs) {
+          const px = x + p.xRatio * w;
+          const py = y + p.yRatio * h + shadowOffsetY;
+          const pr = (h * 0.5) * p.rRatio * pulse;
+          ctx.arc(px, py, pr, 0, Math.PI * 2);
+        }
         ctx.fill();
 
-        // Main puffy body
+        // 2. Main luminous cloud body (tinted dynamically to match current biome)
         ctx.fillStyle = cloudColor;
         ctx.beginPath();
-        ctx.arc(x + r, y + r, r, 0, Math.PI * 2);
-        ctx.arc(x + w * 0.4, y + r * 0.7, r * 1.3, 0, Math.PI * 2);
-        ctx.arc(x + w * 0.7, y + r * 0.9, r * 1.1, 0, Math.PI * 2);
-        ctx.arc(x + w - r, y + r, r, 0, Math.PI * 2);
+        for (const p of puffs) {
+          const px = x + p.xRatio * w;
+          const py = y + p.yRatio * h;
+          const pr = (h * 0.5) * p.rRatio * pulse;
+          ctx.arc(px, py, pr, 0, Math.PI * 2);
+        }
         ctx.fill();
+
+        // 3. Top sunlit rim highlights on upper lobes (adds depth & luster)
+        if (c.layer !== 0) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.30)';
+          ctx.beginPath();
+          for (let i = 1; i <= 2; i++) {
+            const p = puffs[i];
+            if (p) {
+              const px = x + p.xRatio * w - (h * 0.07);
+              const py = y + p.yRatio * h - (h * 0.12);
+              const pr = (h * 0.34) * p.rRatio * pulse;
+              ctx.arc(px, py, pr, 0, Math.PI * 2);
+            }
+          }
+          ctx.fill();
+        }
+
         ctx.restore();
       }
 
@@ -18041,8 +18277,11 @@
 
         if (!this.isConsentModalOpen) {
           this.update(dt);
-          if (this.state !== 'PLAYING' && this.particles.particles.length > 0) {
-            this.particles.update();
+          if (this.state !== 'PLAYING') {
+            this.updateClouds(dt, 0);
+            if (this.particles.particles.length > 0) {
+              this.particles.update();
+            }
           }
         }
         this.draw();
