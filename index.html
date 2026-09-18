@@ -24,7 +24,9 @@
       width: 100%;
       height: 100%;
       width: var(--app-width, 100vw);
-      height: var(--app-height, 100dvh);
+      height: var(--app-height, 100vh);
+      max-width: var(--app-width, 100vw);
+      max-height: var(--app-height, 100vh);
       overflow: hidden;
       position: fixed;
       inset: 0;
@@ -32,7 +34,7 @@
       left: 0;
       margin: 0;
       padding: 0;
-      background-color: #79BFE7;
+      background-color: #0F172A;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     #gameContainer {
@@ -40,7 +42,9 @@
       width: 100%;
       height: 100%;
       width: var(--app-width, 100vw);
-      height: var(--app-height, 100dvh);
+      height: var(--app-height, 100vh);
+      max-width: var(--app-width, 100vw);
+      max-height: var(--app-height, 100vh);
       overflow: hidden;
       box-sizing: border-box;
     }
@@ -70,13 +74,18 @@
     }
     canvas {
       display: block;
-      width: 100%;
-      height: 100%;
       image-rendering: -moz-crisp-edges;
       image-rendering: -webkit-crisp-edges;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       image-rendering: -webkit-optimize-contrast;
+    }
+    #gameCanvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
     }
 
     /* In-Game HUD matching image.png & ultra-wide notch safe areas */
@@ -752,6 +761,8 @@
       width: 100%;
       height: 100%;
       max-height: 100%;
+      min-height: 0;
+      flex-shrink: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -800,7 +811,7 @@
     .info-card,
     .daily-missions-card,
     .privacy-reader-content,
-    .customizer-skins-list,
+    .customizer-carousel-view,
     .hs-records-list,
     .hs-bar-container,
     .distance-container,
@@ -1928,6 +1939,8 @@
       width: 100%;
       max-width: 920px;
       max-height: 100%;
+      min-height: 0;
+      flex-shrink: 1;
       padding: clamp(6px, 1.2vh, 10px);
       margin: auto;
       box-sizing: border-box;
@@ -2150,110 +2163,9 @@
     .pop-anim {
       animation: popAnim 0.5s ease-out;
     }
-    @media (max-width: 720px) and (orientation: landscape) and (min-height: 520px) {
-      .menu-container {
-        flex-direction: column;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-y: contain;
-        max-height: 100%;
-        padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
-        gap: 12px;
-      }
-    }
-    @media (max-height: 440px) {
-      .game-logo {
-        font-size: 28px;
-        margin-bottom: 2px;
-      }
-      .subtitle {
-        display: none !important;
-      }
-      .stats-card {
-        padding: 6px 14px;
-        gap: 14px;
-        margin-bottom: 8px;
-      }
-      .menu-char-widget {
-        padding: 4px 10px 3px;
-        margin-bottom: 6px;
-        max-width: 200px;
-      }
-      .menu-char-canvas-wrap {
-        width: 84px;
-        height: 64px;
-      }
-      #menuCharCanvas {
-        width: 84px;
-        height: 64px;
-      }
-      .menu-char-badge {
-        font-size: 7.5px;
-        padding: 1px 6px;
-      }
-      #menuCharName {
-        font-size: 11px;
-      }
-      .diff-selector-card {
-        padding: 4px 8px;
-        margin-bottom: 6px;
-      }
-      .diff-btn {
-        padding: 4px 8px;
-        font-size: 11px;
-      }
-      .btn {
-        padding: 7px 14px;
-        font-size: 13px;
-        min-width: 110px;
-      }
-      .btn.btn-play {
-        padding: 8px 18px;
-        font-size: 14px;
-      }
-      .help-hint {
-        display: none;
-      }
-      .daily-missions-card {
-        padding: 8px 12px;
-        gap: 6px;
-      }
-      .mission-item {
-        padding: 5px 8px;
-        gap: 6px;
-      }
-      .mission-icon-box {
-        width: 26px;
-        height: 26px;
-        font-size: 13px;
-      }
-      .streak-badge {
-        padding: 4px 10px;
-        margin-bottom: 6px;
-        border-radius: 10px;
-      }
-      .streak-flame-icon {
-        font-size: 16px;
-      }
-      .streak-count-text {
-        font-size: 10.5px;
-      }
-      .streak-desc-line {
-        font-size: 9px;
-      }
-      .streak-action-btn {
-        padding: 3px 7px;
-        font-size: 9.5px;
-      }
-      .streak-day-box {
-        padding: 4px 2px;
-      }
-      .day-box-icon {
-        font-size: 14px;
-      }
-      .day-box-coins {
-        font-size: 9.5px;
-      }
+    /* Clean responsive spacing base */
+    .menu-container {
+      transition: gap 0.25s ease, padding 0.25s ease;
     }
 
     /* Daily Streak Badge & Modal Styles */
@@ -2416,6 +2328,112 @@
     #streakModal.active {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    /* Custom Exit Confirmation Modal */
+    #exitModal {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      background: rgba(10, 15, 29, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+    }
+    #exitModal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .exit-modal-card {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+      border: 1.5px solid rgba(244, 63, 94, 0.4);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 24px rgba(244, 63, 94, 0.25);
+      border-radius: 16px;
+      padding: clamp(16px, 3vh, 24px) clamp(20px, 4vw, 28px);
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-sizing: border-box;
+      transform: scale(0.92);
+      transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #exitModal.active .exit-modal-card {
+      transform: scale(1);
+    }
+    .exit-modal-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1.5px solid rgba(244, 63, 94, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #FB7185;
+    }
+    .exit-modal-title {
+      font-size: clamp(16px, 2.8vh, 19px);
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+    }
+    .exit-modal-desc {
+      font-size: clamp(12px, 2.2vh, 13.5px);
+      color: #94A3B8;
+      line-height: 1.5;
+      margin: 0 0 20px 0;
+    }
+    .exit-modal-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+    .exit-modal-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: clamp(12px, 2.2vh, 13px);
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      touch-action: manipulation;
+    }
+    .exit-modal-btn:active {
+      transform: scale(0.96);
+    }
+    .exit-btn-cancel {
+      background: rgba(51, 65, 85, 0.8);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .exit-btn-confirm {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
     }
 
     /* Mandatory First-Time Privacy Consent Modal */
@@ -3606,15 +3624,15 @@
       pointer-events: auto;
     }
     .customizer-container {
-      background: rgba(15, 23, 42, 0.94);
+      background: rgba(15, 23, 42, 0.95);
       border: 1.5px solid rgba(255, 255, 255, 0.16);
-      border-radius: 18px;
+      border-radius: 20px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       width: 100%;
-      max-width: 880px;
+      max-width: clamp(320px, 94vw, 500px);
       max-height: 100%;
       height: 100%;
-      padding: clamp(6px, 1.2vh, 10px) clamp(10px, 1.8vw, 16px);
+      padding: clamp(8px, 1.4vh, 14px) clamp(10px, 2vw, 18px);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -3707,46 +3725,137 @@
       50% { transform: scale(1.15); }
     }
 
-    .customizer-body {
-      display: flex;
-      flex-direction: row;
-      gap: clamp(8px, 1.5vw, 14px);
-      flex: 1 1 auto;
-      min-height: 0;
-      align-items: stretch;
-      overflow: hidden;
-    }
-
-    /* Left Preview Pane */
-    .customizer-preview-pane {
-      flex: 0 0 clamp(160px, 25vw, 220px);
-      background: rgba(30, 41, 59, 0.55);
-      border: 1.5px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: clamp(6px, 1.2vh, 10px);
+    /* ==========================================================================
+       CHARACTER CUSTOMIZER: MOBILE-FIRST SINGLE-ITEM SWIPE CAROUSEL
+       ========================================================================== */
+    .customizer-carousel-view {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-      box-sizing: border-box;
+      gap: clamp(8px, 1.6vh, 16px);
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
       min-height: 0;
-      overflow: hidden;
+      box-sizing: border-box;
+      touch-action: pan-y;
     }
+
+    /* Carousel Stage: Left Arrow, Character Card, Right Arrow */
+    .carousel-stage-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 3vw, 20px);
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .carousel-nav-btn {
+      background: rgba(30, 41, 59, 0.65);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      color: #F8FAFC;
+      width: clamp(42px, 8.5vw, 50px);
+      height: clamp(42px, 8.5vw, 50px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+      touch-action: manipulation;
+    }
+    .carousel-nav-btn:hover {
+      background: rgba(51, 65, 85, 0.9);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.08);
+    }
+    .carousel-nav-btn:active {
+      transform: scale(0.92);
+      background: rgba(71, 85, 105, 0.95);
+    }
+
+    /* Central Character Spotlight Card */
+    .carousel-showcase-card {
+      background: radial-gradient(circle at 50% 35%, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0.75) 80%);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      border-radius: 20px;
+      padding: clamp(8px, 1.4vh, 12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      width: clamp(170px, 38vw, 240px);
+      flex-shrink: 0;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .carousel-top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 4px;
+      padding: 0 4px;
+    }
+    .carousel-counter-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: #94A3B8;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+      padding: 2px 8px;
+      letter-spacing: 0.5px;
+    }
+    .carousel-status-badge {
+      font-size: 9.5px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .carousel-status-badge.status-equipped {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.6);
+      color: #34D399;
+    }
+    .carousel-status-badge.status-owned {
+      background: rgba(6, 182, 212, 0.2);
+      border: 1px solid rgba(6, 182, 212, 0.6);
+      color: #38BDF8;
+    }
+    .carousel-status-badge.status-locked {
+      background: rgba(148, 163, 184, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #94A3B8;
+    }
+
     .preview-canvas-wrapper {
-      width: clamp(75px, 16vh, 120px);
-      height: clamp(70px, 15vh, 110px);
+      width: clamp(120px, 22vh, 160px);
+      height: clamp(110px, 20vh, 150px);
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(15, 23, 42, 0.5) 75%);
-      border-radius: 12px;
-      border: 1.5px dashed rgba(255, 255, 255, 0.16);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
       flex-shrink: 0;
     }
+    #customizerPreviewCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
     @keyframes unlockGlowPulse {
       0% {
         transform: scale(0.95);
@@ -3767,50 +3876,40 @@
     .preview-canvas-wrapper.unlock-pulse {
       animation: unlockGlowPulse 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    #customizerPreviewCanvas {
-      width: 130px;
-      height: 120px;
-      image-rendering: pixelated;
-    }
-    .preview-info-box {
+
+    /* Details Showcase Box */
+    .carousel-details-box {
       width: 100%;
-      margin: 8px 0;
       text-align: center;
-    }
-    .preview-stat-pill {
-      display: inline-flex;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 5px;
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.12));
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      border-radius: 8px;
-      padding: 3px 8px;
-      margin: 4px 0 2px;
-      font-size: 10.5px;
-      font-weight: 800;
-      color: #FDE047;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+      gap: 4px;
+      padding: 0 6px;
+      box-sizing: border-box;
+      flex-shrink: 0;
     }
+
     .preview-title-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin-bottom: 4px;
+      gap: 8px;
+      margin-bottom: 2px;
       flex-wrap: wrap;
     }
     .preview-skin-name {
-      font-size: 15px;
+      font-size: clamp(16px, 3vh, 22px);
       font-weight: 900;
       color: #FFFFFF;
+      letter-spacing: 0.5px;
     }
     .rarity-chip {
-      font-size: 9px;
+      font-size: 9.5px;
       font-weight: 800;
-      padding: 2px 7px;
+      padding: 2.5px 8px;
       border-radius: 9999px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       text-transform: uppercase;
     }
     .rarity-chip.common {
@@ -3833,23 +3932,45 @@
       color: #FCD34D;
       border: 1px solid rgba(245, 158, 11, 0.4);
     }
-    .preview-tagline {
-      font-size: 10.5px;
-      color: #94A3B8;
-      line-height: 1.35;
-      margin: 0;
+
+    .preview-stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.12));
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 9999px;
+      padding: 3.5px 12px;
+      font-size: clamp(10.5px, 1.8vh, 12px);
+      font-weight: 800;
+      color: #FDE047;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
     }
-    .preview-action-row {
+
+    .preview-tagline {
+      font-size: clamp(10px, 1.7vh, 11.5px);
+      color: #94A3B8;
+      line-height: 1.4;
+      margin: 2px 0 0 0;
+      max-width: 400px;
+    }
+
+    /* Bottom Action Button */
+    .carousel-action-row {
       width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      flex-shrink: 0;
     }
     .btn-customizer-action {
       width: 100%;
       border: none;
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
+      border-radius: 14px;
+      padding: clamp(10px, 1.8vh, 14px);
+      font-size: clamp(13px, 2.2vh, 15.5px);
+      font-weight: 900;
+      letter-spacing: 0.6px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3861,20 +3982,20 @@
       transform: scale(0.97);
     }
     .btn-customizer-action.equipped {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1.5px solid rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.16);
+      border: 1.5px solid rgba(16, 185, 129, 0.55);
       color: #34D399;
       cursor: default;
     }
     .btn-customizer-action.equip {
       background: linear-gradient(180deg, #10B981 0%, #059669 100%);
       color: white;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
     }
     .btn-customizer-action.buy {
       background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
       color: white;
-      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.45);
+      box-shadow: 0 4px 16px rgba(217, 119, 6, 0.45);
     }
     .btn-customizer-action.cannot-buy {
       background: rgba(245, 158, 11, 0.2);
@@ -3883,124 +4004,32 @@
       cursor: pointer;
     }
 
-    /* Right Skins Grid */
-    .customizer-skins-list {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(clamp(130px, 18vw, 170px), 1fr));
-      gap: clamp(6px, 1vw, 10px);
-      padding: 2px 4px 6px 2px;
-      align-content: start;
+    /* Carousel Transitions & Slide Animations */
+    @keyframes skinSlideInNext {
+      0% {
+        opacity: 0;
+        transform: translateX(28px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
     }
-    .customizer-skins-list::-webkit-scrollbar {
-      width: 5px;
+    @keyframes skinSlideInPrev {
+      0% {
+        opacity: 0;
+        transform: translateX(-28px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
     }
-    .customizer-skins-list::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
+    .skin-slide-next {
+      animation: skinSlideInNext 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    .skin-card {
-      background: rgba(30, 41, 59, 0.7);
-      border: 1.5px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      padding: clamp(6px, 1vh, 10px) clamp(8px, 1vw, 12px);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
-      text-align: left;
-      min-height: clamp(80px, 16vh, 105px);
-      box-sizing: border-box;
-    }
-    .skin-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(51, 65, 85, 0.7);
-    }
-    .skin-card:active {
-      transform: scale(0.98);
-    }
-    .skin-card.selected {
-      border-color: #38BDF8;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4), inset 0 0 8px rgba(56, 189, 248, 0.15);
-      background: rgba(30, 58, 138, 0.35);
-    }
-    .skin-card.equipped {
-      border-color: #10B981;
-    }
-    .skin-card.selected.equipped {
-      border-color: #10B981;
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4), inset 0 0 8px rgba(16, 185, 129, 0.15);
-    }
-    .skin-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .skin-card-icon-box {
-      font-size: 22px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(15, 23, 42, 0.6);
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .skin-card-status-badge {
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 6px;
-      letter-spacing: 0.5px;
-    }
-    .skin-card-status-badge.badge-equipped {
-      background: #10B981;
-      color: white;
-    }
-    .skin-card-status-badge.badge-owned {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34D399;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    .skin-card-name {
-      font-size: 13px;
-      font-weight: 800;
-      color: #F8FAFC;
-      margin-bottom: 1px;
-    }
-    .skin-card-rarity {
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-    .skin-card-stat-bonus {
-      display: inline-flex;
-      align-items: center;
-      gap: 3.5px;
-      background: rgba(245, 158, 11, 0.14);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #FDE047;
-      font-size: 8.5px;
-      font-weight: 800;
-      padding: 1.5px 5px;
-      border-radius: 5px;
-      margin-bottom: 4px;
-      letter-spacing: 0.2px;
-      white-space: nowrap;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .skin-slide-prev {
+      animation: skinSlideInPrev 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .skin-bonus-hud-pill {
       display: none;
@@ -4354,9 +4383,69 @@
       flex-shrink: 0;
     }
 
-    /* Aggressive scaling and hiding non-essential fluff on short screens (e.g. mobile landscape / fake-landscape) */
-    @media (max-height: 450px) {
-      /* Non-essential text, subtitles, taglines, hints, and decorative elements hidden to guarantee core buttons stay accessible */
+    /* ==========================================================================
+       MOBILE PHONE FRIENDLY DESIGN SYSTEM (COMPREHENSIVE RESPONSIVENESS & TOUCH)
+       ========================================================================== */
+
+    /* Mobile In-Game HUD Bar & Controls (Phone Landscape & Compact Viewports) */
+    @media (max-width: 860px), (max-height: 480px) {
+      #hud {
+        padding-top: max(6px, calc(env(safe-area-inset-top, 0px) + 4px));
+        padding-bottom: 4px;
+        padding-left: max(10px, calc(env(safe-area-inset-left, 0px) + 8px));
+        padding-right: max(10px, calc(env(safe-area-inset-right, 0px) + 8px));
+        gap: 6px;
+      }
+      .hud-spacer {
+        width: 44px;
+        height: 44px;
+      }
+      .hud-bar {
+        padding: 4px clamp(8px, 1.6vw, 14px);
+        gap: clamp(6px, 1.4vw, 12px);
+      }
+      .hud-stat {
+        font-size: clamp(12px, 2.6vw, 14px);
+        gap: 4px;
+      }
+      .hearts-box {
+        gap: 3px;
+        font-size: 13px;
+      }
+      .pause-btn {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+      }
+      /* Collapse secondary badge text to icons on mobile so HUD stays clean and centered */
+      #hudDiffText,
+      #hudWeatherText,
+      #hudSkinBonusText {
+        display: none !important;
+      }
+      .diff-hud-pill,
+      .weather-hud-pill,
+      .skin-bonus-hud-pill {
+        padding: 2.5px 6px;
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 680px), (max-height: 380px) {
+      .diff-hud-pill,
+      .weather-hud-pill,
+      .skin-bonus-hud-pill {
+        display: none !important;
+      }
+      .hud-stat.distance-container .high-score {
+        display: none !important;
+      }
+    }
+
+    /* Primary Mobile Viewport Optimization (Phone Landscape / Compact Screens) */
+    @media (max-height: 500px), (max-width: 920px) {
+      /* Hide secondary non-interactive fluff to prevent vertical cut-offs and scroll locking */
       .subtitle,
       .customizer-subtitle,
       .streak-desc-line,
@@ -4371,144 +4460,299 @@
       .info-subtitle,
       .tagline,
       .coins-label,
+      .diamonds-label,
       .stat-desc,
       .menu-char-dust-container,
       #newRecordBadge {
         display: none !important;
       }
 
-      /* Main Menu compacting */
-      .game-logo {
-        font-size: clamp(20px, 5vh, 26px) !important;
-        margin-bottom: 2px !important;
-      }
-      .streak-card {
-        padding: 3px 8px !important;
-        margin-bottom: 4px !important;
-        font-size: 11px !important;
-      }
-      .diff-selector-card {
-        padding: 4px 8px !important;
-        margin-bottom: 4px !important;
-      }
-      .diff-btn {
-        padding: 3px 6px !important;
-        font-size: 10px !important;
-      }
-      .menu-char-widget {
-        padding: 2px 8px !important;
-        margin-bottom: 4px !important;
-      }
-      .menu-container {
-        padding: 4px 8px !important;
-        gap: 8px !important;
-      }
-      .daily-missions-card {
-        padding: 6px 10px !important;
-        gap: 4px !important;
-      }
-      .missions-header {
-        margin-bottom: 4px !important;
-      }
-      .mission-item {
-        padding: 4px 6px !important;
+      /* Screen Overlays Padding with Safe-Area Notch Insets */
+      .overlay {
+        padding: max(6px, env(safe-area-inset-top, 6px)) max(12px, env(safe-area-inset-right, 12px)) max(6px, env(safe-area-inset-bottom, 6px)) max(12px, env(safe-area-inset-left, 12px)) !important;
       }
 
-      /* Game Over Screen compacting */
-      .gameover-title {
-        font-size: clamp(18px, 4.5vh, 24px) !important;
+      /* 1. Main Menu Screen */
+      .menu-container {
+        padding: max(4px, env(safe-area-inset-top, 4px)) max(10px, env(safe-area-inset-right, 10px)) max(4px, env(safe-area-inset-bottom, 4px)) max(10px, env(safe-area-inset-left, 10px)) !important;
+        gap: clamp(8px, 1.8vw, 16px) !important;
+        max-height: 100% !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
-      #newRecordBadge {
+      .menu-main-col {
+        flex: 1 1 340px !important;
+        max-width: 420px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 0 !important;
+      }
+      .game-logo {
+        font-size: clamp(22px, 5.2vh, 30px) !important;
+        margin-bottom: 2px !important;
+        line-height: 1.1 !important;
+        letter-spacing: 2px !important;
+      }
+      .streak-badge {
+        padding: 3px 10px !important;
+        margin-bottom: 4px !important;
+        border-radius: 10px !important;
+        font-size: 11px !important;
+        max-width: 380px !important;
+        min-height: 30px !important;
+      }
+      .streak-flame-icon {
+        font-size: 17px !important;
+      }
+      .streak-count-text {
+        font-size: 11px !important;
+      }
+      .streak-action-btn {
+        padding: 3px 9px !important;
+        font-size: 9.5px !important;
+        min-height: 26px !important;
+      }
+      .stats-card {
+        padding: 4px 10px !important;
+        gap: clamp(8px, 1.6vw, 14px) !important;
+        margin-bottom: 4px !important;
+        border-radius: 10px !important;
+        max-width: 380px !important;
+      }
+      .stat-label {
         font-size: 9px !important;
-        padding: 2px 8px !important;
-        margin-top: 2px !important;
+      }
+      .stat-val {
+        font-size: 13.5px !important;
+      }
+      .menu-char-widget {
+        padding: 2px 8px 3px !important;
+        margin-bottom: 4px !important;
+        max-width: 190px !important;
+        border-radius: 12px !important;
+      }
+      .menu-char-canvas-wrap {
+        width: 76px !important;
+        height: 56px !important;
+      }
+      #menuCharCanvas {
+        width: 76px !important;
+        height: 56px !important;
+      }
+      .menu-char-badge {
+        font-size: 7.5px !important;
+        padding: 1px 5px !important;
+      }
+      #menuCharName {
+        font-size: 11px !important;
+      }
+      .menu-char-bonus-pill {
+        font-size: 9px !important;
+        padding: 1px 6px !important;
+      }
+      .diff-selector-card {
+        padding: 3px 8px !important;
+        margin-bottom: 5px !important;
+        border-radius: 10px !important;
+        max-width: 380px !important;
+        gap: 3px !important;
+      }
+      .diff-header-row {
+        margin-bottom: 2px !important;
+      }
+      .diff-title {
+        font-size: 10px !important;
+      }
+      .diff-btn-group {
+        gap: 4px !important;
+        width: 100% !important;
+      }
+      .diff-btn {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+        min-height: 32px !important;
+        border-radius: 8px !important;
+        flex: 1 !important;
+      }
+
+      /* Ergonomic Button Row: High-Impact Thumb-Friendly RUN! Button */
+      .btn-row {
+        gap: 5px !important;
+        max-width: 420px !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+      }
+      .btn-row .btn.btn-play {
+        min-height: 46px !important;
+        height: 46px !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        padding: 8px 24px !important;
+        flex: 1 1 100% !important;
+        max-width: 280px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
+      }
+      .btn-row .btn:not(.btn-play) {
+        min-height: 38px !important;
+        height: 38px !important;
+        font-size: 11.5px !important;
+        font-weight: 700 !important;
+        padding: 4px 10px !important;
+        flex: 1 1 calc(25% - 6px) !important;
+        min-width: 68px !important;
+        border-radius: 10px !important;
+      }
+
+      /* Daily Missions Panel on Mobile */
+      .daily-missions-card {
+        flex: 1 1 340px !important;
+        max-width: 420px !important;
+        max-height: 100% !important;
+        padding: 8px 12px !important;
+        gap: 6px !important;
+        border-radius: 16px !important;
+        box-sizing: border-box !important;
+      }
+      .missions-header {
+        padding-bottom: 4px !important;
+      }
+      .missions-header-title {
+        font-size: 11.5px !important;
+      }
+      .missions-summary-badge {
+        font-size: 9.5px !important;
+        padding: 2px 7px !important;
+      }
+      .missions-list {
+        gap: 5px !important;
+      }
+      .mission-item {
+        padding: 5px 8px !important;
+        gap: 7px !important;
+        border-radius: 10px !important;
+        min-height: 40px !important;
+      }
+      .mission-icon-box {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 14px !important;
+        border-radius: 8px !important;
+      }
+      .mission-desc {
+        font-size: 10.5px !important;
+      }
+      .mission-prog-num {
+        font-size: 9.5px !important;
+      }
+      .btn-mission-claim {
+        padding: 5px 10px !important;
+        font-size: 10px !important;
+        min-height: 32px !important;
+        border-radius: 6px !important;
+      }
+
+      /* 2. Game Over Screen */
+      .gameover-container {
+        padding: max(4px, env(safe-area-inset-top, 4px)) max(10px, env(safe-area-inset-right, 10px)) max(4px, env(safe-area-inset-bottom, 4px)) max(10px, env(safe-area-inset-left, 10px)) !important;
+        gap: clamp(8px, 1.8vw, 16px) !important;
+        max-height: 100% !important;
+        height: 100% !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      .gameover-left-col {
+        flex: 1 1 320px !important;
+        max-width: 400px !important;
+      }
+      .gameover-title {
+        font-size: clamp(20px, 4.8vh, 26px) !important;
+        margin: 0 !important;
       }
       #gameOverScreen .stats-card {
         padding: 4px 10px !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 5px !important;
         gap: 8px !important;
       }
-      .gameover-btn-row .btn {
-        padding: 5px 8px !important;
-        font-size: 11px !important;
-        min-width: 80px !important;
+      .gameover-btn-row {
+        gap: 5px !important;
+        max-width: 400px !important;
+        width: 100% !important;
       }
+      .gameover-btn-row .btn.btn-play {
+        min-height: 46px !important;
+        height: 46px !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        padding: 8px 24px !important;
+        flex: 1 1 100% !important;
+        max-width: 260px !important;
+        border-radius: 12px !important;
+        order: 1 !important;
+      }
+      .gameover-btn-row .btn.btn-reward {
+        min-height: 38px !important;
+        height: 38px !important;
+        font-size: 11.5px !important;
+        font-weight: 800 !important;
+        padding: 4px 10px !important;
+        flex: 1 1 calc(50% - 4px) !important;
+        border-radius: 10px !important;
+        order: 2 !important;
+      }
+      .gameover-btn-row .btn:not(.btn-play):not(.btn-reward) {
+        min-height: 36px !important;
+        height: 36px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        padding: 3px 8px !important;
+        flex: 1 1 calc(25% - 4px) !important;
+        min-width: 60px !important;
+        border-radius: 8px !important;
+        order: 3 !important;
+      }
+
+      /* Benchmark Comparison Card on Mobile */
       .hs-compare-card {
-        padding: 5px 8px !important;
+        padding: 6px 10px !important;
         row-gap: 4px !important;
+        border-radius: 14px !important;
+        max-width: 420px !important;
       }
       .hs-toggle-header {
-        margin-bottom: 0 !important;
-        padding-bottom: 3px !important;
+        padding-bottom: 4px !important;
         gap: 6px !important;
       }
-      #hsLocalPanel.active {
-        row-gap: 4px !important;
-        grid-template-rows: auto auto minmax(0, 1fr) !important;
+      .hs-toggle-heading {
+        font-size: 10px !important;
       }
-      #hsGlobalPanel.active {
-        row-gap: 3px !important;
-        grid-template-rows: auto auto auto minmax(0, 1fr) !important;
-      }
-      .hs-compare-metrics {
-        gap: 4px !important;
-        margin-bottom: 0 !important;
-      }
-      .hs-metric-box {
-        padding: 3px 5px !important;
+      .hs-switch-btn {
+        padding: 3px 8px !important;
+        font-size: 10px !important;
+        min-height: 28px !important;
       }
       .hs-metric-val {
         font-size: 13.5px !important;
       }
-      .hs-metric-tag {
-        font-size: 8.5px !important;
-      }
       .hs-delta-badge {
-        padding: 2px 4px !important;
-        min-width: 52px !important;
-        font-size: 8.5px !important;
-      }
-      .hs-bar-container {
-        row-gap: 2px !important;
-        margin-bottom: 0 !important;
-      }
-      .hs-bar-track {
-        height: 6px !important;
-      }
-      .hs-records-section {
-        padding: 3px 6px !important;
-        row-gap: 2px !important;
+        padding: 2px 6px !important;
+        font-size: 9px !important;
       }
       .hs-records-list {
-        max-height: 48px !important;
-        row-gap: 2px !important;
-      }
-      .hs-rank-row {
-        padding: 1.5px 4px !important;
-        font-size: 9.5px !important;
-      }
-      .hs-global-tier-banner {
-        padding: 3px 6px !important;
-        gap: 6px !important;
-        margin-bottom: 0 !important;
-      }
-      .hs-tier-icon {
-        font-size: 16px !important;
-      }
-      .hs-tier-title {
-        font-size: 11px !important;
-      }
-      .hs-tier-subtitle {
-        font-size: 8.5px !important;
-      }
-      .hs-tier-rank-pill {
-        font-size: 8.5px !important;
-        padding: 1px 5px !important;
+        max-height: 52px !important;
       }
 
-      /* Character Customizer compacting */
+      /* 3. Character Customizer Mobile Carousel */
       .customizer-container {
-        padding: 6px 10px !important;
+        padding: max(4px, env(safe-area-inset-top, 4px)) max(10px, env(safe-area-inset-right, 10px)) max(4px, env(safe-area-inset-bottom, 4px)) max(10px, env(safe-area-inset-left, 10px)) !important;
+        max-height: 100% !important;
+        height: 100% !important;
       }
       .customizer-header {
         padding-bottom: 4px !important;
@@ -4517,53 +4761,185 @@
       .customizer-title {
         font-size: 15px !important;
       }
+      .customizer-diamonds-badge,
       .customizer-coins-badge {
         padding: 3px 8px !important;
         font-size: 12px !important;
       }
-      .customizer-preview-pane {
-        flex: 0 0 160px !important;
-        padding: 6px !important;
+      .customizer-carousel-view {
+        gap: 5px !important;
+        max-width: 440px !important;
+      }
+      .carousel-stage-row {
+        gap: 12px !important;
+      }
+      .carousel-nav-btn {
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        min-height: 46px !important;
+        border-radius: 50% !important;
+      }
+      .carousel-showcase-card {
+        width: 150px !important;
+        padding: 6px 8px !important;
+        border-radius: 14px !important;
       }
       .preview-canvas-wrapper {
-        width: 76px !important;
-        height: 68px !important;
+        width: 110px !important;
+        height: 90px !important;
       }
       #customizerPreviewCanvas {
-        width: 100% !important;
-        height: 100% !important;
+        width: 110px !important;
+        height: 90px !important;
+      }
+      .carousel-top-meta {
+        margin-bottom: 2px !important;
+      }
+      .carousel-counter-badge,
+      .carousel-status-badge {
+        font-size: 8px !important;
+        padding: 1.5px 5px !important;
+      }
+      .carousel-details-box {
+        padding: 5px 12px !important;
+        gap: 3px !important;
+        max-width: 380px !important;
       }
       .preview-skin-name {
-        font-size: 12px !important;
+        font-size: 13.5px !important;
+      }
+      .preview-stat-pill {
+        padding: 2px 8px !important;
+        font-size: 10px !important;
       }
       .btn-customizer-action {
-        padding: 5px 8px !important;
-        font-size: 11px !important;
+        min-height: 46px !important;
+        height: 46px !important;
+        padding: 8px 20px !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        border-radius: 12px !important;
+        max-width: 320px !important;
       }
-      .customizer-skins-list {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
-        gap: 6px !important;
+
+      /* 4. Upgrade Workshop on Mobile */
+      .upgrade-container {
+        padding: 8px 14px !important;
+        max-height: 96% !important;
+        border-radius: 16px !important;
       }
-      .skin-card {
-        padding: 5px 6px !important;
-        min-height: 76px !important;
+      .upgrade-header {
+        padding-bottom: 4px !important;
+        margin-bottom: 6px !important;
       }
-      .skin-card-icon-box {
-        width: 26px !important;
-        height: 26px !important;
-        font-size: 15px !important;
+      .upgrade-title {
+        font-size: 16px !important;
       }
-      .skin-card-name {
+      .upgrade-card {
+        padding: 6px 10px !important;
+        gap: 8px !important;
+        border-radius: 12px !important;
+      }
+      .upgrade-icon-box {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 20px !important;
+        border-radius: 10px !important;
+      }
+      .upgrade-name {
+        font-size: 12px !important;
+      }
+      .upgrade-desc {
+        font-size: 9.5px !important;
+      }
+      .btn-upgrade-action {
+        min-height: 38px !important;
+        padding: 5px 10px !important;
         font-size: 11px !important;
       }
 
-      /* Global button row compacting */
-      .btn-row {
-        gap: 4px !important;
+      /* 5. Daily Streak Modal on Mobile */
+      .streak-card {
+        padding: 10px 14px !important;
+        max-width: 580px !important;
+        border-radius: 16px !important;
       }
-      .btn {
-        padding: 5px 8px !important;
-        font-size: 11px !important;
+      .streak-modal-header {
+        margin-bottom: 6px !important;
+      }
+      .streak-calendar-grid {
+        gap: 4px !important;
+        margin-bottom: 8px !important;
+      }
+      .streak-day-cell {
+        padding: 4px 2px !important;
+        border-radius: 8px !important;
+        min-height: 56px !important;
+      }
+      .day-cell-reward {
+        font-size: 10px !important;
+      }
+      .btn-claim-streak-main {
+        min-height: 44px !important;
+        font-size: 13px !important;
+      }
+
+      /* 6. Settings Modal on Mobile */
+      .settings-card {
+        padding: 10px 14px !important;
+        max-width: 500px !important;
+      }
+      .settings-row {
+        padding: 6px 8px !important;
+        gap: 8px !important;
+      }
+      .settings-label {
+        font-size: 12px !important;
+      }
+      .settings-desc {
+        font-size: 9.5px !important;
+      }
+      .toggle-switch {
+        width: 48px !important;
+        height: 26px !important;
+      }
+      .toggle-thumb {
+        width: 18px !important;
+        height: 18px !important;
+      }
+      .toggle-input:checked + .toggle-track .toggle-thumb {
+        transform: translateX(22px) !important;
+      }
+
+      /* 7. Tutorial Info Modal on Mobile */
+      .info-card {
+        padding: 10px 14px !important;
+        max-width: 600px !important;
+      }
+      .guide-grid {
+        gap: 8px !important;
+        margin-bottom: 6px !important;
+      }
+      .anim-stage {
+        height: 70px !important;
+      }
+      .btn-info-gotit {
+        min-height: 42px !important;
+        padding: 8px 16px !important;
+        font-size: 13px !important;
+      }
+
+      /* 8. Pause Screen on Mobile */
+      .pause-btn-row {
+        gap: 8px !important;
+        max-width: 320px !important;
+      }
+      .pause-btn-row .btn {
+        min-height: 44px !important;
+        height: 44px !important;
+        font-size: 13px !important;
+        border-radius: 12px !important;
       }
     }
 
@@ -5093,6 +5469,12 @@
       border: 1px solid rgba(245, 158, 11, 0.4);
       box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
     }
+    .toggle-status-badge.perf-ultralow {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
+    }
 
     /* Orientation Support: Precise Landscape auto-rotation on portrait mobile screens */
     @media (orientation: portrait) {
@@ -5100,10 +5482,10 @@
         position: fixed;
         top: 50%;
         left: 50%;
-        width: var(--app-height, 100dvh);
-        height: var(--app-width, 100dvw);
-        max-width: var(--app-height, 100dvh);
-        max-height: var(--app-width, 100dvw);
+        width: var(--app-height);
+        height: var(--app-width);
+        max-width: var(--app-height);
+        max-height: var(--app-width);
         transform: translate(-50%, -50%) rotate(90deg);
         transform-origin: center center;
         overflow: hidden;
@@ -5190,13 +5572,67 @@
       }
 
       .diff-selector-card {
-        padding: 4px 8px !important;
-        margin-bottom: 6px !important;
+        padding: 3px 8px !important;
+        margin-bottom: 5px !important;
       }
 
       .diff-btn {
         padding: 4px 8px !important;
         font-size: 11px !important;
+        min-height: 32px !important;
+      }
+
+      .btn-row .btn.btn-play {
+        min-height: 46px !important;
+        height: 46px !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        flex: 1 1 100% !important;
+        max-width: 280px !important;
+      }
+
+      .btn-row .btn:not(.btn-play) {
+        min-height: 38px !important;
+        height: 38px !important;
+        font-size: 11.5px !important;
+        flex: 1 1 calc(25% - 6px) !important;
+      }
+
+      .gameover-btn-row .btn.btn-play {
+        min-height: 46px !important;
+        height: 46px !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        flex: 1 1 100% !important;
+        max-width: 260px !important;
+      }
+
+      .gameover-btn-row .btn.btn-reward {
+        min-height: 38px !important;
+        height: 38px !important;
+        font-size: 11.5px !important;
+        flex: 1 1 calc(50% - 4px) !important;
+      }
+
+      .gameover-btn-row .btn:not(.btn-play):not(.btn-reward) {
+        min-height: 36px !important;
+        height: 36px !important;
+        font-size: 11px !important;
+        flex: 1 1 calc(25% - 4px) !important;
+      }
+
+      .carousel-nav-btn {
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        min-height: 46px !important;
+      }
+
+      .btn-customizer-action {
+        min-height: 46px !important;
+        height: 46px !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
       }
     }
 
@@ -5680,7 +6116,7 @@
             </button>
             <div>
               <h2 class="customizer-title">CHARACTER CUSTOMIZER</h2>
-              <p class="customizer-subtitle">Spend coins to unlock and equip unique runner skins!</p>
+              <p class="customizer-subtitle">Swipe or tap arrows to view, unlock & equip skins</p>
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -5697,36 +6133,47 @@
           </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="customizer-body">
-          <!-- Left: Live Preview Pane -->
-          <div class="customizer-preview-pane">
-            <div class="preview-canvas-wrapper" id="previewCanvasWrapper">
-              <canvas id="customizerPreviewCanvas" width="130" height="120"></canvas>
+        <!-- Unified Showcase Carousel View -->
+        <div class="customizer-carousel-view" id="customizerCarouselView">
+          <!-- Central Spotlight Row with Flanking Arrow Buttons -->
+          <div class="carousel-stage-row">
+            <button class="carousel-nav-btn prev" id="customizerPrevBtn" aria-label="Previous Skin" title="Previous Skin">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+
+            <div class="carousel-showcase-card" id="carouselShowcaseCard">
+              <div class="carousel-top-meta">
+                <span class="carousel-counter-badge" id="carouselCounterBadge">1 / 18</span>
+                <span class="carousel-status-badge status-equipped" id="carouselStatusBadge">EQUIPPED</span>
+              </div>
+              <div class="preview-canvas-wrapper" id="previewCanvasWrapper">
+                <canvas id="customizerPreviewCanvas" width="150" height="140"></canvas>
+              </div>
             </div>
 
-            <div class="preview-info-box">
-              <div class="preview-title-row">
-                <span class="preview-skin-name" id="previewSkinName">Classic Blaze</span>
-                <span class="rarity-chip common" id="previewRarityChip">COMMON</span>
-              </div>
-              <div class="preview-stat-pill" id="previewStatPill">
-                <span id="previewStatIcon">🪙</span>
-                <span id="previewStatLabel">+5% Coin Collection</span>
-              </div>
-              <p class="preview-tagline" id="previewTagline">The signature fiery runner with iconic red headband</p>
-            </div>
-
-            <div class="preview-action-row">
-              <button class="btn-customizer-action equipped" id="customizerActionBtn">
-                ✔ EQUIPPED
-              </button>
-            </div>
+            <button class="carousel-nav-btn next" id="customizerNextBtn" aria-label="Next Skin" title="Next Skin">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
           </div>
 
-          <!-- Right: Skins Carousel / Grid -->
-          <div class="customizer-skins-list" id="customizerSkinsList">
-            <!-- Dynamically populated with skin cards by SkinManager -->
+          <!-- Skin Info Details -->
+          <div class="carousel-details-box" id="carouselDetailsBox">
+            <div class="preview-title-row">
+              <span class="preview-skin-name" id="previewSkinName">Classic Blaze</span>
+              <span class="rarity-chip common" id="previewRarityChip">COMMON</span>
+            </div>
+            <div class="preview-stat-pill" id="previewStatPill">
+              <span id="previewStatIcon">🪙</span>
+              <span id="previewStatLabel">+5% Coin Collection</span>
+            </div>
+            <p class="preview-tagline" id="previewTagline">The signature fiery runner with iconic red headband</p>
+          </div>
+
+          <!-- Large Action Button -->
+          <div class="carousel-action-row">
+            <button class="btn-customizer-action equipped" id="customizerActionBtn">
+              ✔ EQUIPPED
+            </button>
           </div>
         </div>
       </div>
@@ -5885,7 +6332,7 @@
                 <span class="settings-icon">🚀</span>
                 <div class="settings-card-title-group">
                   <span class="settings-name">Performance Mode</span>
-                  <span class="settings-desc">LOW mode reduces particle density to 20% and disables background clouds & stars for solid 60 FPS.</span>
+                  <span class="settings-desc">Tap badge to cycle: HIGH (60 FPS), LOW (GPU boost), or ULTRA-LOW (Battery Saver: 1x DPR &amp; flat shading).</span>
                 </div>
               </div>
             </div>
@@ -6233,6 +6680,27 @@
 
     <!-- Notification Toast -->
     <div id="adToast">Reward Applied!</div>
+
+    <!-- Exit Confirmation Modal (Triggered on Android Back in Main Menu) -->
+    <div id="exitModal">
+      <div class="exit-modal-card" id="exitModalCard">
+        <div class="exit-modal-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          </svg>
+        </div>
+        <h3 class="exit-modal-title">Leave Dashbound?</h3>
+        <p class="exit-modal-desc">Are you sure you want to exit the game? Your high score and progress are saved.</p>
+        <div class="exit-modal-actions">
+          <button class="exit-modal-btn exit-btn-cancel" id="exitModalCancelBtn">
+            <span>Keep Playing</span>
+          </button>
+          <button class="exit-modal-btn exit-btn-confirm" id="exitModalConfirmBtn">
+            <span>Exit Game</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -7704,12 +8172,36 @@
     };
     window.Storage = Storage;
 
-    // 4. Particle System with Dynamic Low-End Android Device Adaptation
+    // 4. Particle System with Dynamic Low-End Android Device Adaptation & Object Pooling
     class ParticleSystem {
       constructor(game = null) {
         this.game = game;
-        this.particles = [];
         this.isLowEnd = ParticleSystem.detectLowEndDevice();
+
+        // 2. Object Pooling: Pre-allocate a fixed pool of particle objects to completely eliminate GC stutter
+        this.poolSize = 250;
+        this.pool = new Array(this.poolSize);
+        for (let i = 0; i < this.poolSize; i++) {
+          this.pool[i] = {
+            active: false,
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            life: 0,
+            decay: 0.03,
+            color: '#FFFFFF',
+            size: 4,
+            shape: 'circle',
+            growth: 0,
+            rotation: 0,
+            rotSpeed: 0,
+            palette: null
+          };
+        }
+        // Maintain this.particles reference for backwards compatibility
+        this.particles = this.pool;
+
         // Set baseline density multiplier and particle capacity based on hardware tier
         this.density = this.isLowEnd ? 0.45 : 1.0;
         this.maxParticles = this.isLowEnd ? 55 : 160;
@@ -7724,12 +8216,45 @@
         this.activeBiome = null;
       }
 
+      // Fast recycling from pre-allocated object pool
+      obtain() {
+        for (let i = 0; i < this.poolSize; i++) {
+          if (!this.pool[i].active) {
+            return this.pool[i];
+          }
+        }
+        // If all slots are in use, recycle the one with the lowest remaining life
+        let lowest = this.pool[0];
+        let minLife = 999;
+        for (let i = 0; i < this.poolSize; i++) {
+          if (this.pool[i].life < minLife) {
+            minLife = this.pool[i].life;
+            lowest = this.pool[i];
+          }
+        }
+        return lowest;
+      }
+
       setPerformanceMode(mode) {
-        if (mode === 'LOW') {
+        if (mode === 'ULTRA-LOW') {
+          this.density = 0.1;
+          this.maxParticles = 20;
+          let count = 0;
+          for (let i = 0; i < this.poolSize; i++) {
+            if (this.pool[i].active) {
+              count++;
+              if (count > this.maxParticles) this.pool[i].active = false;
+            }
+          }
+        } else if (mode === 'LOW') {
           this.density = 0.2;
           this.maxParticles = 30;
-          if (this.particles.length > this.maxParticles) {
-            this.particles.splice(0, this.particles.length - this.maxParticles);
+          let count = 0;
+          for (let i = 0; i < this.poolSize; i++) {
+            if (this.pool[i].active) {
+              count++;
+              if (count > this.maxParticles) this.pool[i].active = false;
+            }
           }
         } else {
           this.density = this.isLowEnd ? 0.45 : 1.0;
@@ -7847,7 +8372,13 @@
       }
 
       monitorPerformance(fps) {
-        if (this.game && this.game.settingsManager && this.game.settingsManager.get('performanceMode') === 'LOW') {
+        const pm = (this.game && this.game.settingsManager) ? this.game.settingsManager.get('performanceMode') : 'HIGH';
+        if (pm === 'ULTRA-LOW') {
+          this.density = 0.1;
+          this.maxParticles = 20;
+          return;
+        }
+        if (pm === 'LOW') {
           this.density = 0.2;
           this.maxParticles = 30;
           return;
@@ -7873,24 +8404,26 @@
       create(x, y, count, color, speed = 2, size = 4, shape = 'circle') {
         const actualCount = Math.max(1, Math.round(count * this.density));
         for (let i = 0; i < actualCount; i++) {
-          if (this.particles.length >= this.maxParticles) {
-            this.particles.shift();
-          }
+          const p = this.obtain();
           const angle = Math.random() * Math.PI * 2;
           const velocity = (Math.random() * 0.7 + 0.3) * speed;
-          this.particles.push({
-            x,
-            y,
-            vx: Math.cos(angle) * velocity,
-            vy: Math.sin(angle) * velocity,
-            life: 1.0,
-            decay: Math.random() * 0.03 + 0.02,
-            color,
-            size: Math.random() * size + 2,
-            shape
-          });
+          p.active = true;
+          p.x = x;
+          p.y = y;
+          p.vx = Math.cos(angle) * velocity;
+          p.vy = Math.sin(angle) * velocity;
+          p.life = 1.0;
+          p.decay = Math.random() * 0.03 + 0.02;
+          p.color = color;
+          p.size = Math.random() * size + 2;
+          p.shape = shape;
+          p.growth = 0;
+          p.rotation = 0;
+          p.rotSpeed = 0;
+          p.palette = null;
         }
       }
+
       createDust(x, y) {
         const pal = this.getDustPalette();
         const isRain = this.currentWeather === 'rain' && this.weatherIntensity > 0.2;
@@ -7899,7 +8432,7 @@
 
         const count = Math.max(2, Math.round((isSnow ? 5 : (isRain ? 4 : 3)) * this.density));
         for (let i = 0; i < count; i++) {
-          if (this.particles.length >= this.maxParticles) this.particles.shift();
+          const p = this.obtain();
 
           let vx, vy, decay, size, growth;
           if (isRain) {
@@ -7930,20 +8463,23 @@
             growth = 0.04;
           }
 
-          this.particles.push({
-            x: x + (Math.random() - 0.5) * 8,
-            y: y - 1,
-            vx,
-            vy,
-            life: 1.0,
-            decay,
-            palette: pal,
-            size,
-            growth,
-            shape: 'dust'
-          });
+          p.active = true;
+          p.x = x + (Math.random() - 0.5) * 8;
+          p.y = y - 1;
+          p.vx = vx;
+          p.vy = vy;
+          p.life = 1.0;
+          p.decay = decay;
+          p.palette = pal;
+          p.size = size;
+          p.growth = growth;
+          p.shape = 'dust';
+          p.rotation = 0;
+          p.rotSpeed = 0;
+          p.color = '#FFFFFF';
         }
       }
+
       createJumpDustBurst(x, y, isDoubleJump = false) {
         const count = isDoubleJump ? 8 : 6;
         const pal = this.getDustPalette();
@@ -7953,176 +8489,185 @@
         const isRain = this.currentWeather === 'rain' && this.weatherIntensity > 0.2;
 
         for (let i = 0; i < actualCount; i++) {
-          if (this.particles.length >= this.maxParticles) {
-            this.particles.shift();
-          }
+          const p = this.obtain();
           const angle = isDoubleJump
-            ? Math.PI * 0.5 + (Math.random() - 0.5) * 1.6 // radially downward from mid-air feet
-            : Math.PI * 0.85 + Math.random() * 0.9;      // backward and downward ground kick
+            ? Math.PI * 0.5 + (Math.random() - 0.5) * 1.6
+            : Math.PI * 0.85 + Math.random() * 0.9;
           const speed = Math.random() * 2.8 + 1.2;
           const size = Math.random() * 2.5 + 2.0;
 
-          this.particles.push({
-            x: x + (Math.random() - 0.5) * 10,
-            y: y + (Math.random() - 0.5) * 4,
-            vx: Math.cos(angle) * speed - (isSnow ? 0.6 : 1.2),
-            vy: Math.sin(angle) * speed + (isSnow ? -0.2 : (isRain ? 0.8 : 0.4)),
-            life: 1.0,
-            decay: isSnow ? (Math.random() * 0.02 + 0.018) : (isRain ? (Math.random() * 0.045 + 0.035) : (Math.random() * 0.035 + 0.03)),
-            palette: pal,
-            size: size,
-            growth: isSnow ? 0.03 : 0.05,
-            shape: 'dust'
-          });
+          p.active = true;
+          p.x = x + (Math.random() - 0.5) * 10;
+          p.y = y + (Math.random() - 0.5) * 4;
+          p.vx = Math.cos(angle) * speed - (isSnow ? 0.6 : 1.2);
+          p.vy = Math.sin(angle) * speed + (isSnow ? -0.2 : (isRain ? 0.8 : 0.4));
+          p.life = 1.0;
+          p.decay = isSnow ? (Math.random() * 0.02 + 0.018) : (isRain ? (Math.random() * 0.045 + 0.035) : (Math.random() * 0.035 + 0.03));
+          p.palette = pal;
+          p.size = size;
+          p.growth = isSnow ? 0.03 : 0.05;
+          p.shape = 'dust';
+          p.rotation = 0;
+          p.rotSpeed = 0;
+          p.color = '#FFFFFF';
         }
       }
+
       createJumpDustTrail(x, y, isDoubleJump = false) {
         const count = isDoubleJump ? 2 : 1;
         const pal = this.getDustPalette();
         const actualCount = Math.max(1, Math.round(count * this.density));
 
         for (let i = 0; i < actualCount; i++) {
-          if (this.particles.length >= this.maxParticles) {
-            this.particles.shift();
-          }
-          const size = Math.random() * 1.8 + 1.8; // Small dust sprite: ~1.8 - 3.6px
+          const p = this.obtain();
+          const size = Math.random() * 1.8 + 1.8;
 
-          this.particles.push({
-            x: x + (Math.random() - 0.5) * 6,
-            y: y + (Math.random() - 0.5) * 3,
-            vx: -(Math.random() * 1.8 + 1.0), // trail backwards opposite runner movement
-            vy: Math.random() * 1.0 + 0.3,    // subtle downward drift from feet
-            life: 1.0,
-            decay: Math.random() * 0.045 + 0.04, // fast fading
-            palette: pal,
-            size: size,
-            growth: 0.04,
-            shape: 'dust'
-          });
+          p.active = true;
+          p.x = x + (Math.random() - 0.5) * 6;
+          p.y = y + (Math.random() - 0.5) * 3;
+          p.vx = -(Math.random() * 1.8 + 1.0);
+          p.vy = Math.random() * 1.0 + 0.3;
+          p.life = 1.0;
+          p.decay = Math.random() * 0.045 + 0.04;
+          p.palette = pal;
+          p.size = size;
+          p.growth = 0.04;
+          p.shape = 'dust';
+          p.rotation = 0;
+          p.rotSpeed = 0;
+          p.color = '#FFFFFF';
         }
       }
+
       createCoinSparkle(x, y) {
         this.create(x, y, 8, '#FBBF24', 3, 4, 'star');
       }
+
       createMagnetSparkle(x, y) {
         this.create(x, y, 16, '#38BDF8', 4, 4, 'star');
         this.create(x, y, 10, '#FDE047', 3, 3, 'circle');
       }
+
       createMagnetTrail(x, y) {
         this.create(x, y, 1, '#38BDF8', 1, 2.5, 'circle');
       }
+
       createHurtBurst(x, y) {
         this.create(x, y, 12, '#EF4444', 4, 5, 'square');
       }
+
       createFastStartSparks(x, y) {
         const colors = ['#F59E0B', '#FDE047', '#38BDF8', '#FFFFFF'];
         const sparkCount = Math.max(1, Math.round(2 * this.density));
         for (let i = 0; i < sparkCount; i++) {
-          if (this.particles.length >= this.maxParticles) {
-            this.particles.shift();
-          }
+          const p = this.obtain();
           const angle = Math.PI * (0.85 + Math.random() * 0.3);
           const speed = Math.random() * 4 + 2.5;
-          this.particles.push({
-            x: x + (Math.random() - 0.5) * 8,
-            y: y + (Math.random() - 0.5) * 6,
-            vx: Math.cos(angle) * speed - 2.5,
-            vy: Math.sin(angle) * speed - 0.5,
-            life: 1.0,
-            decay: Math.random() * 0.05 + 0.04,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: Math.random() * 3 + 2,
-            shape: Math.random() < 0.5 ? 'star' : 'circle'
-          });
+
+          p.active = true;
+          p.x = x + (Math.random() - 0.5) * 8;
+          p.y = y + (Math.random() - 0.5) * 6;
+          p.vx = Math.cos(angle) * speed - 2.5;
+          p.vy = Math.sin(angle) * speed - 0.5;
+          p.life = 1.0;
+          p.decay = Math.random() * 0.05 + 0.04;
+          p.color = colors[Math.floor(Math.random() * colors.length)];
+          p.size = Math.random() * 3 + 2;
+          p.shape = Math.random() < 0.5 ? 'star' : 'circle';
+          p.growth = 0;
+          p.rotation = 0;
+          p.rotSpeed = 0;
+          p.palette = null;
         }
       }
+
       createSpeedSonicRings(x, y) {
         this.create(x, y, 18, '#FDE047', 4.5, 3.5, 'star');
         this.create(x, y, 14, '#38BDF8', 3.5, 3, 'circle');
       }
+
       createCelebrationExplosion(x, y, count = 55) {
         const colors = [
-          '#FBBF24', '#F59E0B', '#FDE047', // Radiant Gold
-          '#10B981', '#34D399', '#6EE7B7', // Emerald Victory
-          '#38BDF8', '#0EA5E9', '#A855F7', // Cyber Cyan & Violet
-          '#EC4899', '#FFFBEB', '#FFFFFF'  // Sparkling Pink & Diamonds
+          '#FBBF24', '#F59E0B', '#FDE047',
+          '#10B981', '#34D399', '#6EE7B7',
+          '#38BDF8', '#0EA5E9', '#A855F7',
+          '#EC4899', '#FFFBEB', '#FFFFFF'
         ];
         const shapes = ['star', 'circle', 'square'];
         const actualCount = Math.max(15, Math.round(count * this.density));
 
         for (let i = 0; i < actualCount; i++) {
-          if (this.particles.length >= this.maxParticles) {
-            this.particles.shift();
-          }
+          const p = this.obtain();
           const angle = Math.random() * Math.PI * 2;
           const speed = Math.random() * 6.0 + 2.0;
           const size = Math.random() * 5.5 + 3.0;
           const shape = shapes[Math.floor(Math.random() * shapes.length)];
           const color = colors[Math.floor(Math.random() * colors.length)];
 
-          this.particles.push({
-            x: x + (Math.random() - 0.5) * 20,
-            y: y + (Math.random() - 0.5) * 16,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - 1.5, // Initial upward burst
-            life: 1.0,
-            decay: Math.random() * 0.016 + 0.012, // Lasts ~60-80 frames (~1.2s)
-            color,
-            size,
-            shape,
-            rotation: Math.random() * Math.PI * 2,
-            rotSpeed: (Math.random() - 0.5) * 0.22
-          });
+          p.active = true;
+          p.x = x + (Math.random() - 0.5) * 20;
+          p.y = y + (Math.random() - 0.5) * 16;
+          p.vx = Math.cos(angle) * speed;
+          p.vy = Math.sin(angle) * speed - 1.5;
+          p.life = 1.0;
+          p.decay = Math.random() * 0.016 + 0.012;
+          p.color = color;
+          p.size = size;
+          p.shape = shape;
+          p.growth = 0;
+          p.rotation = Math.random() * Math.PI * 2;
+          p.rotSpeed = (Math.random() - 0.5) * 0.22;
+          p.palette = null;
         }
       }
+
       createConfetti(w, h) {
         const colors = ['#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6'];
         const count = Math.max(12, Math.round(40 * this.density));
         for (let i = 0; i < count; i++) {
-          if (this.particles.length >= this.maxParticles) {
-            this.particles.shift();
-          }
-          this.particles.push({
-            x: Math.random() * w,
-            y: Math.random() * (h * 0.4),
-            vx: (Math.random() - 0.5) * 3,
-            vy: Math.random() * 2 + 1,
-            life: 1.0,
-            decay: 0.015,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: Math.random() * 6 + 4,
-            shape: 'square',
-            rotation: Math.random() * Math.PI * 2,
-            rotSpeed: (Math.random() - 0.5) * 0.15
-          });
+          const p = this.obtain();
+          p.active = true;
+          p.x = Math.random() * w;
+          p.y = Math.random() * (h * 0.4);
+          p.vx = (Math.random() - 0.5) * 3;
+          p.vy = Math.random() * 2 + 1;
+          p.life = 1.0;
+          p.decay = 0.015;
+          p.color = colors[Math.floor(Math.random() * colors.length)];
+          p.size = Math.random() * 6 + 4;
+          p.shape = 'square';
+          p.growth = 0;
+          p.rotation = Math.random() * Math.PI * 2;
+          p.rotSpeed = (Math.random() - 0.5) * 0.15;
+          p.palette = null;
         }
       }
+
       update() {
         const isRain = this.currentWeather === 'rain';
         const isSnow = this.currentWeather === 'snow';
         const isSand = this.currentWeather === 'sandstorm';
         const int = this.weatherIntensity || 1.0;
 
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-          const p = this.particles[i];
+        for (let i = 0; i < this.poolSize; i++) {
+          const p = this.pool[i];
+          if (!p.active) continue;
+
           p.x += p.vx;
           p.y += p.vy;
 
           if (isRain && int > 0.1) {
-            // Rain washes dust and airborne particles down faster with stronger air drag
             p.vx *= (0.97 - 0.03 * int);
             p.vy = (p.vy * 0.95) + (0.08 + 0.09 * int);
           } else if (isSnow && int > 0.1) {
-            // Cold snowy air gives particles floatiness, reduced gravity and gentle fluttering drift
             p.vx = (p.vx * 0.99) + Math.sin((p.x + performance.now() * 0.06) * 0.02) * (0.08 * int);
             p.vy = (p.vy * 0.99) + (0.08 - 0.045 * int);
           } else if (isSand && int > 0.1) {
-            // Fierce sandstorm wind sweeps particles backwards
             p.vx = (p.vx - 0.45 * int) * 0.97;
             p.vy = (p.vy * 0.97) + 0.07;
           } else {
-            p.vx *= 0.98; // gentle air resistance
-            p.vy = (p.vy * 0.98) + 0.08; // celebratory gravity
+            p.vx *= 0.98;
+            p.vy = (p.vy * 0.98) + 0.08;
           }
           if (p.growth) {
             p.size += p.growth;
@@ -8132,57 +8677,70 @@
           }
           p.life -= p.decay;
           if (p.life <= 0) {
-            this.particles.splice(i, 1);
+            p.active = false;
           }
         }
       }
+
       draw(ctx) {
-        for (const p of this.particles) {
+        const pm = (this.game && this.game.settingsManager) ? this.game.settingsManager.get('performanceMode') : 'HIGH';
+        const isLowPerf = pm === 'LOW' || pm === 'ULTRA-LOW' || (this.game && this.game.isThermalThrottled);
+
+        for (let i = 0; i < this.poolSize; i++) {
+          const p = this.pool[i];
+          if (!p.active) continue;
+
           ctx.save();
           ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
           ctx.fillStyle = p.color;
+
           if (p.shape === 'circle') {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fill();
           } else if (p.shape === 'dust') {
-            // Dynamic color gradient transition for fading dust sprites matching active biome/environment
-            const progress = Math.max(0, Math.min(1, 1 - p.life)); // 0.0 at spawn -> 1.0 when fully faded
-            const pal = p.palette || this.getDustPalette();
+            if (isLowPerf) {
+              // High-performance flat dust puff: avoid expensive createRadialGradient per particle
+              const pal = p.palette || this.getDustPalette();
+              ctx.fillStyle = `rgba(${pal.outerStart[0]}, ${pal.outerStart[1]}, ${pal.outerStart[2]}, ${p.life * 0.75})`;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, Math.max(1, p.size), 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              const progress = Math.max(0, Math.min(1, 1 - p.life));
+              const pal = p.palette || this.getDustPalette();
 
-            // Interpolate inner nucleus and outer puff colors across particle lifespan
-            const rIn = Math.round(pal.innerStart[0] + (pal.innerEnd[0] - pal.innerStart[0]) * progress);
-            const gIn = Math.round(pal.innerStart[1] + (pal.innerEnd[1] - pal.innerStart[1]) * progress);
-            const bIn = Math.round(pal.innerStart[2] + (pal.innerEnd[2] - pal.innerStart[2]) * progress);
+              const rIn = Math.round(pal.innerStart[0] + (pal.innerEnd[0] - pal.innerStart[0]) * progress);
+              const gIn = Math.round(pal.innerStart[1] + (pal.innerEnd[1] - pal.innerStart[1]) * progress);
+              const bIn = Math.round(pal.innerStart[2] + (pal.innerEnd[2] - pal.innerStart[2]) * progress);
 
-            const rOut = Math.round(pal.outerStart[0] + (pal.outerEnd[0] - pal.outerStart[0]) * progress);
-            const gOut = Math.round(pal.outerStart[1] + (pal.outerEnd[1] - pal.outerStart[1]) * progress);
-            const bOut = Math.round(pal.outerStart[2] + (pal.outerEnd[2] - pal.outerStart[2]) * progress);
+              const rOut = Math.round(pal.outerStart[0] + (pal.outerEnd[0] - pal.outerStart[0]) * progress);
+              const gOut = Math.round(pal.outerStart[1] + (pal.outerEnd[1] - pal.outerStart[1]) * progress);
+              const bOut = Math.round(pal.outerStart[2] + (pal.outerEnd[2] - pal.outerStart[2]) * progress);
 
-            const alpha = Math.max(0, Math.min(1, p.life));
-            const innerColor = `rgba(${rIn}, ${gIn}, ${bIn}, ${alpha * 0.95})`;
-            const outerColor = `rgba(${rOut}, ${gOut}, ${bOut}, ${alpha * 0.75})`;
-            const edgeColor = `rgba(${rOut}, ${gOut}, ${bOut}, 0)`;
+              const alpha = Math.max(0, Math.min(1, p.life));
+              const innerColor = `rgba(${rIn}, ${gIn}, ${bIn}, ${alpha * 0.95})`;
+              const outerColor = `rgba(${rOut}, ${gOut}, ${bOut}, ${alpha * 0.75})`;
+              const edgeColor = `rgba(${rOut}, ${gOut}, ${bOut}, 0)`;
 
-            // Soft volumetric cloud puff using radial color gradient
-            const radGrad = ctx.createRadialGradient(
-              p.x - p.size * 0.18, p.y - p.size * 0.18, 0,
-              p.x, p.y, Math.max(1, p.size)
-            );
-            radGrad.addColorStop(0, innerColor);
-            radGrad.addColorStop(0.52, outerColor);
-            radGrad.addColorStop(1, edgeColor);
+              const radGrad = ctx.createRadialGradient(
+                p.x - p.size * 0.18, p.y - p.size * 0.18, 0,
+                p.x, p.y, Math.max(1, p.size)
+              );
+              radGrad.addColorStop(0, innerColor);
+              radGrad.addColorStop(0.52, outerColor);
+              radGrad.addColorStop(1, edgeColor);
 
-            ctx.fillStyle = radGrad;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, Math.max(1, p.size), 0, Math.PI * 2);
-            ctx.fill();
+              ctx.fillStyle = radGrad;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, Math.max(1, p.size), 0, Math.PI * 2);
+              ctx.fill();
+            }
           } else if (p.shape === 'square') {
             ctx.translate(p.x, p.y);
             if (p.rotation) ctx.rotate(p.rotation);
             ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
           } else if (p.shape === 'star') {
-            // Sparkle 4-Point Diamond Star
             ctx.translate(p.x, p.y);
             if (p.rotation) ctx.rotate(p.rotation);
             const s = p.size;
@@ -8194,7 +8752,6 @@
             ctx.quadraticCurveTo(0, 0, 0, -s * 1.35);
             ctx.fill();
 
-            // Diamond Center Sparkle
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
             ctx.arc(0, 0, s * 0.35, 0, Math.PI * 2);
@@ -8203,8 +8760,11 @@
           ctx.restore();
         }
       }
+
       clear() {
-        this.particles = [];
+        for (let i = 0; i < this.poolSize; i++) {
+          this.pool[i].active = false;
+        }
       }
     }
 
@@ -9882,7 +10442,9 @@
 
         this.unlockedSkins = this.loadUnlockedSkins();
         this.selectedSkinId = this.loadSelectedSkin();
-        this.previewSkinId = this.selectedSkinId;
+        const initialSkinIdx = this.skins.findIndex(s => s.id === this.selectedSkinId);
+        this.currentSkinIndex = initialSkinIdx >= 0 ? initialSkinIdx : 0;
+        this.previewSkinId = this.skins[this.currentSkinIndex].id;
 
         // Preview loop properties
         this.previewAnimId = null;
@@ -9892,6 +10454,7 @@
         this.previewParticles = new ParticleSystem();
         this.unlockScalePulse = 1.0;
         this.unlockShockwave = null;
+        this.swipeListenersAttached = false;
       }
 
       loadUnlockedSkins() {
@@ -9948,13 +10511,25 @@
 
       selectForPreview(skinId) {
         this.closeConfirmDialog();
-        this.previewSkinId = skinId;
+        const idx = this.skins.findIndex(s => s.id === skinId);
+        if (idx >= 0) {
+          const dir = idx >= this.currentSkinIndex ? 'next' : 'prev';
+          this.currentSkinIndex = idx;
+          this.previewSkinId = skinId;
+          this.triggerSkinChangeAnimation(dir);
+        } else {
+          this.previewSkinId = skinId;
+        }
         this.renderCustomizer();
       }
 
       equipSkin(skinId) {
         if (!this.isUnlocked(skinId)) return;
         this.selectedSkinId = skinId;
+        const idx = this.skins.findIndex(s => s.id === skinId);
+        if (idx >= 0) {
+          this.currentSkinIndex = idx;
+        }
         this.previewSkinId = skinId;
         this.saveSelectedSkin(skinId);
 
@@ -10248,9 +10823,127 @@
         this.unlockScalePulse = 1.35;
       }
 
+      nextSkin() {
+        if (!this.skins || this.skins.length === 0) return;
+        audio.click();
+        AndroidBridge.vibrate(15);
+        this.currentSkinIndex = (this.currentSkinIndex + 1) % this.skins.length;
+        this.previewSkinId = this.skins[this.currentSkinIndex].id;
+        this.triggerSkinChangeAnimation('next');
+        this.renderCustomizer();
+      }
+
+      prevSkin() {
+        if (!this.skins || this.skins.length === 0) return;
+        audio.click();
+        AndroidBridge.vibrate(15);
+        this.currentSkinIndex = (this.currentSkinIndex - 1 + this.skins.length) % this.skins.length;
+        this.previewSkinId = this.skins[this.currentSkinIndex].id;
+        this.triggerSkinChangeAnimation('prev');
+        this.renderCustomizer();
+      }
+
+      triggerSkinChangeAnimation(dir) {
+        const card = document.getElementById('carouselShowcaseCard');
+        const details = document.getElementById('carouselDetailsBox');
+        const animClass = dir === 'next' ? 'skin-slide-next' : 'skin-slide-prev';
+
+        [card, details].forEach(el => {
+          if (el) {
+            el.classList.remove('skin-slide-next', 'skin-slide-prev');
+            void el.offsetWidth;
+            el.classList.add(animClass);
+          }
+        });
+      }
+
+      initSwipeListeners() {
+        if (this.swipeListenersAttached) return;
+        const customizerScreen = document.getElementById('customizerScreen');
+        if (!customizerScreen) return;
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+
+        customizerScreen.addEventListener('touchstart', (e) => {
+          if (e.touches && e.touches.length > 0) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+          }
+        }, { passive: true });
+
+        customizerScreen.addEventListener('touchend', (e) => {
+          if (e.changedTouches && e.changedTouches.length > 0) {
+            const deltaX = e.changedTouches[0].clientX - touchStartX;
+            const deltaY = e.changedTouches[0].clientY - touchStartY;
+            const deltaTime = Date.now() - touchStartTime;
+
+            const isPortrait = (window.innerHeight > window.innerWidth);
+            let gameDeltaX = deltaX;
+            let gameDeltaY = deltaY;
+            if (isPortrait) {
+              // In 90deg clockwise rotated container:
+              // Physical +Y is game +X (swipe right)
+              // Physical -Y is game -X (swipe left)
+              // Physical -X is game +Y (swipe down)
+              // Physical +X is game -Y (swipe up)
+              gameDeltaX = deltaY;
+              gameDeltaY = -deltaX;
+            }
+
+            // Must be predominantly horizontal swipe relative to game, minimum 30px, within 700ms
+            if (Math.abs(gameDeltaX) > 30 && Math.abs(gameDeltaX) > Math.abs(gameDeltaY) * 1.1 && deltaTime < 700) {
+              if (gameDeltaX < 0) {
+                // Swiped Left -> Next Skin
+                this.nextSkin();
+              } else {
+                // Swiped Right -> Previous Skin
+                this.prevSkin();
+              }
+            }
+          }
+        }, { passive: true });
+
+        // Flanking arrow navigation buttons
+        const prevBtn = document.getElementById('customizerPrevBtn');
+        if (prevBtn) {
+          prevBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            this.prevSkin();
+          };
+        }
+
+        const nextBtn = document.getElementById('customizerNextBtn');
+        if (nextBtn) {
+          nextBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            this.nextSkin();
+          };
+        }
+
+        // Keyboard arrow key navigation when customizer screen is active
+        window.addEventListener('keydown', (e) => {
+          if (!customizerScreen.classList.contains('active')) return;
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            this.prevSkin();
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            this.nextSkin();
+          }
+        });
+
+        this.swipeListenersAttached = true;
+      }
+
       openCustomizer() {
         this.closeConfirmDialog();
-        this.previewSkinId = this.selectedSkinId;
+        this.initSwipeListeners();
+        const equippedIdx = this.skins.findIndex(s => s.id === this.selectedSkinId);
+        this.currentSkinIndex = equippedIdx >= 0 ? equippedIdx : 0;
+        this.previewSkinId = this.skins[this.currentSkinIndex].id;
         if (this.previewParticles) this.previewParticles.clear();
         this.unlockShockwave = null;
         this.unlockScalePulse = 1.0;
@@ -10341,9 +11034,34 @@
         const diamondsValEl = document.getElementById('customizerDiamondsVal');
         if (diamondsValEl) diamondsValEl.textContent = (this.game.diamonds || 0).toLocaleString();
 
-        const currentSkin = this.getSkin(this.previewSkinId);
+        if (this.currentSkinIndex < 0 || this.currentSkinIndex >= this.skins.length) {
+          this.currentSkinIndex = 0;
+        }
+        const currentSkin = this.skins[this.currentSkinIndex] || this.skins[0];
+        this.previewSkinId = currentSkin.id;
+
         const isOwned = this.isUnlocked(currentSkin.id);
         const isEquipped = this.selectedSkinId === currentSkin.id;
+
+        // Counter and Status Badge
+        const counterEl = document.getElementById('carouselCounterBadge');
+        if (counterEl) {
+          counterEl.textContent = `${this.currentSkinIndex + 1} / ${this.skins.length}`;
+        }
+
+        const statusBadgeEl = document.getElementById('carouselStatusBadge');
+        if (statusBadgeEl) {
+          if (isEquipped) {
+            statusBadgeEl.className = 'carousel-status-badge status-equipped';
+            statusBadgeEl.textContent = 'EQUIPPED';
+          } else if (isOwned) {
+            statusBadgeEl.className = 'carousel-status-badge status-owned';
+            statusBadgeEl.textContent = 'OWNED';
+          } else {
+            statusBadgeEl.className = 'carousel-status-badge status-locked';
+            statusBadgeEl.textContent = 'LOCKED';
+          }
+        }
 
         // Preview text details
         const nameEl = document.getElementById('previewSkinName');
@@ -10400,73 +11118,6 @@
             };
           }
         }
-
-        // Skins List Grid
-        const listEl = document.getElementById('customizerSkinsList');
-        if (!listEl) return;
-        listEl.innerHTML = '';
-
-        this.skins.forEach(skin => {
-          const unlocked = this.isUnlocked(skin.id);
-          const equipped = this.selectedSkinId === skin.id;
-          const selected = this.previewSkinId === skin.id;
-
-          const card = document.createElement('div');
-          let cardClasses = 'skin-card';
-          if (selected) cardClasses += ' selected';
-          if (equipped) cardClasses += ' equipped';
-          card.className = cardClasses;
-
-          let badgeHtml = '';
-          if (equipped) {
-            badgeHtml = '<span class="skin-card-status-badge badge-equipped">EQUIPPED</span>';
-          } else if (unlocked) {
-            badgeHtml = '<span class="skin-card-status-badge badge-owned">OWNED</span>';
-          }
-
-          let costHtml = '';
-          if (unlocked) {
-            costHtml = '<span class="skin-card-cost free">READY</span>';
-          } else if (skin.diamondCost) {
-            costHtml = `<span class="skin-card-cost" style="color: #38BDF8;">${skin.diamondCost} 💎</span>`;
-          } else {
-            const shortPrice = skin.price >= 10000 ? (skin.price / 1000) + 'k' : skin.price.toLocaleString();
-            costHtml = `<span class="skin-card-cost">${shortPrice} 🪙</span>`;
-          }
-
-          let statBadgeHtml = '';
-          if (skin.statBonus) {
-            statBadgeHtml = `<div class="skin-card-stat-bonus" title="${skin.statBonus.desc || skin.statBonus.label}"><span>${skin.statBonus.icon}</span> <span>${skin.statBonus.label}</span></div>`;
-          }
-
-          card.innerHTML = `
-            <div class="skin-card-top">
-              <div class="skin-card-icon-box">${skin.icon}</div>
-              ${badgeHtml}
-            </div>
-            <div>
-              <div class="skin-card-name">${skin.name}</div>
-              <div class="skin-card-rarity" style="color: ${skin.rarity === 'legendary' ? '#FBBF24' : (skin.rarity === 'epic' ? '#C084FC' : (skin.rarity === 'rare' ? '#38BDF8' : '#94A3B8'))}">${skin.rarity}</div>
-              ${statBadgeHtml}
-            </div>
-            <div class="skin-card-bottom">
-              <span style="color: #64748B; font-size: 10px;">${unlocked ? 'Unlocked' : 'Cost'}</span>
-              ${costHtml}
-            </div>
-          `;
-
-          card.onclick = (e) => {
-            e.stopPropagation();
-            audio.click();
-            this.selectForPreview(skin.id);
-            // If already previewing and owned, click again equips it!
-            if (unlocked && !equipped && selected) {
-              this.equipSkin(skin.id);
-            }
-          };
-
-          listEl.appendChild(card);
-        });
       }
     }
 
@@ -10983,11 +11634,15 @@
         if (!saved || typeof saved !== 'object') {
           return defaults;
         }
+        let perf = 'HIGH';
+        if (saved.performanceMode === 'LOW' || saved.performanceMode === 'ULTRA-LOW') {
+          perf = saved.performanceMode;
+        }
         return {
           masterAudio: saved.masterAudio !== undefined ? !!saved.masterAudio : defaults.masterAudio,
           screenShake: saved.screenShake !== undefined ? !!saved.screenShake : defaults.screenShake,
           flashingEffects: saved.flashingEffects !== undefined ? !!saved.flashingEffects : defaults.flashingEffects,
-          performanceMode: saved.performanceMode === 'LOW' ? 'LOW' : 'HIGH'
+          performanceMode: perf
         };
       }
 
@@ -11012,6 +11667,17 @@
         } else if (key === 'performanceMode') {
           if (this.game && this.game.particles) {
             this.game.particles.setPerformanceMode(value);
+          }
+          if (this.game && typeof this.game.resize === 'function') {
+            if (value === 'ULTRA-LOW') {
+              this.game.forceLowDpr = true;
+              this.game.integerScale = 1;
+              this.game.dpr = 1;
+            } else {
+              this.game.forceLowDpr = false;
+              this.game.dpr = window.devicePixelRatio || 1;
+            }
+            this.game.resize();
           }
         }
       }
@@ -11073,12 +11739,29 @@
           };
         }
 
+        if (this.statusPerformanceMode) {
+          this.statusPerformanceMode.style.cursor = 'pointer';
+          this.statusPerformanceMode.onclick = (e) => {
+            if (e) e.stopPropagation();
+            audio.click();
+            const current = this.settings.performanceMode;
+            let next = 'HIGH';
+            if (current === 'HIGH') next = 'LOW';
+            else if (current === 'LOW') next = 'ULTRA-LOW';
+            else next = 'HIGH';
+            this.set('performanceMode', next);
+          };
+        }
+
         if (this.togglePerformanceMode) {
           this.togglePerformanceMode.onchange = (e) => {
             audio.click();
-            // Checked is HIGH, unchecked is LOW
-            const newMode = e.target.checked ? 'HIGH' : 'LOW';
-            this.set('performanceMode', newMode);
+            const current = this.settings.performanceMode;
+            if (e.target.checked) {
+              this.set('performanceMode', 'HIGH');
+            } else {
+              this.set('performanceMode', current === 'ULTRA-LOW' ? 'ULTRA-LOW' : 'LOW');
+            }
           };
         }
 
@@ -11108,10 +11791,21 @@
         }
 
         if (this.togglePerformanceMode && this.statusPerformanceMode) {
-          const isHigh = this.settings.performanceMode === 'HIGH';
-          this.togglePerformanceMode.checked = isHigh;
-          this.statusPerformanceMode.textContent = isHigh ? 'HIGH' : 'LOW';
-          this.statusPerformanceMode.className = `toggle-status-badge ${isHigh ? 'perf-high' : 'perf-low'}`;
+          const mode = this.settings.performanceMode || 'HIGH';
+          this.togglePerformanceMode.checked = (mode === 'HIGH');
+          if (mode === 'ULTRA-LOW') {
+            this.statusPerformanceMode.textContent = 'ULTRA-LOW';
+            this.statusPerformanceMode.className = 'toggle-status-badge perf-ultralow';
+            this.statusPerformanceMode.title = 'Battery Saver: Flat Shading & 1x DPR (Tap to cycle)';
+          } else if (mode === 'LOW') {
+            this.statusPerformanceMode.textContent = 'LOW';
+            this.statusPerformanceMode.className = 'toggle-status-badge perf-low';
+            this.statusPerformanceMode.title = 'Reduced particles & shadows (Tap to cycle)';
+          } else {
+            this.statusPerformanceMode.textContent = 'HIGH';
+            this.statusPerformanceMode.className = 'toggle-status-badge perf-high';
+            this.statusPerformanceMode.title = 'Full fidelity 60 FPS (Tap to cycle)';
+          }
         }
       }
 
@@ -11328,12 +12022,281 @@
       return `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`;
     }
 
+    // ==========================================================================
+    // 6. Mobile GPU Thermal Guard: Global shadowBlur Interceptor
+    // Prevents costly multi-pass GPU Gaussian blurs when in LOW, ULTRA-LOW,
+    // or during thermal auto-throttling
+    // ==========================================================================
+    (function installShadowBlurGuard() {
+      if (typeof CanvasRenderingContext2D === 'undefined' || window.__shadowBlurGuardInstalled) return;
+      window.__shadowBlurGuardInstalled = true;
+      const desc = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'shadowBlur');
+      if (desc && desc.set) {
+        const origSet = desc.set;
+        Object.defineProperty(CanvasRenderingContext2D.prototype, 'shadowBlur', {
+          get: desc.get,
+          set: function(val) {
+            if (window.game) {
+              const sm = window.game.settingsManager;
+              const mode = sm ? sm.get('performanceMode') : null;
+              if (mode === 'LOW' || mode === 'ULTRA-LOW' || window.game.isThermalThrottled) {
+                origSet.call(this, 0);
+                return;
+              }
+            }
+            origSet.call(this, val);
+          },
+          configurable: true,
+          enumerable: true
+        });
+      }
+    })();
+
+    // ==========================================================================
+    // 6.1 Off-Screen Sprite Cacher
+    // Pre-renders complex procedural game shapes (Coins, Diamonds, Spikes,
+    // Basic Enemies, and Background Trees) onto hidden offscreen canvases during SPLASH
+    // ==========================================================================
+    class OffscreenCacher {
+      constructor() {
+        this.coinCanvas = null;
+        this.diamondCanvas = null;
+        this.treeCanvases = new Map();
+        this.isReady = false;
+      }
+
+      createCanvas(w, h) {
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(w));
+        c.height = Math.max(1, Math.round(h));
+        return c;
+      }
+
+      preRenderAll(biomes = []) {
+        try {
+          this.preRenderCoin();
+          this.preRenderDiamond();
+          this.preRenderTrees(biomes);
+          this.isReady = true;
+        } catch (err) {
+          console.warn('[OffscreenCacher] Pre-rendering fallback:', err);
+          this.isReady = false;
+        }
+      }
+
+      preRenderCoin() {
+        const size = 32;
+        const c = this.createCanvas(size * 2, size * 2);
+        const ctx = c.getContext('2d');
+        const cx = size;
+        const cy = size;
+        const r = size * 0.85;
+
+        // Outer golden rim
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = '#F59E0B';
+        ctx.fill();
+
+        // Inner coin face
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = '#FDE047';
+        ctx.fill();
+
+        // Inner golden bevel ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.65, 0, Math.PI * 2);
+        ctx.lineWidth = 1.8;
+        ctx.strokeStyle = '#D97706';
+        ctx.stroke();
+
+        // Star emblem inside coin
+        ctx.fillStyle = '#D97706';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Specular glint
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(cx - r * 0.28, cy - r * 0.28, r * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        this.coinCanvas = c;
+      }
+
+      preRenderDiamond() {
+        const size = 36;
+        const c = this.createCanvas(size * 2, size * 2);
+        const ctx = c.getContext('2d');
+        const cx = size;
+        const cy = size;
+        const r = size * 0.8;
+
+        // Outer diamond rhombus
+        ctx.fillStyle = '#0284C7';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - r);
+        ctx.lineTo(cx + r, cy);
+        ctx.lineTo(cx, cy + r);
+        ctx.lineTo(cx - r, cy);
+        ctx.closePath();
+        ctx.fill();
+
+        // Inner lighter faceted face
+        ctx.fillStyle = '#38BDF8';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - r * 0.72);
+        ctx.lineTo(cx + r * 0.72, cy);
+        ctx.lineTo(cx, cy + r * 0.72);
+        ctx.lineTo(cx - r * 0.72, cy);
+        ctx.closePath();
+        ctx.fill();
+
+        // Top crystalline facet highlight
+        ctx.fillStyle = '#BAE6FD';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - r * 0.72);
+        ctx.lineTo(cx + r * 0.72, cy);
+        ctx.lineTo(cx, cy);
+        ctx.closePath();
+        ctx.fill();
+
+        // Sparkle glint
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(cx - r * 0.25, cy - r * 0.25, r * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        this.diamondCanvas = c;
+      }
+
+      preRenderTrees(biomes) {
+        const styles = ['round', 'pine', 'cyber'];
+        const defaultBiome = {
+          id: 'default',
+          treeColors: ['#047857', '#065F46', '#064E3B'],
+          treeTrunk: '#6D4C41'
+        };
+        const allBiomes = [defaultBiome, ...(biomes || [])];
+
+        allBiomes.forEach(biome => {
+          const foliageColors = (biome.treeColors && biome.treeColors.length) ? biome.treeColors : ['#047857', '#065F46'];
+          const trunkColor = biome.treeTrunk || '#6D4C41';
+
+          styles.forEach(style => {
+            const size = 50;
+            const w = 60;
+            const h = 90;
+            const c = this.createCanvas(w, h);
+            const ctx = c.getContext('2d');
+            const x = 5;
+            const y = 5;
+            const color = foliageColors[0];
+
+            if (style === 'round') {
+              ctx.fillStyle = trunkColor;
+              ctx.fillRect(x + size * 0.38, y + size * 0.7, size * 0.24, size * 0.9);
+
+              ctx.fillStyle = color;
+              ctx.beginPath();
+              ctx.arc(x + size * 0.5, y + size * 0.5, size * 0.65, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.beginPath();
+              ctx.arc(x + size * 0.25, y + size * 0.7, size * 0.45, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.beginPath();
+              ctx.arc(x + size * 0.75, y + size * 0.7, size * 0.45, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+              ctx.beginPath();
+              ctx.arc(x + size * 0.45, y + size * 0.35, size * 0.28, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (style === 'pine') {
+              ctx.fillStyle = trunkColor;
+              ctx.fillRect(x + size * 0.42, y + size * 0.95, size * 0.16, size * 0.65);
+
+              ctx.fillStyle = color;
+              const tiers = [
+                { w: size * 0.9, h: size * 0.55, y: y + size * 0.75 },
+                { w: size * 0.72, h: size * 0.5, y: y + size * 0.4 },
+                { w: size * 0.5, h: size * 0.45, y: y + size * 0.05 }
+              ];
+              for (const tier of tiers) {
+                ctx.beginPath();
+                ctx.moveTo(x + size * 0.5, tier.y - tier.h);
+                ctx.lineTo(x + size * 0.5 + tier.w * 0.5, tier.y);
+                ctx.lineTo(x + size * 0.5 - tier.w * 0.5, tier.y);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+                ctx.beginPath();
+                ctx.moveTo(x + size * 0.5, tier.y - tier.h);
+                ctx.lineTo(x + size * 0.5 + tier.w * 0.25, tier.y - tier.h * 0.4);
+                ctx.lineTo(x + size * 0.5 - tier.w * 0.25, tier.y - tier.h * 0.4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = color;
+              }
+            } else {
+              // cyber
+              ctx.fillStyle = '#09090B';
+              ctx.fillRect(x + size * 0.44, y + size * 0.9, size * 0.12, size * 0.7);
+
+              ctx.fillStyle = color;
+              ctx.fillRect(x + size * 0.48, y + size * 0.2, 2.5, size * 1.3);
+
+              const tiers = [
+                { w: size * 0.85, y: y + size * 0.8 },
+                { w: size * 0.65, y: y + size * 0.5 },
+                { w: size * 0.42, y: y + size * 0.2 }
+              ];
+              for (const tier of tiers) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.moveTo(x + size * 0.5 - tier.w * 0.5, tier.y + 6);
+                ctx.lineTo(x + size * 0.5, tier.y - 12);
+                ctx.lineTo(x + size * 0.5 + tier.w * 0.5, tier.y + 6);
+                ctx.stroke();
+              }
+            }
+
+            const key = `${style}_${biome.id}`;
+            this.treeCanvases.set(key, c);
+          });
+        });
+      }
+
+      getTreeSprite(style = 'round', biomeId = 'default') {
+        const key = `${style}_${biomeId}`;
+        if (this.treeCanvases.has(key)) return this.treeCanvases.get(key);
+        const fallbackKey = `${style}_default`;
+        if (this.treeCanvases.has(fallbackKey)) return this.treeCanvases.get(fallbackKey);
+        return this.treeCanvases.values().next().value;
+      }
+    }
+
     // 7. Main Dashbound Game Class
     class DashboundGame {
       constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.state = 'SPLASH'; // SPLASH, MENU, PLAYING, PAUSED, GAMEOVER
+
+        // Initialize Off-Screen Sprite Cacher during SPLASH screen state
+        this.offscreenCacher = new OffscreenCacher();
+        this.offscreenCacher.preRenderAll(BIOMES);
+
+        // Dynamic Resolution & Thermal Auto-Throttling state
+        this.isThermalThrottled = false;
+        this.lowFpsDuration = 0;
+        this.forceLowDpr = false;
 
         this.width = 0;
         this.height = 0;
@@ -11743,6 +12706,7 @@
         this.gameOverScreen = document.getElementById('gameOverScreen');
         this.infoModal = document.getElementById('infoModal');
         this.streakModal = document.getElementById('streakModal');
+        this.exitModal = document.getElementById('exitModal');
         this.consentModal = document.getElementById('consentModal');
         this.customizerScreen = document.getElementById('customizerScreen');
         this.tutorialOverlay = document.getElementById('tutorialOverlay');
@@ -11750,6 +12714,7 @@
         this.adToast = document.getElementById('adToast');
         this.isInfoModalOpen = false;
         this.isStreakModalOpen = false;
+        this.isExitModalOpen = false;
         this.isTutorialOpen = false;
 
         // Power-Up & Mission HUD Elements
@@ -11919,6 +12884,51 @@
           streakCard.onclick = (e) => e.stopPropagation();
         }
 
+        // Exit Confirmation Modal (Android Back Button Prevention)
+        this.openExitModal = (e) => {
+          if (e) e.stopPropagation();
+          audio.click();
+          this.isExitModalOpen = true;
+          if (this.exitModal) this.exitModal.classList.add('active');
+        };
+
+        this.closeExitModal = (e) => {
+          if (e) e.stopPropagation();
+          audio.click();
+          this.isExitModalOpen = false;
+          if (this.exitModal) this.exitModal.classList.remove('active');
+        };
+
+        const exitModalCancelBtn = document.getElementById('exitModalCancelBtn');
+        if (exitModalCancelBtn) {
+          exitModalCancelBtn.onclick = (e) => this.closeExitModal(e);
+        }
+
+        const exitModalConfirmBtn = document.getElementById('exitModalConfirmBtn');
+        if (exitModalConfirmBtn) {
+          exitModalConfirmBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            audio.click();
+            if (typeof AndroidBridge !== 'undefined' && AndroidBridge.exitApp) {
+              AndroidBridge.exitApp();
+            } else if (typeof Android !== 'undefined' && Android.exitApp) {
+              Android.exitApp();
+            }
+          };
+        }
+
+        if (this.exitModal) {
+          this.exitModal.onclick = (e) => {
+            if (e.target === this.exitModal) {
+              this.closeExitModal(e);
+            }
+          };
+        }
+        const exitModalCard = document.getElementById('exitModalCard');
+        if (exitModalCard) {
+          exitModalCard.onclick = (e) => e.stopPropagation();
+        }
+
         // Helper to convert screen pointer/click coordinates into canvas game space
         const getCanvasCoords = (e) => {
           const rect = this.canvas.getBoundingClientRect();
@@ -11927,14 +12937,18 @@
           const isPortrait = this.isPortrait !== undefined ? this.isPortrait : (window.innerHeight > window.innerWidth);
           let x, y;
           if (isPortrait) {
-            // Rotated 90deg clockwise:
-            // Screen Y maps to game X, inverted Screen X maps to game Y
-            x = (clientY - rect.top) * (this.width / rect.height);
-            y = (rect.right - clientX) * (this.height / rect.width);
+            // In portrait orientation, #gameContainer is rotated 90deg clockwise.
+            // Client Y runs along game X, and right-to-left Client X runs along game Y.
+            x = (clientY - rect.top) * (this.width / Math.max(1, rect.height));
+            y = (rect.right - clientX) * (this.height / Math.max(1, rect.width));
           } else {
-            x = (clientX - rect.left) * (this.width / rect.width);
-            y = (clientY - rect.top) * (this.height / rect.height);
+            // In standard landscape orientation, direct letterboxed scale mapping
+            x = (clientX - rect.left) * (this.width / Math.max(1, rect.width));
+            y = (clientY - rect.top) * (this.height / Math.max(1, rect.height));
           }
+          // Clamp to game world boundaries
+          x = Math.max(0, Math.min(this.width, x));
+          y = Math.max(0, Math.min(this.height, y));
           return { x, y };
         };
 
@@ -11944,7 +12958,7 @@
           const now = performance.now();
           if (now - lastJumpTapTime < 60) return; // Debounce simultaneous touch/pointer triggers
           lastJumpTapTime = now;
-          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || (this.settingsManager && this.settingsManager.isOpen) || this.state === 'CUSTOMIZER') return;
+          if (this.isInfoModalOpen || this.isStreakModalOpen || this.isExitModalOpen || this.isConsentModalOpen || this.isTutorialOpen || (this.settingsManager && this.settingsManager.isOpen) || this.state === 'CUSTOMIZER') return;
           if (this.state === 'PLAYING') {
             this.playerJump();
           } else if (this.state === 'MENU') {
@@ -11956,7 +12970,7 @@
         let touchStartY = 0;
         let touchStartX = 0;
         this.canvas.addEventListener('touchstart', (e) => {
-          if (this.isConsentModalOpen || this.isTutorialOpen) return;
+          if (this.isConsentModalOpen || this.isTutorialOpen || this.isExitModalOpen) return;
           audio.init();
           const touch = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
           if (touch) {
@@ -11970,10 +12984,18 @@
         this.canvas.addEventListener('touchmove', (e) => {
           if (this.state !== 'PLAYING') return;
           const touch = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
-          if (touch && touchStartY) {
-            const dy = touch.clientY - touchStartY;
-            if (dy > 38) {
+          if (touch && (touchStartY !== 0 || touchStartX !== 0)) {
+            const isPortrait = this.isPortrait !== undefined ? this.isPortrait : (window.innerHeight > window.innerWidth);
+            let gameDy = 0;
+            if (isPortrait) {
+              // In portrait mode, game container is rotated 90deg clockwise: game downward swipe is physical left
+              gameDy = touchStartX - touch.clientX;
+            } else {
+              gameDy = touch.clientY - touchStartY;
+            }
+            if (gameDy > 32) {
               touchStartY = 0; // Trigger once per swipe
+              touchStartX = 0;
               this.playerStomp();
             }
           }
@@ -11981,21 +13003,26 @@
 
         this.canvas.addEventListener('pointerdown', (e) => {
           if (e.pointerType === 'touch') return; // Handled with ultra-low latency by passive touchstart
-          if (this.isConsentModalOpen || this.isTutorialOpen) return;
+          if (this.isConsentModalOpen || this.isTutorialOpen || this.isExitModalOpen) return;
           audio.init();
           const coords = getCanvasCoords(e);
           handleJump(e, coords);
         }, { passive: true });
 
         this.canvas.addEventListener('click', (e) => {
-          if (this.isConsentModalOpen || this.isTutorialOpen) return;
+          if (this.isConsentModalOpen || this.isTutorialOpen || this.isExitModalOpen) return;
           const coords = getCanvasCoords(e);
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
-          if (this.isConsentModalOpen) return;
+          if (this.isConsentModalOpen || this.isExitModalOpen) {
+            if ((e.code === 'Escape' || e.code === 'KeyP') && this.isExitModalOpen) {
+              this.closeExitModal();
+            }
+            return;
+          }
           if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
-            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isConsentModalOpen || this.isTutorialOpen || (this.settingsManager && this.settingsManager.isOpen) || this.state === 'CUSTOMIZER') return;
+            if (this.isInfoModalOpen || this.isStreakModalOpen || this.isExitModalOpen || this.isConsentModalOpen || this.isTutorialOpen || (this.settingsManager && this.settingsManager.isOpen) || this.state === 'CUSTOMIZER') return;
             e.preventDefault();
             audio.init();
             handleJump(e);
@@ -12005,7 +13032,9 @@
               this.playerStomp();
             }
           } else if (e.code === 'Escape' || e.code === 'KeyP') {
-            if (this.settingsManager && this.settingsManager.isOpen) {
+            if (this.isExitModalOpen) {
+              this.closeExitModal();
+            } else if (this.settingsManager && this.settingsManager.isOpen) {
               this.settingsManager.closeModal();
             } else if (this.isTutorialOpen) {
               closeTutorial(e);
@@ -12309,41 +13338,61 @@
         const isLandscape = !isPortrait;
 
         // In CSS fake-landscape rotation, physical width and height swap on screen
-        const targetWidth = isPortrait ? rawH : rawW;
-        const targetHeight = isPortrait ? rawW : rawH;
+        const containerWidth = isPortrait ? rawH : rawW;
+        const containerHeight = isPortrait ? rawW : rawH;
 
-        document.documentElement.style.setProperty('--game-width', `${targetWidth}px`);
-        document.documentElement.style.setProperty('--game-height', `${targetHeight}px`);
+        document.documentElement.style.setProperty('--game-width', `${containerWidth}px`);
+        document.documentElement.style.setProperty('--game-height', `${containerHeight}px`);
 
         // Prevent address bar scroll offsets from pushing content down
         window.scrollTo(0, 0);
+
+        // Target 16:9 aspect ratio (standard widescreen game resolution)
+        const targetAspect = 16 / 9;
+        const containerAspect = containerWidth / Math.max(1, containerHeight);
+
+        let displayW, displayH;
+        if (containerAspect > targetAspect) {
+          // Screen is wider than 16:9 -> pillarbox (fit height, center horizontally)
+          displayH = containerHeight;
+          displayW = Math.round(containerHeight * targetAspect);
+        } else {
+          // Screen is taller/narrower than 16:9 -> letterbox (fit width, center vertically)
+          displayW = containerWidth;
+          displayH = Math.round(containerWidth / targetAspect);
+        }
+
+        // Apply display dimensions to canvas CSS style
+        this.canvas.style.width = `${displayW}px`;
+        this.canvas.style.height = `${displayH}px`;
 
         // Track previous dimensions for smooth dynamic coordinate scaling
         const oldWidth = this.width;
         const oldHeight = this.height;
 
-        this.width = Math.round(targetWidth);
-        this.height = Math.round(targetHeight);
-        this.isPortrait = isPortrait;
-        this.isLandscape = isLandscape;
-
-        // Dynamic aspect ratio calculation
-        this.aspectRatio = this.width / Math.max(1, this.height);
-
-        // Virtual reference baseline (standard mobile landscape baseline: 960x540)
+        // Virtual internal coordinate game space matches the 16:9 reference resolution
         this.baseWidth = 960;
         this.baseHeight = 540;
-        this.scaleX = this.width / this.baseWidth;
-        this.scaleY = this.height / this.baseHeight;
-        this.coordScale = Math.min(this.scaleX, this.scaleY);
+        this.width = this.baseWidth;
+        this.height = this.baseHeight;
+        this.isPortrait = isPortrait;
+        this.isLandscape = isLandscape;
+        this.aspectRatio = targetAspect;
 
-        // Integer Scaling in landscape mode:
-        // High-density mobile displays frequently use non-integer DPRs (e.g. 2.625, 2.75, 3.375).
-        // Fractional scaling causes sub-pixel blurring, anti-aliasing artifacts, and pixel distortion.
-        // In landscape mode, enforce crisp integer scaling (e.g. 1x, 2x, 3x) so that each virtual pixel
-        // maps to an exact integer block of device pixels without sub-pixel blurring.
+        this.scaleX = 1.0;
+        this.scaleY = 1.0;
+        this.coordScale = 1.0;
+
+        // Integer Scaling in landscape mode / capped DPR for pixel-perfect clarity
         const rawDpr = window.devicePixelRatio || 1;
-        if (isLandscape) {
+        const currentPerfMode = (this.settingsManager) ? this.settingsManager.get('performanceMode') : 'HIGH';
+        const forceLowRes = this.forceLowDpr || this.isThermalThrottled || currentPerfMode === 'ULTRA-LOW';
+
+        if (forceLowRes) {
+          // Dynamic Resolution Scaling & Battery Saver: clamp DPR to 1.0 to drop fillrate load by up to 75%
+          this.integerScale = 1;
+          this.dpr = 1;
+        } else if (isLandscape) {
           // Snap DPR to exact integer scale (minimum 1, capped at 3 to prevent GPU memory exhaustion)
           this.integerScale = Math.max(1, Math.min(3, Math.round(rawDpr)));
           this.dpr = this.integerScale;
@@ -12651,6 +13700,9 @@
           }
         }
         if (screen !== 'MENU') {
+          if (this.isExitModalOpen) {
+            this.closeExitModal();
+          }
           if (this.isInfoModalOpen) {
             this.isInfoModalOpen = false;
             if (this.infoModal) this.infoModal.classList.remove('active');
@@ -15922,6 +16974,11 @@
       }
 
       drawDistantSkyline(ctx, biome) {
+        const currentPerfMode = (this.settingsManager) ? this.settingsManager.get('performanceMode') : 'HIGH';
+        if (currentPerfMode === 'LOW' || currentPerfMode === 'ULTRA-LOW' || this.isThermalThrottled) {
+          return; // Skip complex skyline geometry & parallax passes on mobile low/ultra-low modes
+        }
+
         ctx.save();
         const baseH = this.height * 0.62;
         const skylineWidth = 1400;
@@ -16124,12 +17181,23 @@
 
       drawTree(ctx, t, defaultTrunk) {
         ctx.save();
+        const style = t.style || 'round';
+        const biomeId = (this.activeBiome && this.activeBiome.id) || 'default';
+        if (this.offscreenCacher && this.offscreenCacher.isReady) {
+          const sprite = this.offscreenCacher.getTreeSprite(style, biomeId);
+          if (sprite) {
+            const size = t.size || 50;
+            ctx.drawImage(sprite, t.x, t.y, size * 1.2, size * 1.8);
+            ctx.restore();
+            return;
+          }
+        }
+
         const x = t.x;
         const y = t.y;
         const size = t.size;
         const trunkColor = t.trunk || defaultTrunk || '#6D4C41';
         const color = t.color;
-        const style = t.style || 'round';
 
         if (style === 'round') {
           // Trunk
@@ -16234,6 +17302,10 @@
         const leftTaper = Math.min(36, p.w * 0.14);
         const rightTaper = Math.min(36, p.w * 0.14);
 
+        const currentPerfMode = (this.settingsManager) ? this.settingsManager.get('performanceMode') : 'HIGH';
+        const isLowPerf = currentPerfMode === 'LOW' || currentPerfMode === 'ULTRA-LOW' || this.isThermalThrottled;
+        const isUltraLow = currentPerfMode === 'ULTRA-LOW';
+
         // 1 & 2. Floating Island Body: Rugged tapered crag silhouette
         ctx.beginPath();
         // Top edge under grass
@@ -16259,103 +17331,104 @@
         ctx.lineTo(p.x + (leftTaper * 0.25), p.y + 36);
         ctx.closePath();
 
-        // 3D Soil Linear Gradient
-        const soilGrad = ctx.createLinearGradient(0, p.y + 14, 0, p.y + islandH + 6);
-        soilGrad.addColorStop(0, soilColor);
-        soilGrad.addColorStop(0.55, soilShadow);
-        soilGrad.addColorStop(1, '#111827');
-        ctx.fillStyle = soilGrad;
-        ctx.fill();
-
-        // Atmospheric Bottom Shadow Overlay
-        const underShadow = ctx.createLinearGradient(0, p.y + 30, 0, p.y + islandH + 6);
-        underShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        underShadow.addColorStop(0.65, 'rgba(0, 0, 0, 0.22)');
-        underShadow.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
-        ctx.fillStyle = underShadow;
-        ctx.fill();
-
-        // 3. Overgrown Details: Low-Poly Embedded Rocks & Soil Strata
-        // Using rgba(0,0,0,0.2) and rgba(255,255,255,0.1) to automatically adapt to current biome
-        const rockCount = Math.max(2, Math.floor(p.w / 65));
-        for (let r = 0; r < rockCount; r++) {
-          const rx = p.x + 35 + r * 58 + ((r * 19) % 17);
-          const ry = p.y + 36 + ((r * 29) % Math.max(20, islandH - 60));
-          const rw = 12 + ((r * 7) % 10);
-          const rh = 8 + ((r * 5) % 8);
-
-          // Dark faceted rock face
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
-          ctx.beginPath();
-          ctx.moveTo(rx, ry + rh * 0.5);
-          ctx.lineTo(rx + rw * 0.35, ry);
-          ctx.lineTo(rx + rw, ry + rh * 0.25);
-          ctx.lineTo(rx + rw * 0.85, ry + rh);
-          ctx.lineTo(rx + rw * 0.2, ry + rh * 0.9);
-          ctx.closePath();
+        // 3D Soil Shading: Use solid color on low-perf/ultra-low to avoid GPU linear gradient generation
+        if (isLowPerf) {
+          ctx.fillStyle = soilShadow;
+          ctx.fill();
+        } else {
+          const soilGrad = ctx.createLinearGradient(0, p.y + 14, 0, p.y + islandH + 6);
+          soilGrad.addColorStop(0, soilColor);
+          soilGrad.addColorStop(0.55, soilShadow);
+          soilGrad.addColorStop(1, '#111827');
+          ctx.fillStyle = soilGrad;
           ctx.fill();
 
-          // Ambient rock edge highlight
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-          ctx.beginPath();
-          ctx.moveTo(rx, ry + rh * 0.5);
-          ctx.lineTo(rx + rw * 0.35, ry);
-          ctx.lineTo(rx + rw, ry + rh * 0.25);
-          ctx.lineTo(rx + rw * 0.45, ry + rh * 0.35);
-          ctx.closePath();
+          // Atmospheric Bottom Shadow Overlay
+          const underShadow = ctx.createLinearGradient(0, p.y + 30, 0, p.y + islandH + 6);
+          underShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+          underShadow.addColorStop(0.65, 'rgba(0, 0, 0, 0.22)');
+          underShadow.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+          ctx.fillStyle = underShadow;
           ctx.fill();
+        }
 
-          // Small companion pebble speckles
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
-          ctx.beginPath();
-          ctx.arc(rx + rw + 8, ry + 4, 2.2, 0, Math.PI * 2);
-          ctx.arc(rx - 6, ry + rh - 2, 1.8, 0, Math.PI * 2);
-          ctx.fill();
+        // 3. Overgrown Details: Low-Poly Embedded Rocks & Soil Strata (Simplified in Ultra-Low)
+        if (!isUltraLow) {
+          const rockCount = Math.max(2, Math.floor(p.w / 65));
+          for (let r = 0; r < rockCount; r++) {
+            const rx = p.x + 35 + r * 58 + ((r * 19) % 17);
+            const ry = p.y + 36 + ((r * 29) % Math.max(20, islandH - 60));
+            const rw = 12 + ((r * 7) % 10);
+            const rh = 8 + ((r * 5) % 8);
 
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-          ctx.beginPath();
-          ctx.arc(rx + rw + 7, ry + 3.2, 1.2, 0, Math.PI * 2);
-          ctx.fill();
+            // Dark faceted rock face
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
+            ctx.beginPath();
+            ctx.moveTo(rx, ry + rh * 0.5);
+            ctx.lineTo(rx + rw * 0.35, ry);
+            ctx.lineTo(rx + rw, ry + rh * 0.25);
+            ctx.lineTo(rx + rw * 0.85, ry + rh);
+            ctx.lineTo(rx + rw * 0.2, ry + rh * 0.9);
+            ctx.closePath();
+            ctx.fill();
+
+            if (!isLowPerf) {
+              // Ambient rock edge highlight
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+              ctx.beginPath();
+              ctx.moveTo(rx, ry + rh * 0.5);
+              ctx.lineTo(rx + rw * 0.35, ry);
+              ctx.lineTo(rx + rw, ry + rh * 0.25);
+              ctx.lineTo(rx + rw * 0.45, ry + rh * 0.35);
+              ctx.closePath();
+              ctx.fill();
+            }
+          }
         }
 
         // Ambient Overhang Shadow directly under the grass layer
         ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
         ctx.fillRect(p.x, p.y + 14, p.w, 8);
 
-        // 3. Hanging Vines and Dangling Roots
-        const vineSpacing = 36;
-        const vineCount = Math.floor((p.w - 30) / vineSpacing);
-        for (let v = 0; v < vineCount; v++) {
-          const vx = p.x + 24 + v * vineSpacing + ((v * 13) % 9);
-          const vLen = 14 + ((v * 21) % 20); // 14 to 34px long
-          const sway = (v % 2 === 0 ? 3 : -3);
+        // 3. Hanging Vines and Dangling Roots (Skipped in Ultra-Low)
+        if (!isUltraLow) {
+          const vineSpacing = isLowPerf ? 60 : 36;
+          const vineCount = Math.floor((p.w - 30) / vineSpacing);
+          for (let v = 0; v < vineCount; v++) {
+            const vx = p.x + 24 + v * vineSpacing + ((v * 13) % 9);
+            const vLen = 14 + ((v * 21) % 20); // 14 to 34px long
+            const sway = (v % 2 === 0 ? 3 : -3);
 
-          ctx.strokeStyle = (v % 2 === 0) ? grassColor : tuftColor;
-          ctx.lineWidth = 1.8;
-          ctx.beginPath();
-          ctx.moveTo(vx, p.y + 14);
-          ctx.quadraticCurveTo(vx + sway, p.y + 14 + vLen * 0.55, vx, p.y + 14 + vLen);
-          ctx.stroke();
+            ctx.strokeStyle = (v % 2 === 0) ? grassColor : tuftColor;
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(vx, p.y + 14);
+            ctx.quadraticCurveTo(vx + sway, p.y + 14 + vLen * 0.55, vx, p.y + 14 + vLen);
+            ctx.stroke();
 
-          // Little root tip / hanging leaf node
-          ctx.fillStyle = (v % 3 === 0) ? tuftColor : 'rgba(0, 0, 0, 0.28)';
-          ctx.beginPath();
-          ctx.arc(vx, p.y + 14 + vLen, 2.2, 0, Math.PI * 2);
-          ctx.fill();
+            // Little root tip
+            ctx.fillStyle = (v % 3 === 0) ? tuftColor : 'rgba(0, 0, 0, 0.28)';
+            ctx.beginPath();
+            ctx.arc(vx, p.y + 14 + vLen, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
 
-        // 1 & 4. Lush Grass Layer with 3D Depth & Overlapping Tufts
-        // Base grass slab with organic droops
-        const grassGrad = ctx.createLinearGradient(0, p.y, 0, p.y + 16);
-        grassGrad.addColorStop(0, grassColor);
-        grassGrad.addColorStop(1, soilShadow);
-        ctx.fillStyle = grassGrad;
+        // 1 & 4. Lush Grass Layer
+        if (isLowPerf) {
+          ctx.fillStyle = grassColor;
+        } else {
+          const grassGrad = ctx.createLinearGradient(0, p.y, 0, p.y + 16);
+          grassGrad.addColorStop(0, grassColor);
+          grassGrad.addColorStop(1, soilShadow);
+          ctx.fillStyle = grassGrad;
+        }
 
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(p.x + p.w, p.y);
         // Scalloped bottom edge of grass
-        const scallopW = 18;
+        const scallopW = isLowPerf ? 30 : 18;
         const scallops = Math.ceil(p.w / scallopW);
         for (let s = scallops; s >= 0; s--) {
           const sx = p.x + s * scallopW;
@@ -16365,25 +17438,28 @@
         ctx.closePath();
         ctx.fill();
 
-        // Highlight rim on top grass lip to catch sunlight
-        const grassHighlight = ctx.createLinearGradient(0, p.y, 0, p.y + 3);
-        grassHighlight.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
-        grassHighlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        ctx.fillStyle = grassHighlight;
+        // Highlight rim on top grass lip
+        if (isLowPerf) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        } else {
+          const grassHighlight = ctx.createLinearGradient(0, p.y, 0, p.y + 3);
+          grassHighlight.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+          grassHighlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          ctx.fillStyle = grassHighlight;
+        }
         ctx.fillRect(p.x, p.y, p.w, 3);
 
-        // 4. Wild, Organic Grass Tufts (overlapping heights & varying angles)
+        // 4. Grass Tufts
         ctx.fillStyle = tuftColor;
-        const tuftW = 7;
+        const tuftW = isLowPerf ? 12 : 7;
         const tuftCount = Math.ceil(p.w / tuftW);
         ctx.beginPath();
         for (let i = 0; i < tuftCount; i++) {
           const tx = p.x + i * tuftW;
           const phase = (i * 7 + (Math.floor(p.x) % 11)) % 5;
-          const th = 4.5 + phase * 2.2; // Varied heights 4.5px to 13.5px
+          const th = 4.5 + phase * 2.2;
           const lean = (phase % 2 === 0 ? 1 : -1) * (1.2 + phase * 0.4);
 
-          // Overlapping organic blade
           ctx.moveTo(tx, p.y + 1);
           ctx.lineTo(tx + tuftW * 0.45 + lean, p.y - th);
           ctx.lineTo(tx + tuftW, p.y + 1);
@@ -16787,6 +17863,13 @@
         const scaleX = Math.cos(c.spinAngle);
         ctx.scale(Math.abs(scaleX) < 0.1 ? 0.1 : scaleX, 1);
 
+        if (this.offscreenCacher && this.offscreenCacher.coinCanvas) {
+          const r = (c.radius || 10) * 1.1;
+          ctx.drawImage(this.offscreenCacher.coinCanvas, -r, -r, r * 2, r * 2);
+          ctx.restore();
+          return;
+        }
+
         // Golden Outer Glow
         ctx.shadowColor = '#FBBF24';
         ctx.shadowBlur = 10;
@@ -16818,6 +17901,13 @@
 
         const scaleX = Math.cos(d.spinAngle || 0);
         ctx.scale(Math.abs(scaleX) < 0.1 ? 0.1 : scaleX, 1);
+
+        if (this.offscreenCacher && this.offscreenCacher.diamondCanvas) {
+          const r = (d.radius || 13) * 1.15;
+          ctx.drawImage(this.offscreenCacher.diamondCanvas, -r, -r, r * 2, r * 2);
+          ctx.restore();
+          return;
+        }
 
         // Glowing cyan aura
         ctx.shadowColor = '#38BDF8';
@@ -18269,10 +19359,23 @@
         const dt = Math.min((time - this.lastTime) / 1000, 0.1);
         this.lastTime = time;
 
-        // Dynamically monitor frame rate for particle throttling on low-end hardware
-        if (dt > 0 && this.particles) {
+        // Dynamically monitor frame rate for particle throttling & thermal auto-throttling
+        if (dt > 0) {
           const fps = 1 / dt;
-          this.particles.monitorPerformance(fps);
+          if (this.particles) {
+            this.particles.monitorPerformance(fps);
+          }
+
+          // Dynamic Resolution Scaling: Thermal auto-throttling logic
+          // If FPS < 45 for > 3 seconds, force Performance Mode to LOW, set integerScale = 1, and trigger resize()
+          if (fps < 45) {
+            this.lowFpsDuration = (this.lowFpsDuration || 0) + dt;
+            if (this.lowFpsDuration >= 3.0 && !this.isThermalThrottled) {
+              this.triggerThermalDowngrade();
+            }
+          } else if (fps >= 55) {
+            this.lowFpsDuration = Math.max(0, (this.lowFpsDuration || 0) - dt * 0.5);
+          }
         }
 
         if (!this.isConsentModalOpen) {
@@ -18292,10 +19395,92 @@
 
         requestAnimationFrame((t) => this.loop(t));
       }
+
+      triggerThermalDowngrade() {
+        this.isThermalThrottled = true;
+        console.warn('[Dashbound Thermal Engine] Sustained FPS < 45 for > 3 seconds. Engaging thermal auto-throttling: LOW mode, 1x DPR, integerScale=1.');
+
+        if (this.settingsManager) {
+          this.settingsManager.set('performanceMode', 'LOW');
+        }
+
+        this.forceLowDpr = true;
+        this.integerScale = 1;
+        this.dpr = 1;
+        this.resize();
+
+        if (this.adToast) {
+          this.adToast.textContent = '⚡ Battery Saver: Low Performance Mode Activated';
+          this.adToast.classList.add('active');
+          setTimeout(() => {
+            if (this.adToast) this.adToast.classList.remove('active');
+          }, 3500);
+        }
+      }
     }
 
     // Start Game Instance
     const game = new DashboundGame();
+    window.game = game;
+
+    // PART 1: Native Android Back-Button Handler
+    window.onNativeBackPressed = function() {
+      if (!window.game) return;
+      const g = window.game;
+
+      // 1. If currently playing, pause the game
+      if (g.state === 'PLAYING') {
+        g.pauseGame();
+        return;
+      }
+
+      // 2. If paused, resume the game
+      if (g.state === 'PAUSED') {
+        g.resumeGame();
+        return;
+      }
+
+      // 3. If in CUSTOMIZER screen, return to MENU
+      if (g.state === 'CUSTOMIZER') {
+        g.setScreen('MENU');
+        return;
+      }
+
+      // 4. If exit confirmation modal is already open, close it (cancel exit)
+      if (g.isExitModalOpen) {
+        g.closeExitModal();
+        return;
+      }
+
+      // 5. If SETTINGS modal is open, close it
+      if (g.settingsManager && g.settingsManager.isOpen) {
+        g.settingsManager.closeModal();
+        return;
+      }
+
+      // 6. If STREAK modal is open, close it
+      if (g.isStreakModalOpen) {
+        g.isStreakModalOpen = false;
+        if (g.streakModal) g.streakModal.classList.remove('active');
+        return;
+      }
+
+      // 7. If INFO or TUTORIAL modal is open, close it
+      if (g.isInfoModalOpen) {
+        g.isInfoModalOpen = false;
+        if (g.infoModal) g.infoModal.classList.remove('active');
+        return;
+      }
+      if (g.isTutorialOpen) {
+        g.closeTutorial();
+        return;
+      }
+
+      // 8. If on MENU screen (with no modals open), show confirmation modal to prevent accidental exit
+      if (g.state === 'MENU') {
+        g.openExitModal();
+      }
+    };
   </script>
 </body>
 </html>
