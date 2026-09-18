@@ -3877,6 +3877,40 @@
       animation: unlockGlowPulse 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
 
+    .preview-360-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #38BDF8;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      pointer-events: none;
+      user-select: none;
+      text-transform: uppercase;
+      opacity: 0.9;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+    .preview-360-icon {
+      font-size: 10px;
+      line-height: 1;
+      display: inline-block;
+      animation: rotateIcon 4s linear infinite;
+    }
+    @keyframes rotateIcon {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* Details Showcase Box */
     .carousel-details-box {
       width: 100%;
@@ -6143,11 +6177,14 @@
 
             <div class="carousel-showcase-card" id="carouselShowcaseCard">
               <div class="carousel-top-meta">
-                <span class="carousel-counter-badge" id="carouselCounterBadge">1 / 18</span>
+                <span class="carousel-counter-badge" id="carouselCounterBadge">1 / 23</span>
                 <span class="carousel-status-badge status-equipped" id="carouselStatusBadge">EQUIPPED</span>
               </div>
               <div class="preview-canvas-wrapper" id="previewCanvasWrapper">
                 <canvas id="customizerPreviewCanvas" width="150" height="140"></canvas>
+                <div class="preview-360-badge" id="preview360Badge" title="Drag to rotate 360°">
+                  <span class="preview-360-icon">↺</span> 360°
+                </div>
               </div>
             </div>
 
@@ -10003,7 +10040,7 @@
       constructor(game) {
         this.game = game;
         this.skins = [
-          // ==================== THE CLASSICS (3) ====================
+          // 1. Free Starter (0 Coins)
           {
             id: 'classic',
             name: 'Blaze Runner',
@@ -10022,45 +10059,7 @@
             pupils: '#1E293B',
             smile: '#9A3412'
           },
-          {
-            id: 'ninja',
-            name: 'Shadow Shinobi',
-            modelType: 'biped',
-            w: 36, h: 50,
-            price: 6000,
-            rarity: 'rare',
-            icon: '🥷',
-            statBonus: { type: 'jump_boost', value: 0.08, label: '+8% Jump Height', icon: '🥷', desc: '+8% higher leaping agility' },
-            tagline: 'Silent assassin with flowing twin tails, obsidian armor, and stealth mask',
-            bodyGrad: ['#334155', '#0F172A'],
-            belly: 'rgba(148, 163, 184, 0.35)',
-            shoes: '#020617',
-            headband: '#1E293B',
-            accessory: 'shinobi',
-            pupils: '#EF4444',
-            smile: '#020617'
-          },
-          {
-            id: 'paladin',
-            name: 'Aegis Knight',
-            modelType: 'biped',
-            w: 42, h: 54,
-            price: 22500,
-            diamondCost: 15,
-            rarity: 'epic',
-            icon: '🛡️',
-            statBonus: { type: 'shield_start', value: 1, label: 'Free Start Shield', icon: '🛡️', desc: 'Spawns with an energy shield ready' },
-            tagline: 'Armored vanguard clad in gleaming steel plate and golden crest',
-            bodyGrad: ['#CBD5E1', '#64748B'],
-            belly: 'rgba(241, 245, 249, 0.65)',
-            shoes: '#334155',
-            headband: '#F59E0B',
-            accessory: 'knight',
-            pupils: '#0EA5E9',
-            smile: '#1E293B'
-          },
-
-          // ==================== HUMANS / CYBORGS (6) ====================
+          // 2. Jaxen Vance (500 Coins)
           {
             id: 'jaxen_vance',
             name: 'Jaxen Vance',
@@ -10079,42 +10078,7 @@
             pupils: '#F59E0B',
             smile: '#0F172A'
           },
-          {
-            id: 'vex_cross',
-            name: 'Valerie "Vex" Cross',
-            modelType: 'biped',
-            w: 38, h: 52,
-            price: 2500,
-            rarity: 'rare',
-            icon: '⚡',
-            statBonus: { type: 'speed_boost', value: 0.07, label: '+7% Sprint Speed', icon: '⚡', desc: '+7% higher base run speed' },
-            tagline: 'Cybernetic rogue with neon magenta augmentations and holographic goggles',
-            bodyGrad: ['#F43F5E', '#881337'],
-            belly: 'rgba(251, 113, 133, 0.45)',
-            shoes: '#0F172A',
-            headband: '#06B6D4',
-            accessory: 'vex_goggles',
-            pupils: '#22D3EE',
-            smile: '#4C0519'
-          },
-          {
-            id: 'marcus_unbroken',
-            name: 'Marcus the Unbroken',
-            modelType: 'biped',
-            w: 42, h: 54,
-            price: 12500,
-            rarity: 'epic',
-            icon: '🎖️',
-            statBonus: { type: 'invulnerable_time', value: 0.5, label: '+0.5s Recovery', icon: '🎖️', desc: '+0.5s post-hit invulnerability' },
-            tagline: 'Seasoned battle commander equipped with heavy ammo bandolier and armored pauldron',
-            bodyGrad: ['#78350F', '#451A03'],
-            belly: 'rgba(217, 119, 6, 0.35)',
-            shoes: '#1C1917',
-            headband: '#B45309',
-            accessory: 'marcus_bandolier',
-            pupils: '#FDE047',
-            smile: '#292524'
-          },
+          // 3. Leo "Dash" Rossi (800 Coins)
           {
             id: 'dash_rossi',
             name: 'Leo "Dash" Rossi',
@@ -10133,24 +10097,64 @@
             pupils: '#0F172A',
             smile: '#1E3A8A'
           },
+          // 4. Rusty (1,000 Coins)
           {
-            id: 'elena_vance',
-            name: 'Dr. Elena Vance',
+            id: 'rusty_bot',
+            name: 'Rusty',
+            modelType: 'biped',
+            w: 38, h: 50,
+            price: 1000,
+            rarity: 'common',
+            icon: '🔩',
+            statBonus: { type: 'coin_collection', value: 0.08, label: '+8% Coins', icon: '🔩', desc: '+8% scrap coin scavenging chance' },
+            tagline: 'Clunky scrapheap automaton with a puffing chimney smokestack and welded plates',
+            bodyGrad: ['#D97706', '#78350F'],
+            belly: 'rgba(254, 243, 199, 0.3)',
+            shoes: '#451A03',
+            headband: 'transparent',
+            accessory: 'rusty_funnel',
+            pupils: '#FBBF24',
+            smile: '#451A03'
+          },
+          // 5. Valerie "Vex" Cross (2,500 Coins)
+          {
+            id: 'vex_cross',
+            name: 'Valerie "Vex" Cross',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 10000,
-            rarity: 'epic',
-            icon: '🔬',
-            statBonus: { type: 'score_mult', value: 0.10, label: '+10% Score Mult', icon: '🔬', desc: '+10% bonus research score gained' },
-            tagline: 'Brilliant biometric researcher with a floating cybernetic optic eyepiece HUD',
-            bodyGrad: ['#F8FAFC', '#94A3B8'],
-            belly: 'rgba(56, 189, 248, 0.3)',
-            shoes: '#334155',
-            headband: 'transparent',
-            accessory: 'elena_visor',
-            pupils: '#0284C7',
-            smile: '#475569'
+            price: 2500,
+            rarity: 'rare',
+            icon: '⚡',
+            statBonus: { type: 'speed_boost', value: 0.07, label: '+7% Sprint Speed', icon: '⚡', desc: '+7% higher base run speed' },
+            tagline: 'Cybernetic rogue with neon magenta augmentations and holographic goggles',
+            bodyGrad: ['#F43F5E', '#881337'],
+            belly: 'rgba(251, 113, 133, 0.45)',
+            shoes: '#0F172A',
+            headband: '#06B6D4',
+            accessory: 'vex_goggles',
+            pupils: '#22D3EE',
+            smile: '#4C0519'
           },
+          // 6. DJ B-00M (3,500 Coins)
+          {
+            id: 'dj_b00m',
+            name: 'DJ B-00M',
+            modelType: 'biped',
+            w: 40, h: 52,
+            price: 3500,
+            rarity: 'rare',
+            icon: '📻',
+            statBonus: { type: 'coin_collection', value: 0.10, label: '+10% Coins', icon: '📻', desc: '+10% audio vibration coin bonus' },
+            tagline: 'Boombox automaton blasting frequency audio waveforms across live equalizer LEDs',
+            bodyGrad: ['#8B5CF6', '#3B0764'],
+            belly: 'rgba(139, 92, 246, 0.25)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'boom_equalizer',
+            pupils: '#00F0FF',
+            smile: '#581C87'
+          },
+          // 7. Roxie Sparks (5,000 Coins)
           {
             id: 'roxie_sparks',
             name: 'Roxie Sparks',
@@ -10169,8 +10173,83 @@
             pupils: '#F472B6',
             smile: '#500724'
           },
-
-          // ==================== ROBOTS (6) ====================
+          // 8. Shadow Shinobi (6,000 Coins)
+          {
+            id: 'ninja',
+            name: 'Shadow Shinobi',
+            modelType: 'biped',
+            w: 36, h: 50,
+            price: 6000,
+            rarity: 'rare',
+            icon: '🥷',
+            statBonus: { type: 'jump_boost', value: 0.08, label: '+8% Jump Height', icon: '🥷', desc: '+8% higher leaping agility' },
+            tagline: 'Silent assassin with flowing twin tails, obsidian armor, and stealth mask',
+            bodyGrad: ['#334155', '#0F172A'],
+            belly: 'rgba(148, 163, 184, 0.35)',
+            shoes: '#020617',
+            headband: '#1E293B',
+            accessory: 'shinobi',
+            pupils: '#EF4444',
+            smile: '#020617'
+          },
+          // 9. Sylph (7,500 Coins)
+          {
+            id: 'sylph',
+            name: 'Sylph',
+            modelType: 'biped',
+            w: 36, h: 50,
+            price: 7500,
+            rarity: 'rare',
+            icon: '🦋',
+            statBonus: { type: 'double_jump_float', value: 0.12, label: '-12% Gravity Float', icon: '🦋', desc: '12% lighter gravity for smoother gliding' },
+            tagline: 'Ethereal forest fairy alien with wiggling bioluminescent moth antennae',
+            bodyGrad: ['#34D399', '#065F46'],
+            belly: 'rgba(167, 243, 208, 0.55)',
+            shoes: '#064E3B',
+            headband: 'transparent',
+            accessory: 'sylph_antennae',
+            pupils: '#064E3B',
+            smile: '#065F46'
+          },
+          // 10. Dr. Elena Vance (10,000 Coins)
+          {
+            id: 'elena_vance',
+            name: 'Dr. Elena Vance',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 10000,
+            rarity: 'epic',
+            icon: '🔬',
+            statBonus: { type: 'score_mult', value: 0.10, label: '+10% Score Mult', icon: '🔬', desc: '+10% bonus research score gained' },
+            tagline: 'Brilliant biometric researcher with a floating cybernetic optic eyepiece HUD',
+            bodyGrad: ['#F8FAFC', '#94A3B8'],
+            belly: 'rgba(56, 189, 248, 0.3)',
+            shoes: '#334155',
+            headband: 'transparent',
+            accessory: 'elena_visor',
+            pupils: '#0284C7',
+            smile: '#475569'
+          },
+          // 11. Marcus the Unbroken (12,500 Coins)
+          {
+            id: 'marcus_unbroken',
+            name: 'Marcus the Unbroken',
+            modelType: 'biped',
+            w: 42, h: 54,
+            price: 12500,
+            rarity: 'epic',
+            icon: '🎖️',
+            statBonus: { type: 'invulnerable_time', value: 0.5, label: '+0.5s Recovery', icon: '🎖️', desc: '+0.5s post-hit invulnerability' },
+            tagline: 'Seasoned battle commander equipped with heavy ammo bandolier and armored pauldron',
+            bodyGrad: ['#78350F', '#451A03'],
+            belly: 'rgba(217, 119, 6, 0.35)',
+            shoes: '#1C1917',
+            headband: '#B45309',
+            accessory: 'marcus_bandolier',
+            pupils: '#FDE047',
+            smile: '#292524'
+          },
+          // 12. Apex-9 (15,000 Coins / 12 Diamonds)
           {
             id: 'apex_9',
             name: 'Apex-9',
@@ -10190,61 +10269,7 @@
             pupils: '#EF4444',
             smile: 'transparent'
           },
-          {
-            id: 'rusty_bot',
-            name: 'Rusty',
-            modelType: 'biped',
-            w: 38, h: 50,
-            price: 1000,
-            rarity: 'common',
-            icon: '🔩',
-            statBonus: { type: 'coin_collection', value: 0.08, label: '+8% Coins', icon: '🔩', desc: '+8% scrap coin scavenging chance' },
-            tagline: 'Clunky scrapheap automaton with a puffing chimney smokestack and welded plates',
-            bodyGrad: ['#D97706', '#78350F'],
-            belly: 'rgba(254, 243, 199, 0.3)',
-            shoes: '#451A03',
-            headband: 'transparent',
-            accessory: 'rusty_funnel',
-            pupils: '#FBBF24',
-            smile: '#451A03'
-          },
-          {
-            id: 'null_void',
-            name: 'Null-Void',
-            modelType: 'biped',
-            w: 38, h: 52,
-            price: 25000,
-            diamondCost: 20,
-            rarity: 'epic',
-            icon: '🕳️',
-            statBonus: { type: 'magnet_duration', value: 3.5, label: '+3.5s Magnet Time', icon: '🕳️', desc: '+3.5s longer magnet power-up' },
-            tagline: 'Dark matter mechanoid harboring an active cosmic singularity portal in its chest',
-            bodyGrad: ['#09090B', '#18181B'],
-            belly: 'rgba(0, 0, 0, 0)',
-            shoes: '#27272A',
-            headband: 'transparent',
-            accessory: 'null_portal',
-            pupils: '#C084FC',
-            smile: 'transparent'
-          },
-          {
-            id: 'dj_b00m',
-            name: 'DJ B-00M',
-            modelType: 'biped',
-            w: 40, h: 52,
-            price: 3500,
-            rarity: 'rare',
-            icon: '📻',
-            statBonus: { type: 'coin_collection', value: 0.10, label: '+10% Coins', icon: '📻', desc: '+10% audio vibration coin bonus' },
-            tagline: 'Boombox automaton blasting frequency audio waveforms across live equalizer LEDs',
-            bodyGrad: ['#8B5CF6', '#3B0764'],
-            belly: 'rgba(139, 92, 246, 0.25)',
-            shoes: '#0F172A',
-            headband: 'transparent',
-            accessory: 'boom_equalizer',
-            pupils: '#00F0FF',
-            smile: '#581C87'
-          },
+          // 13. Orion (18,000 Coins / 14 Diamonds)
           {
             id: 'orion_starbot',
             name: 'Orion',
@@ -10264,27 +10289,7 @@
             pupils: '#38BDF8',
             smile: '#1E1B4B'
           },
-          {
-            id: 'bastion_prime',
-            name: 'Bastion-Prime',
-            modelType: 'biped',
-            w: 42, h: 54,
-            price: 40000,
-            diamondCost: 28,
-            rarity: 'legendary',
-            icon: '🏰',
-            statBonus: { type: 'shield_start', value: 1, label: 'Free Start Shield', icon: '🏰', desc: 'Deploys with fortress energy barrier' },
-            tagline: 'Heavy mechanized fortress vanguard armed with dual shoulder blast shields',
-            bodyGrad: ['#475569', '#1E293B'],
-            belly: 'rgba(148, 163, 184, 0.35)',
-            shoes: '#0F172A',
-            headband: 'transparent',
-            accessory: 'bastion_plating',
-            pupils: '#F59E0B',
-            smile: 'transparent'
-          },
-
-          // ==================== ALIENS / HYBRIDS (5) ====================
+          // 14. Kaelith Star-Eye (20,000 Coins / 16 Diamonds)
           {
             id: 'kaelith_stareye',
             name: 'Kaelith Star-Eye',
@@ -10304,102 +10309,47 @@
             pupils: '#A5B4FC',
             smile: '#312E81'
           },
+          // 15. Aegis Knight (22,500 Coins / 18 Diamonds)
           {
-            id: 'gorgoroth',
-            name: 'Gorgoroth',
+            id: 'paladin',
+            name: 'Aegis Knight',
             modelType: 'biped',
-            w: 40, h: 54,
-            price: 35000,
-            diamondCost: 25,
-            rarity: 'legendary',
-            icon: '👹',
-            statBonus: { type: 'stomp_bonus', value: 3, label: '+3 Coins/Stomp', icon: '👹', desc: '+3 bonus coins on enemy crushes' },
-            tagline: 'Infernal volcanic brute crowned with curving obsidian horns and magma cracks',
-            bodyGrad: ['#DC2626', '#7F1D1D'],
-            belly: 'rgba(254, 240, 138, 0.4)',
-            shoes: '#450A0A',
-            headband: 'transparent',
-            accessory: 'gorgoroth_horns',
-            pupils: '#FACC15',
-            smile: '#450A0A'
+            w: 42, h: 54,
+            price: 22500,
+            diamondCost: 18,
+            rarity: 'epic',
+            icon: '🛡️',
+            statBonus: { type: 'shield_start', value: 1, label: 'Free Start Shield', icon: '🛡️', desc: 'Spawns with an energy shield ready' },
+            tagline: 'Armored vanguard clad in gleaming steel plate and golden crest',
+            bodyGrad: ['#CBD5E1', '#64748B'],
+            belly: 'rgba(241, 245, 249, 0.65)',
+            shoes: '#334155',
+            headband: '#F59E0B',
+            accessory: 'knight',
+            pupils: '#0EA5E9',
+            smile: '#1E293B'
           },
+          // 16. Null-Void (25,000 Coins / 20 Diamonds)
           {
-            id: 'sylph',
-            name: 'Sylph',
-            modelType: 'biped',
-            w: 36, h: 50,
-            price: 7500,
-            rarity: 'rare',
-            icon: '🦋',
-            statBonus: { type: 'double_jump_float', value: 0.12, label: '-12% Gravity Float', icon: '🦋', desc: '12% lighter gravity for smoother gliding' },
-            tagline: 'Ethereal forest fairy alien with wiggling bioluminescent moth antennae',
-            bodyGrad: ['#34D399', '#065F46'],
-            belly: 'rgba(167, 243, 208, 0.55)',
-            shoes: '#064E3B',
-            headband: 'transparent',
-            accessory: 'sylph_antennae',
-            pupils: '#064E3B',
-            smile: '#065F46'
-          },
-          {
-            id: 'zorblax_great',
-            name: 'Zorblax the Great',
+            id: 'null_void',
+            name: 'Null-Void',
             modelType: 'biped',
             w: 38, h: 52,
-            price: 42500,
-            diamondCost: 30,
-            rarity: 'legendary',
-            icon: '👽',
-            statBonus: { type: 'coin_collection', value: 0.15, label: '+15% Coins', icon: '👽', desc: '+15% alien tribute coin collection' },
-            tagline: 'Megalomaniacal alien overlord with an exposed glowing brain dome and eye-stalks',
-            bodyGrad: ['#4ADE80', '#15803D'],
-            belly: 'rgba(187, 247, 208, 0.5)',
-            shoes: '#052E16',
-            headband: 'transparent',
-            accessory: 'zorblax_crown',
-            pupils: '#000000',
-            smile: '#14532D'
-          },
-          {
-            id: 'nyx_shadow',
-            name: 'Nyx',
-            modelType: 'biped',
-            w: 38, h: 52,
-            price: 48000,
-            diamondCost: 32,
-            rarity: 'legendary',
-            icon: '🐙',
-            statBonus: { type: 'score_mult', value: 0.20, label: '+20% Score Mult', icon: '🐙', desc: '+20% abyssal cosmic score multiplier' },
-            tagline: 'Cosmic entity of the deep void with writhing shadowy ethereal tentacles',
-            bodyGrad: ['#581C87', '#1E1B4B'],
-            belly: 'rgba(192, 132, 252, 0.3)',
-            shoes: '#0F172A',
-            headband: 'transparent',
-            accessory: 'nyx_tentacles',
-            pupils: '#E879F9',
-            smile: '#3B0764'
-          },
-
-          // ==================== SKELETONS / NECRO (3) ====================
-          {
-            id: 'bone_kzero',
-            name: '骨-K0 (Bone-KZero)',
-            modelType: 'biped',
-            w: 38, h: 52,
-            price: 50000,
-            diamondCost: 35,
-            rarity: 'legendary',
-            icon: '💀',
-            statBonus: { type: 'coin_collection', value: 0.20, label: '+20% Coins', icon: '💀', desc: '+20% cyber-necro coin salvage' },
-            tagline: 'A cybernetic undead warrior with glowing neon ribs and cranial circuits',
-            bodyGrad: ['#1E293B', '#020617'],
+            price: 25000,
+            diamondCost: 20,
+            rarity: 'epic',
+            icon: '🕳️',
+            statBonus: { type: 'magnet_duration', value: 3.5, label: '+3.5s Magnet Time', icon: '🕳️', desc: '+3.5s longer magnet power-up' },
+            tagline: 'Dark matter mechanoid harboring an active cosmic singularity portal in its chest',
+            bodyGrad: ['#09090B', '#18181B'],
             belly: 'rgba(0, 0, 0, 0)',
-            shoes: '#475569',
+            shoes: '#27272A',
             headband: 'transparent',
-            accessory: 'cyber_skeleton',
-            pupils: '#38BDF8',
+            accessory: 'null_portal',
+            pupils: '#C084FC',
             smile: 'transparent'
           },
+          // 17. Captain Skelly (30,000 Coins / 22 Diamonds)
           {
             id: 'captain_skelly',
             name: 'Captain Skelly',
@@ -10419,13 +10369,74 @@
             pupils: '#0F172A',
             smile: '#475569'
           },
+          // 18. Gorgoroth (35,000 Coins / 25 Diamonds)
+          {
+            id: 'gorgoroth',
+            name: 'Gorgoroth',
+            modelType: 'biped',
+            w: 40, h: 54,
+            price: 35000,
+            diamondCost: 25,
+            rarity: 'legendary',
+            icon: '👹',
+            statBonus: { type: 'stomp_bonus', value: 3, label: '+3 Coins/Stomp', icon: '👹', desc: '+3 bonus coins on enemy crushes' },
+            tagline: 'Infernal volcanic brute crowned with curving obsidian horns and magma cracks',
+            bodyGrad: ['#DC2626', '#7F1D1D'],
+            belly: 'rgba(254, 240, 138, 0.4)',
+            shoes: '#450A0A',
+            headband: 'transparent',
+            accessory: 'gorgoroth_horns',
+            pupils: '#FACC15',
+            smile: '#450A0A'
+          },
+          // 19. Bastion-Prime (40,000 Coins / 28 Diamonds)
+          {
+            id: 'bastion_prime',
+            name: 'Bastion-Prime',
+            modelType: 'biped',
+            w: 42, h: 54,
+            price: 40000,
+            diamondCost: 28,
+            rarity: 'legendary',
+            icon: '🏰',
+            statBonus: { type: 'shield_start', value: 1, label: 'Free Start Shield', icon: '🏰', desc: 'Deploys with fortress energy barrier' },
+            tagline: 'Heavy mechanized fortress vanguard armed with dual shoulder blast shields',
+            bodyGrad: ['#475569', '#1E293B'],
+            belly: 'rgba(148, 163, 184, 0.35)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'bastion_plating',
+            pupils: '#F59E0B',
+            smile: 'transparent'
+          },
+          // 20. Zorblax the Great (42,500 Coins / 30 Diamonds)
+          {
+            id: 'zorblax_great',
+            name: 'Zorblax the Great',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 42500,
+            diamondCost: 30,
+            rarity: 'legendary',
+            icon: '👽',
+            statBonus: { type: 'coin_collection', value: 0.15, label: '+15% Coins', icon: '👽', desc: '+15% alien tribute coin collection' },
+            tagline: 'Megalomaniacal alien overlord with an exposed glowing brain dome and eye-stalks',
+            bodyGrad: ['#4ADE80', '#15803D'],
+            belly: 'rgba(187, 247, 208, 0.5)',
+            shoes: '#052E16',
+            headband: 'transparent',
+            accessory: 'zorblax_crown',
+            pupils: '#000000',
+            smile: '#14532D'
+          },
+          // 21. Baron Marrow (45,000 Coins / 32 Diamonds)
           {
             id: 'baron_marrow',
             name: 'Baron Marrow',
             modelType: 'biped',
             w: 38, h: 54,
             price: 45000,
-            diamondCost: 30,
+            diamondCost: 32,
             rarity: 'legendary',
             icon: '🎩',
             statBonus: { type: 'coin_collection', value: 0.25, label: '+25% Coins', icon: '🎩', desc: '+25% aristocratic gold accumulation' },
@@ -10437,8 +10448,51 @@
             accessory: 'marrow_monocle',
             pupils: '#F59E0B',
             smile: 'transparent'
+          },
+          // 22. Nyx (48,000 Coins / 34 Diamonds)
+          {
+            id: 'nyx_shadow',
+            name: 'Nyx',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 48000,
+            diamondCost: 34,
+            rarity: 'legendary',
+            icon: '🐙',
+            statBonus: { type: 'score_mult', value: 0.20, label: '+20% Score Mult', icon: '🐙', desc: '+20% abyssal cosmic score multiplier' },
+            tagline: 'Cosmic entity of the deep void with writhing shadowy ethereal tentacles',
+            bodyGrad: ['#581C87', '#1E1B4B'],
+            belly: 'rgba(192, 132, 252, 0.3)',
+            shoes: '#0F172A',
+            headband: 'transparent',
+            accessory: 'nyx_tentacles',
+            pupils: '#E879F9',
+            smile: '#3B0764'
+          },
+          // 23. 骨-K0 (Bone-KZero) (50,000 Coins / 35 Diamonds)
+          {
+            id: 'bone_kzero',
+            name: '骨-K0 (Bone-KZero)',
+            modelType: 'biped',
+            w: 38, h: 52,
+            price: 50000,
+            diamondCost: 35,
+            rarity: 'legendary',
+            icon: '💀',
+            statBonus: { type: 'coin_collection', value: 0.20, label: '+20% Coins', icon: '💀', desc: '+20% cyber-necro coin salvage' },
+            tagline: 'A cybernetic undead warrior with glowing neon ribs and cranial circuits',
+            bodyGrad: ['#1E293B', '#020617'],
+            belly: 'rgba(0, 0, 0, 0)',
+            shoes: '#475569',
+            headband: 'transparent',
+            accessory: 'cyber_skeleton',
+            pupils: '#38BDF8',
+            smile: 'transparent'
           }
         ];
+
+        // Ensure skins are always strictly sorted from low to high by price
+        this.skins.sort((a, b) => a.price - b.price);
 
         this.unlockedSkins = this.loadUnlockedSkins();
         this.selectedSkinId = this.loadSelectedSkin();
@@ -10446,15 +10500,23 @@
         this.currentSkinIndex = initialSkinIdx >= 0 ? initialSkinIdx : 0;
         this.previewSkinId = this.skins[this.currentSkinIndex].id;
 
-        // Preview loop properties
+        // Preview loop & 3D floating rotation showcase properties
         this.previewAnimId = null;
         this.previewTime = 0;
+        this.rotAngle = 0;
+        this.rotSpeed = 0.024;
+        this.rotVelocity = 0;
+        this.isDraggingModel = false;
+        this.dragStartX = 0;
+        this.lastDragX = 0;
+        this.showcaseParticles = [];
         this.previewCanvas = null;
         this.previewCtx = null;
         this.previewParticles = new ParticleSystem();
         this.unlockScalePulse = 1.0;
         this.unlockShockwave = null;
         this.swipeListenersAttached = false;
+        this.previewListenersAttached = false;
       }
 
       loadUnlockedSkins() {
@@ -10941,10 +11003,12 @@
       openCustomizer() {
         this.closeConfirmDialog();
         this.initSwipeListeners();
+        this.initPreviewInteractions();
         const equippedIdx = this.skins.findIndex(s => s.id === this.selectedSkinId);
         this.currentSkinIndex = equippedIdx >= 0 ? equippedIdx : 0;
         this.previewSkinId = this.skins[this.currentSkinIndex].id;
         if (this.previewParticles) this.previewParticles.clear();
+        this.showcaseParticles = [];
         this.unlockShockwave = null;
         this.unlockScalePulse = 1.0;
         this.renderCustomizer();
@@ -10955,6 +11019,7 @@
         this.closeConfirmDialog();
         this.stopPreviewAnim();
         if (this.previewParticles) this.previewParticles.clear();
+        this.showcaseParticles = [];
         this.unlockShockwave = null;
         this.unlockScalePulse = 1.0;
       }
@@ -10964,6 +11029,7 @@
         this.previewCanvas = document.getElementById('customizerPreviewCanvas');
         if (!this.previewCanvas) return;
         this.previewCtx = this.previewCanvas.getContext('2d');
+        this.initPreviewInteractions();
 
         const step = (t) => {
           this.renderPreviewFrame(t);
@@ -10979,6 +11045,67 @@
         }
       }
 
+      initPreviewInteractions() {
+        const canvas = document.getElementById('customizerPreviewCanvas');
+        if (!canvas || this.previewListenersAttached) return;
+        this.previewListenersAttached = true;
+        canvas.style.cursor = 'grab';
+
+        const getPos = (e) => {
+          if (e.touches && e.touches.length > 0) {
+            return e.touches[0].clientX;
+          }
+          return e.clientX;
+        };
+
+        const onStart = (e) => {
+          this.isDraggingModel = true;
+          this.dragStartX = getPos(e);
+          this.lastDragX = this.dragStartX;
+          this.rotVelocity = 0;
+          canvas.style.cursor = 'grabbing';
+        };
+
+        const onMove = (e) => {
+          if (!this.isDraggingModel) return;
+          const pos = getPos(e);
+          const dx = pos - this.lastDragX;
+          this.lastDragX = pos;
+          this.rotAngle += dx * 0.024;
+          this.rotVelocity = dx * 0.016;
+        };
+
+        const onEnd = () => {
+          if (!this.isDraggingModel) return;
+          this.isDraggingModel = false;
+          canvas.style.cursor = 'grab';
+        };
+
+        canvas.addEventListener('mousedown', onStart);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onEnd);
+
+        canvas.addEventListener('touchstart', onStart, { passive: true });
+        window.addEventListener('touchmove', onMove, { passive: true });
+        window.addEventListener('touchend', onEnd, { passive: true });
+        window.addEventListener('touchcancel', onEnd, { passive: true });
+      }
+
+      darkenHex(hex, factor) {
+        if (!hex || hex === 'transparent' || !hex.startsWith('#')) return hex || '#000000';
+        try {
+          let c = hex.replace('#', '');
+          if (c.length === 3) c = c.split('').map(x => x + x).join('');
+          const num = parseInt(c, 16);
+          const r = Math.max(0, Math.floor(((num >> 16) & 255) * (1 - factor)));
+          const g = Math.max(0, Math.floor(((num >> 8) & 255) * (1 - factor)));
+          const b = Math.max(0, Math.floor((num & 255) * (1 - factor)));
+          return `rgb(${r},${g},${b})`;
+        } catch (e) {
+          return hex;
+        }
+      }
+
       renderPreviewFrame(t) {
         if (!this.previewCanvas || !this.previewCtx) return;
         const ctx = this.previewCtx;
@@ -10988,17 +11115,33 @@
         ctx.clearRect(0, 0, w, h);
 
         const skin = this.getSkin(this.previewSkinId);
-        this.previewTime += 0.04;
-        const bounceY = (skin.modelType === 'hover') ? 0 : Math.sin(this.previewTime * 7) * 3.5;
-        const legAngle = this.previewTime * 8;
+        this.previewTime += 0.035;
+
+        // Auto-rotation with interactive touch inertia
+        if (this.isDraggingModel) {
+          this.rotVelocity *= 0.92;
+        } else if (Math.abs(this.rotVelocity) > 0.001) {
+          this.rotAngle += this.rotVelocity;
+          this.rotVelocity *= 0.94;
+        } else {
+          this.rotAngle += this.rotSpeed || 0.024;
+        }
+        this.rotAngle = ((this.rotAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+
+        // Smooth floating levitation bob and gentle tilt
+        const floatY = Math.sin(this.previewTime * 2.2) * 5.5;
+        const floatTilt = Math.sin(this.previewTime * 1.6) * 0.025;
 
         // Smoothly ease down unlock scale pulse if active
         if (this.unlockScalePulse > 1.0) {
           this.unlockScalePulse = Math.max(1.0, this.unlockScalePulse - 0.02);
         }
-        const scale = 1.35 * (this.unlockScalePulse || 1.0);
+        const scale = 1.32 * (this.unlockScalePulse || 1.0);
 
-        // Draw expanding shockwave if active
+        // 1. Draw Holographic Turntable Pedestal with glowing ring
+        this.drawTurntablePedestal(ctx, w, h, skin, floatY);
+
+        // 2. Draw expanding shockwave if active
         if (this.unlockShockwave && this.unlockShockwave.alpha > 0.01) {
           ctx.save();
           ctx.beginPath();
@@ -11015,16 +11158,704 @@
           this.unlockShockwave.alpha -= 0.035;
         }
 
+        // 3. Draw Floating Rotating 3D Character Model
         ctx.save();
-        ctx.translate(w / 2, h / 2 + 8 + bounceY);
+        ctx.translate(w / 2, h / 2 - 3 + floatY);
+        ctx.rotate(floatTilt);
         ctx.scale(scale, scale);
-        this.game.drawRunnerSkin(ctx, skin, legAngle, true, skin.w || 38, skin.h || 50);
+        this.drawShowcaseCharacter(ctx, skin, this.previewTime, skin.w || 38, skin.h || 52, this.rotAngle, floatY);
         ctx.restore();
 
-        // Update and draw preview particles
+        // 4. Update and draw floating ambient motes & particles
+        this.updateShowcaseParticles(ctx, w, h, skin);
         if (this.previewParticles && this.previewParticles.particles.length > 0) {
           this.previewParticles.update();
           this.previewParticles.draw(ctx);
+        }
+      }
+
+      drawTurntablePedestal(ctx, w, h, skin, floatY) {
+        const pedX = w / 2;
+        const pedY = h - 18;
+        const rarity = skin ? (skin.rarity || 'common') : 'common';
+        const auras = {
+          legendary: { color: '#F59E0B', glow: '#FBBF24', beam: 'rgba(245, 158, 11, 0.16)' },
+          epic: { color: '#A855F7', glow: '#C084FC', beam: 'rgba(168, 85, 247, 0.16)' },
+          rare: { color: '#06B6D4', glow: '#22D3EE', beam: 'rgba(6, 182, 212, 0.16)' },
+          common: { color: '#38BDF8', glow: '#38BDF8', beam: 'rgba(56, 189, 248, 0.16)' }
+        };
+        const aura = auras[rarity] || auras.common;
+
+        // Soft Dynamic Contact Floor Shadow beneath floating runner
+        const shadowScale = Math.max(0.6, 1 - (floatY / 28));
+        const shadowAlpha = Math.max(0.12, 0.34 - (floatY / 26));
+        ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
+        ctx.beginPath();
+        ctx.ellipse(pedX, pedY, 26 * shadowScale, 5.2 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Upward Holographic Showcase Light Column
+        const beamGrad = ctx.createLinearGradient(pedX, pedY, pedX, pedY - 65);
+        beamGrad.addColorStop(0, aura.beam);
+        beamGrad.addColorStop(0.7, aura.beam.replace('0.16', '0.05'));
+        beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = beamGrad;
+        ctx.beginPath();
+        ctx.moveTo(pedX - 30, pedY);
+        ctx.lineTo(pedX - 18, pedY - 65);
+        ctx.lineTo(pedX + 18, pedY - 65);
+        ctx.lineTo(pedX + 30, pedY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Concentric Metallic Turntable Ring with Neon Edge
+        ctx.save();
+        ctx.strokeStyle = aura.color;
+        ctx.lineWidth = 1.6;
+        ctx.shadowColor = aura.glow;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.ellipse(pedX, pedY, 36, 8.5, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner glowing turntable disc
+        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(pedX, pedY, 25, 6, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Rotating holographic projector nodes along perimeter
+        for (let i = 0; i < 6; i++) {
+          const a = this.rotAngle + (i * Math.PI / 3);
+          const px = pedX + Math.cos(a) * 36;
+          const py = pedY + Math.sin(a) * 8.5;
+          ctx.fillStyle = i % 2 === 0 ? '#FFFFFF' : aura.color;
+          ctx.beginPath();
+          ctx.arc(px, py, i % 2 === 0 ? 1.6 : 1.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      drawShowcaseCharacter(ctx, skin, animTime, bw, bh, rotAngle, floatY) {
+        if (!skin) return;
+
+        // Facing vectors in 3D camera space
+        const facingZ = Math.cos(rotAngle); // +1 = facing front, -1 = facing back
+        const facingX = Math.sin(rotAngle); // +1 = facing right profile, -1 = facing left profile
+
+        // Legs / Feet in 3D rotation
+        const feet = [
+          {
+            id: 0,
+            x: -8 * Math.cos(rotAngle) - 3 * Math.sin(rotAngle),
+            z: -8 * Math.sin(rotAngle) + 3 * Math.cos(rotAngle),
+            bob: Math.sin(animTime * 2.8) * 2.2
+          },
+          {
+            id: 1,
+            x: 8 * Math.cos(rotAngle) - 3 * Math.sin(rotAngle),
+            z: 8 * Math.sin(rotAngle) + 3 * Math.cos(rotAngle),
+            bob: -Math.sin(animTime * 2.8) * 2.2
+          }
+        ];
+        feet.sort((a, b) => a.z - b.z);
+
+        const drawFoot = (foot, isBack) => {
+          ctx.save();
+          ctx.translate(foot.x, bh / 2 - 7 + foot.bob);
+          const fScale = 0.85 + (foot.z / 18) * 0.25;
+          ctx.scale(Math.max(0.6, fScale), 1);
+          ctx.fillStyle = skin.shoes || '#9A3412';
+          if (isBack) {
+            ctx.fillStyle = this.darkenHex(skin.shoes || '#9A3412', 0.45);
+          }
+          ctx.beginPath();
+          ctx.roundRect(-4.5, 0, 9, 11, [3, 3, 4, 4]);
+          ctx.fill();
+          ctx.restore();
+        };
+
+        // 1. Draw Rear Foot (behind body)
+        if (feet[0].z < 0) {
+          drawFoot(feet[0], true);
+        }
+
+        // 2. Draw Back Details & Rear Accessories (when facing away, facingZ < 0.3)
+        if (facingZ < 0.3) {
+          const backAlpha = Math.min(1, (-facingZ + 0.3) * 2.5);
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, backAlpha);
+          this.drawShowcaseBackDetails(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle);
+          ctx.restore();
+        }
+
+        // 3. Main Torso Pill Capsule Body with Dynamic 3D Cylindrical Shading
+        const br = bw / 2;
+        ctx.save();
+        const lightOffset = 0.5 + facingX * 0.22;
+        const bodyGrad = ctx.createLinearGradient(-bw / 2, 0, bw / 2, 0);
+        const col0 = skin.bodyGrad ? skin.bodyGrad[1] : '#EA580C';
+        const col1 = skin.bodyGrad ? skin.bodyGrad[0] : '#FF8A3D';
+        bodyGrad.addColorStop(0, this.darkenHex(col0, 0.4));
+        bodyGrad.addColorStop(Math.max(0.08, Math.min(0.92, lightOffset - 0.15)), col1);
+        bodyGrad.addColorStop(Math.max(0.15, Math.min(0.95, lightOffset + 0.15)), col0);
+        bodyGrad.addColorStop(1, this.darkenHex(col0, 0.55));
+        ctx.fillStyle = bodyGrad;
+
+        ctx.beginPath();
+        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [br, br, br, br]);
+        ctx.fill();
+
+        // 4. Front Belly Highlight / Chest Plate (when facing front, facingZ > -0.2)
+        if (facingZ > -0.2) {
+          const frontAlpha = Math.min(1, (facingZ + 0.2) * 2.2);
+          const foreshortenedW = bw * 0.68 * Math.max(0.05, facingZ);
+          const parallaxX = facingX * (bw * 0.16);
+
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, frontAlpha);
+          ctx.fillStyle = skin.belly || 'rgba(255, 237, 213, 0.45)';
+          ctx.beginPath();
+          ctx.roundRect(parallaxX - foreshortenedW / 2, -bh * 0.32, foreshortenedW, bh * 0.44, 10);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // 5. Front Accessories (Headbands, crests, pauldrons, visors, medallions)
+        if (facingZ > -0.25) {
+          const frontAlpha = Math.min(1, (facingZ + 0.25) * 2.2);
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, frontAlpha);
+          this.drawShowcaseFrontAccessories(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle);
+          ctx.restore();
+        }
+
+        // 6. Facial Features (Eyes & Smile with 3D cylindrical parallax)
+        if (facingZ > 0.05) {
+          const faceAlpha = Math.min(1, (facingZ - 0.05) * 3);
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, faceAlpha);
+          this.drawShowcaseFace(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle);
+          ctx.restore();
+        }
+
+        ctx.restore(); // Restore body context
+
+        // 7. Draw Front Foot (in front of body)
+        if (feet[1].z >= 0) {
+          drawFoot(feet[1], false);
+        }
+      }
+
+      drawShowcaseBackDetails(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle) {
+        const acc = skin.accessory;
+        const xKnot = facingX * 8;
+
+        if (acc === 'headband') {
+          // Blaze Runner - fluttering red fabric ribbons tied at back of head
+          ctx.fillStyle = skin.headband || '#EF4444';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh / 2 + 13, 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(xKnot - 2, -bh / 2 + 13);
+          ctx.quadraticCurveTo(xKnot - 14, -bh / 2 + 20 + Math.sin(animTime * 3) * 4, xKnot - 20, -bh / 2 + 30 + Math.sin(animTime * 3) * 5);
+          ctx.lineTo(xKnot - 16, -bh / 2 + 34 + Math.sin(animTime * 3) * 5);
+          ctx.quadraticCurveTo(xKnot - 10, -bh / 2 + 22 + Math.sin(animTime * 3) * 4, xKnot + 2, -bh / 2 + 15);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'shinobi') {
+          // Shadow Shinobi - twin obsidian ninja ribbons trailing in wind
+          ctx.fillStyle = '#0F172A';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh / 2 + 14, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#1E293B';
+          ctx.beginPath();
+          ctx.moveTo(xKnot - 1, -bh / 2 + 14);
+          ctx.quadraticCurveTo(xKnot - 16, -bh / 2 + 22 + Math.sin(animTime * 3.5) * 4, xKnot - 22, -bh / 2 + 34 + Math.sin(animTime * 3.5) * 5);
+          ctx.lineTo(xKnot - 17, -bh / 2 + 38 + Math.sin(animTime * 3.5) * 5);
+          ctx.quadraticCurveTo(xKnot - 10, -bh / 2 + 24 + Math.sin(animTime * 3.5) * 4, xKnot + 2, -bh / 2 + 16);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'knight') {
+          // Aegis Knight - red feathered plume curving down back of helmet & steel spine ridge
+          ctx.fillStyle = '#DC2626';
+          ctx.beginPath();
+          ctx.moveTo(xKnot, -bh / 2 + 2);
+          ctx.quadraticCurveTo(xKnot - 12, -bh / 2 + 8, xKnot - 16, -bh / 2 + 24 + Math.sin(animTime * 2.5) * 3);
+          ctx.lineTo(xKnot - 11, -bh / 2 + 22 + Math.sin(animTime * 2.5) * 3);
+          ctx.quadraticCurveTo(xKnot - 8, -bh / 2 + 10, xKnot + 2, -bh / 2 + 4);
+          ctx.closePath();
+          ctx.fill();
+
+          // Steel spine plate ridge
+          ctx.fillStyle = '#64748B';
+          ctx.fillRect(xKnot - 2, -bh / 2 + 16, 4, bh * 0.55);
+        } else if (acc === 'jaxen_cyberarm') {
+          // Jaxen Vance - glowing amber power conduit cable along spine & cyber pauldron
+          ctx.strokeStyle = '#F59E0B';
+          ctx.lineWidth = 3;
+          ctx.shadowColor = '#F59E0B';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.moveTo(xKnot, -bh / 2 + 16);
+          ctx.lineTo(xKnot, bh / 2 - 14);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        } else if (acc === 'vex_goggles') {
+          // Vex Cross - spiked magenta hair tufts and cyan battery strap
+          ctx.fillStyle = '#F43F5E';
+          ctx.beginPath();
+          ctx.moveTo(xKnot - 8, -bh / 2 + 8);
+          ctx.lineTo(xKnot - 18, -bh / 2 + 14);
+          ctx.lineTo(xKnot - 6, -bh / 2 + 16);
+          ctx.lineTo(xKnot - 14, -bh / 2 + 24);
+          ctx.lineTo(xKnot, -bh / 2 + 20);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'marcus_bandolier') {
+          // Marcus - diagonal tactical harness crossing back with survival field pack
+          ctx.fillStyle = '#451A03';
+          ctx.fillRect(xKnot - 9, -bh * 0.15, 18, 16);
+          ctx.strokeStyle = '#B45309';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(-bw / 2 + 4, -bh * 0.25);
+          ctx.lineTo(bw / 2 - 4, bh * 0.18);
+          ctx.stroke();
+        } else if (acc === 'dash_cap') {
+          // Dash Rossi - backward baseball cap crown and snapback strap
+          ctx.fillStyle = '#EF4444';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh / 2 + 10, 11, Math.PI, 0);
+          ctx.fill();
+          // Cap visor bill projecting backward
+          ctx.fillRect(xKnot - 10, -bh / 2 + 9, 20, 4.5);
+        } else if (acc === 'elena_visor') {
+          // Elena Vance - lab coat center vent seam
+          ctx.strokeStyle = '#64748B';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(xKnot, -bh * 0.1);
+          ctx.lineTo(xKnot, bh * 0.35);
+          ctx.stroke();
+        } else if (acc === 'roxie_headphones') {
+          // Roxie Sparks - matte black headphones headband arch & neon jacket soundwave
+          ctx.strokeStyle = '#18181B';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh / 2 + 8, 12, Math.PI, 0);
+          ctx.stroke();
+
+          // Jacket soundwave emblem
+          ctx.strokeStyle = '#EC4899';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = -3; i <= 3; i++) {
+            const hBar = 4 + Math.abs(i) * 2;
+            ctx.moveTo(xKnot + i * 3, -bh * 0.05 - hBar / 2);
+            ctx.lineTo(xKnot + i * 3, -bh * 0.05 + hBar / 2);
+          }
+          ctx.stroke();
+        } else if (acc === 'apex_visor') {
+          // Apex-9 - chrome backplate with dual vertical glowing heatsink grilles
+          ctx.fillStyle = '#0F172A';
+          ctx.fillRect(xKnot - 8, -bh * 0.2, 16, 20);
+          ctx.fillStyle = '#EF4444';
+          ctx.shadowColor = '#EF4444';
+          ctx.shadowBlur = 6;
+          ctx.fillRect(xKnot - 5, -bh * 0.15, 3, 14);
+          ctx.fillRect(xKnot + 2, -bh * 0.15, 3, 14);
+          ctx.shadowBlur = 0;
+        } else if (acc === 'rusty_funnel') {
+          // Rusty - boiler rivet seams & smokestack steam puffs
+          ctx.fillStyle = '#78350F';
+          ctx.fillRect(xKnot - 5, -bh / 2 - 7, 10, 8);
+          // Soft puff of steam
+          const steamY = -bh / 2 - 12 - (animTime * 8) % 16;
+          const steamAlpha = Math.max(0, 0.6 - ((animTime * 8) % 16) / 16);
+          ctx.fillStyle = `rgba(255, 255, 255, ${steamAlpha})`;
+          ctx.beginPath();
+          ctx.arc(xKnot + Math.sin(animTime * 2) * 3, steamY, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (acc === 'null_void') {
+          // Null-Void - swirling dark matter void rift
+          ctx.save();
+          ctx.shadowColor = '#C084FC';
+          ctx.shadowBlur = 10;
+          ctx.fillStyle = '#581C87';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh * 0.05, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#09090B';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh * 0.05, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (acc === 'boom_equalizer') {
+          // DJ B-00M - giant rear subwoofer speaker cone pulsing
+          const pulse = 1 + Math.sin(animTime * 8) * 0.12;
+          ctx.fillStyle = '#1E1B4B';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh * 0.05, 11 * pulse, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#A855F7';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        } else if (acc === 'orion_solar') {
+          // Orion - golden solar ring halo floating around head
+          ctx.save();
+          ctx.strokeStyle = '#FDE047';
+          ctx.lineWidth = 2;
+          ctx.shadowColor = '#FDE047';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.ellipse(xKnot, -bh / 2 + 5, 18, 5, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        } else if (acc === 'bastion_plating') {
+          // Bastion-Prime - fortress blast shield rear panels
+          ctx.fillStyle = '#1E293B';
+          ctx.fillRect(xKnot - 11, -bh * 0.22, 22, 24);
+          ctx.strokeStyle = '#F59E0B';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(xKnot - 11, -bh * 0.22, 22, 24);
+        } else if (acc === 'kaelith_third_eye') {
+          // Kaelith - starlight stardust veil flowing behind head
+          ctx.fillStyle = 'rgba(165, 180, 252, 0.4)';
+          ctx.beginPath();
+          ctx.moveTo(xKnot - 8, -bh / 2 + 10);
+          ctx.quadraticCurveTo(xKnot - 14, -bh / 2 + 25 + Math.sin(animTime * 2) * 4, xKnot - 6, -bh / 2 + 38);
+          ctx.quadraticCurveTo(xKnot + 10, -bh / 2 + 25, xKnot + 8, -bh / 2 + 10);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'gorgoroth_horns') {
+          // Gorgoroth - curved obsidian horns from behind & magma spine cracks
+          ctx.fillStyle = '#1C1917';
+          ctx.beginPath();
+          ctx.moveTo(-bw / 2 + 2, -bh / 2 + 10);
+          ctx.quadraticCurveTo(-bw / 2 - 12, -bh / 2 - 8, -bw / 2 - 6, -bh / 2 - 18);
+          ctx.lineTo(-bw / 2 + 2, -bh / 2 + 4);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(bw / 2 - 2, -bh / 2 + 10);
+          ctx.quadraticCurveTo(bw / 2 + 12, -bh / 2 - 8, bw / 2 + 6, -bh / 2 - 18);
+          ctx.lineTo(bw / 2 - 2, -bh / 2 + 4);
+          ctx.fill();
+
+          // Spiked glowing magma spinal ridge
+          ctx.strokeStyle = '#F59E0B';
+          ctx.lineWidth = 2.5;
+          ctx.shadowColor = '#F59E0B';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.moveTo(xKnot, -bh * 0.2);
+          ctx.lineTo(xKnot, bh * 0.25);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        } else if (acc === 'sylph_antennae') {
+          // Sylph - translucent glowing emerald moth wings with fluttering animation
+          const flap = Math.sin(animTime * 14) * 5;
+          ctx.fillStyle = 'rgba(52, 211, 153, 0.55)';
+          ctx.shadowColor = '#34D399';
+          ctx.shadowBlur = 8;
+          // Left wing
+          ctx.beginPath();
+          ctx.ellipse(xKnot - 12 - flap * 0.4, -bh * 0.1, 14, 7 + flap * 0.3, -0.4, 0, Math.PI * 2);
+          ctx.fill();
+          // Right wing
+          ctx.beginPath();
+          ctx.ellipse(xKnot + 12 + flap * 0.4, -bh * 0.1, 14, 7 + flap * 0.3, 0.4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        } else if (acc === 'zorblax_crown') {
+          // Zorblax - translucent glowing green brain dome seen from behind
+          ctx.fillStyle = 'rgba(74, 222, 128, 0.6)';
+          ctx.beginPath();
+          ctx.arc(xKnot, -bh / 2 + 7, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#15803D';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        } else if (acc === 'nyx_tentacles') {
+          // Nyx - cosmic shadowy tentacles waving fluidly around the body
+          ctx.strokeStyle = '#581C87';
+          ctx.lineWidth = 3.5;
+          for (let i = -2; i <= 2; i++) {
+            const tx = xKnot + i * 7;
+            const wave = Math.sin(animTime * 3 + i) * 6;
+            ctx.beginPath();
+            ctx.moveTo(tx, bh * 0.1);
+            ctx.quadraticCurveTo(tx + wave * 1.5, bh * 0.3, tx + wave * 2, bh * 0.45);
+            ctx.stroke();
+          }
+        } else if (acc === 'pirate_skull') {
+          // Captain Skelly - pirate captain coat tails flowing behind
+          ctx.fillStyle = '#451A03';
+          ctx.beginPath();
+          ctx.moveTo(xKnot - 8, bh * 0.05);
+          ctx.lineTo(xKnot - 14, bh * 0.38 + Math.sin(animTime * 2.5) * 3);
+          ctx.lineTo(xKnot - 2, bh * 0.32);
+          ctx.lineTo(xKnot + 2, bh * 0.32);
+          ctx.lineTo(xKnot + 14, bh * 0.38 + Math.sin(animTime * 2.5 + 1) * 3);
+          ctx.lineTo(xKnot + 8, bh * 0.05);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'marrow_monocle') {
+          // Baron Marrow - elegant aristocratic formal tuxedo coat tails
+          ctx.fillStyle = '#09090B';
+          ctx.beginPath();
+          ctx.moveTo(xKnot - 7, bh * 0.08);
+          ctx.lineTo(xKnot - 11, bh * 0.42);
+          ctx.lineTo(xKnot - 2, bh * 0.35);
+          ctx.lineTo(xKnot + 2, bh * 0.35);
+          ctx.lineTo(xKnot + 11, bh * 0.42);
+          ctx.lineTo(xKnot + 7, bh * 0.08);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'cyber_skeleton') {
+          // Bone-KZero - cybernetic illuminated spinal column
+          ctx.fillStyle = '#38BDF8';
+          ctx.shadowColor = '#38BDF8';
+          ctx.shadowBlur = 6;
+          for (let i = 0; i < 5; i++) {
+            ctx.fillRect(xKnot - 3, -bh * 0.2 + i * 6.5, 6, 3);
+          }
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      drawShowcaseFrontAccessories(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle) {
+        const acc = skin.accessory;
+        const pX = facingX * (bw * 0.18);
+
+        // Headband wrap (Blaze Runner, Vex, Marcus)
+        if (skin.headband && skin.headband !== 'transparent') {
+          ctx.fillStyle = skin.headband;
+          ctx.fillRect(-bw / 2 + 1, -bh / 2 + 11, bw - 2, 4.5);
+        }
+
+        if (acc === 'vex_goggles') {
+          // Valerie Vex Cross - neon holographic goggles with glint
+          ctx.fillStyle = '#06B6D4';
+          ctx.shadowColor = '#22D3EE';
+          ctx.shadowBlur = 6;
+          const gW = 20 * Math.max(0.1, facingZ);
+          ctx.fillRect(pX - gW / 2, -bh / 2 + 10, gW, 6);
+          ctx.shadowBlur = 0;
+        } else if (acc === 'marcus_bandolier') {
+          // Marcus - diagonal ammunition bandolier
+          ctx.strokeStyle = '#451A03';
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          ctx.moveTo(-bw / 2 + 4, -bh * 0.28);
+          ctx.lineTo(bw / 2 - 4, bh * 0.18);
+          ctx.stroke();
+          // Brass cartridge studs
+          ctx.fillStyle = '#FDE047';
+          for (let i = -1; i <= 2; i++) {
+            ctx.fillRect(pX + i * 5 - 1.5, -bh * 0.05 + i * 5, 3, 4);
+          }
+        } else if (acc === 'dash_cap') {
+          // Dash - baseball cap brim turned to the side/front
+          ctx.fillStyle = '#EF4444';
+          ctx.beginPath();
+          ctx.arc(pX, -bh / 2 + 10, 11, Math.PI, 0);
+          ctx.fill();
+        } else if (acc === 'elena_visor') {
+          // Elena - cybernetic holographic eye reticle
+          ctx.strokeStyle = '#0284C7';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(pX + 4, -bh / 2 + 13, 5, 0, Math.PI * 2);
+          ctx.stroke();
+        } else if (acc === 'roxie_headphones') {
+          // Roxie - neon pink earcups
+          ctx.fillStyle = '#EC4899';
+          ctx.shadowColor = '#EC4899';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.roundRect(-bw / 2 - 2, -bh / 2 + 9, 4, 10, 2);
+          ctx.roundRect(bw / 2 - 2, -bh / 2 + 9, 4, 10, 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        } else if (acc === 'apex_visor') {
+          // Apex-9 - sweeping horizontal crimson laser scanner
+          ctx.fillStyle = '#EF4444';
+          ctx.shadowColor = '#EF4444';
+          ctx.shadowBlur = 8;
+          const vW = 18 * Math.max(0.1, facingZ);
+          ctx.fillRect(pX - vW / 2, -bh / 2 + 12, vW, 4);
+          ctx.shadowBlur = 0;
+        } else if (acc === 'pirate_skull') {
+          // Captain Skelly - skull & crossbones captain bicorne hat
+          ctx.fillStyle = '#0F172A';
+          ctx.beginPath();
+          ctx.moveTo(-bw / 2 - 4, -bh / 2 + 8);
+          ctx.lineTo(0, -bh / 2 - 8);
+          ctx.lineTo(bw / 2 + 4, -bh / 2 + 8);
+          ctx.closePath();
+          ctx.fill();
+          // Skull emblem
+          ctx.fillStyle = '#FFFFFF';
+          ctx.beginPath();
+          ctx.arc(pX, -bh / 2, 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (acc === 'marrow_monocle') {
+          // Baron Marrow - silk top hat & gold monocle
+          ctx.fillStyle = '#09090B';
+          ctx.fillRect(-bw / 2 - 2, -bh / 2 + 2, bw + 4, 3); // hat brim
+          ctx.fillRect(-bw / 2 + 2, -bh / 2 - 14, bw - 4, 16); // hat crown
+          ctx.fillStyle = '#F59E0B';
+          ctx.fillRect(-bw / 2 + 2, -bh / 2, bw - 4, 2.5); // gold band
+          // Bowtie
+          ctx.fillStyle = '#DC2626';
+          ctx.beginPath();
+          ctx.moveTo(pX - 5, -bh * 0.08);
+          ctx.lineTo(pX + 5, -bh * 0.08);
+          ctx.lineTo(pX, -bh * 0.05);
+          ctx.closePath();
+          ctx.fill();
+        } else if (acc === 'sylph_antennae') {
+          // Sylph - bioluminescent moth antennae
+          ctx.strokeStyle = '#34D399';
+          ctx.lineWidth = 1.5;
+          ctx.shadowColor = '#34D399';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.moveTo(pX - 4, -bh / 2 + 2);
+          ctx.quadraticCurveTo(pX - 10, -bh / 2 - 8, pX - 8, -bh / 2 - 14);
+          ctx.moveTo(pX + 4, -bh / 2 + 2);
+          ctx.quadraticCurveTo(pX + 10, -bh / 2 - 8, pX + 8, -bh / 2 - 14);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        } else if (acc === 'boom_equalizer') {
+          // DJ B-00M - active dancing audio spectrum LEDs
+          ctx.fillStyle = '#00F0FF';
+          ctx.shadowColor = '#00F0FF';
+          ctx.shadowBlur = 4;
+          for (let i = -2; i <= 2; i++) {
+            const hBar = 3 + Math.abs(Math.sin(animTime * 6 + i)) * 7;
+            ctx.fillRect(pX + i * 3.5 - 1, -bh * 0.06 - hBar / 2, 2, hBar);
+          }
+          ctx.shadowBlur = 0;
+        } else if (acc === 'null_portal') {
+          // Null-Void - cosmic dark matter core
+          ctx.fillStyle = '#C084FC';
+          ctx.shadowColor = '#C084FC';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(pX, -bh * 0.06, 5.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      drawShowcaseFace(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle) {
+        // Eyes placed at azimuthal angles on the front hemisphere of the cylinder
+        const phiL = -0.32;
+        const phiR = 0.32;
+
+        const zL = Math.cos(rotAngle + phiL);
+        const zR = Math.cos(rotAngle + phiR);
+        const xL = (bw * 0.42) * Math.sin(rotAngle + phiL);
+        const xR = (bw * 0.42) * Math.sin(rotAngle + phiR);
+
+        const yEye = -bh / 2 + 18;
+
+        const drawEye = (x, z) => {
+          if (z <= 0.05) return;
+          const eyeW = 5.5 * z;
+          const eyeH = 6.8;
+
+          // Sclera (white of the eye)
+          ctx.fillStyle = '#FFFFFF';
+          ctx.beginPath();
+          ctx.ellipse(x, yEye, Math.max(1, eyeW), eyeH / 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Pupil
+          ctx.fillStyle = skin.pupils || '#1E293B';
+          ctx.beginPath();
+          ctx.ellipse(x + (facingX * 0.8), yEye, Math.max(0.6, eyeW * 0.58), eyeH * 0.45, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Eye glint catchlight
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.beginPath();
+          ctx.arc(x - 0.8 * z, yEye - 1.6, Math.max(0.4, 1.2 * z), 0, Math.PI * 2);
+          ctx.fill();
+        };
+
+        drawEye(xL, zL);
+        drawEye(xR, zR);
+
+        // Smile mouth (when facing forward)
+        if (facingZ > 0.15 && skin.smile && skin.smile !== 'transparent') {
+          const mouthX = facingX * (bw * 0.18);
+          const mouthW = 7 * Math.max(0.1, facingZ);
+          ctx.strokeStyle = skin.smile;
+          ctx.lineWidth = 1.8;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.arc(mouthX, -bh / 2 + 25, mouthW, 0.2, Math.PI - 0.2);
+          ctx.stroke();
+        }
+      }
+
+      updateShowcaseParticles(ctx, w, h, skin) {
+        if (!this.showcaseParticles) this.showcaseParticles = [];
+        const pedX = w / 2;
+        const pedY = h - 20;
+        const rarity = skin ? (skin.rarity || 'common') : 'common';
+        const colors = {
+          legendary: ['#F59E0B', '#FDE047', '#FEF08A'],
+          epic: ['#A855F7', '#C084FC', '#E879F9'],
+          rare: ['#06B6D4', '#38BDF8', '#67E8F9'],
+          common: ['#38BDF8', '#60A5FA', '#93C5FD']
+        }[rarity] || ['#38BDF8', '#FFFFFF'];
+
+        // Spawn new floating mote from the turntable
+        if (this.showcaseParticles.length < 14 && Math.random() < 0.28) {
+          const a = Math.random() * Math.PI * 2;
+          const r = Math.random() * 32;
+          this.showcaseParticles.push({
+            x: pedX + Math.cos(a) * r,
+            y: pedY + Math.sin(a) * (r * 0.25),
+            vy: -0.45 - Math.random() * 0.65,
+            vx: (Math.random() - 0.5) * 0.25,
+            size: 1.0 + Math.random() * 1.6,
+            alpha: 0.85,
+            decay: 0.012 + Math.random() * 0.015,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+
+        // Update and draw motes
+        for (let i = this.showcaseParticles.length - 1; i >= 0; i--) {
+          const p = this.showcaseParticles[i];
+          p.y += p.vy;
+          p.x += p.vx;
+          p.alpha -= p.decay;
+          if (p.alpha <= 0.01) {
+            this.showcaseParticles.splice(i, 1);
+            continue;
+          }
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         }
       }
 
