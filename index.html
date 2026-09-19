@@ -1589,6 +1589,17 @@
     .btn.btn-danger {
       background: linear-gradient(180deg, #EF4444 0%, #DC2626 100%);
     }
+    .btn.btn-exit {
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.95) 100%);
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+      color: #FFFFFF;
+    }
+    .btn.btn-exit:hover {
+      background: linear-gradient(180deg, #EF4444 0%, #DC2626 100%);
+      box-shadow: 0 6px 18px rgba(239, 68, 68, 0.55);
+      transform: translateY(-2px);
+    }
     .btn.confirm-state {
       background: linear-gradient(180deg, #DC2626 0%, #991B1B 100%) !important;
       border: 1.5px solid #FCA5A5;
@@ -5922,6 +5933,9 @@
             </button>
             <button class="btn btn-secondary" id="menuSettingsBtn" title="Advanced Settings & Accessibility">
               <span>⚙️</span> <span>Settings</span>
+            </button>
+            <button class="btn btn-exit" id="menuExitBtn" title="Exit Dashbound App">
+              <span>🚪</span> <span>Exit</span>
             </button>
           </div>
           <div class="help-hint" id="helpHintBtn" style="cursor: pointer;" title="Open Controls Guide">
@@ -11106,6 +11120,12 @@
         }
       }
 
+      drawRunnerSkin(ctx, skin, animTime, onGround = true, bw, bh) {
+        if (this.game && typeof this.game.drawRunnerSkin === 'function') {
+          this.game.drawRunnerSkin(ctx, skin, animTime, onGround, bw || (skin.w || 38), bh || (skin.h || 50));
+        }
+      }
+
       renderPreviewFrame(t) {
         if (!this.previewCanvas || !this.previewCtx) return;
         const ctx = this.previewCtx;
@@ -11115,22 +11135,20 @@
         ctx.clearRect(0, 0, w, h);
 
         const skin = this.getSkin(this.previewSkinId);
+        if (!skin) return;
+
+        // Smooth continuous time variables
+        const nowSec = (t !== undefined ? t * 0.001 : performance.now() * 0.001);
         this.previewTime += 0.035;
+        const animTime = this.previewTime;
 
-        // Auto-rotation with interactive touch inertia
-        if (this.isDraggingModel) {
-          this.rotVelocity *= 0.92;
-        } else if (Math.abs(this.rotVelocity) > 0.001) {
-          this.rotAngle += this.rotVelocity;
-          this.rotVelocity *= 0.94;
-        } else {
-          this.rotAngle += this.rotSpeed || 0.024;
-        }
-        this.rotAngle = ((this.rotAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+        // 1. Premium Hero Idle Animation:
+        // Gentle Levitation / Bobbing: smooth vertical translation
+        const floatY = Math.sin(nowSec * 3) * 4;
 
-        // Smooth floating levitation bob and gentle tilt
-        const floatY = Math.sin(this.previewTime * 2.2) * 5.5;
-        const floatTilt = Math.sin(this.previewTime * 1.6) * 0.025;
+        // Breathing (Squash & Stretch): subtle vertical scaling that slowly expands and contracts
+        const breatheY = 1.0 + Math.sin(nowSec * 2) * 0.03;
+        const breatheX = 1.0 - Math.sin(nowSec * 2) * 0.015; // Natural volume preservation
 
         // Smoothly ease down unlock scale pulse if active
         if (this.unlockScalePulse > 1.0) {
@@ -11138,10 +11156,10 @@
         }
         const scale = 1.32 * (this.unlockScalePulse || 1.0);
 
-        // 1. Draw Holographic Turntable Pedestal with glowing ring
+        // 2. Draw Holographic Turntable Pedestal with glowing ring
         this.drawTurntablePedestal(ctx, w, h, skin, floatY);
 
-        // 2. Draw expanding shockwave if active
+        // 3. Draw expanding shockwave if active
         if (this.unlockShockwave && this.unlockShockwave.alpha > 0.01) {
           ctx.save();
           ctx.beginPath();
@@ -11158,15 +11176,16 @@
           this.unlockShockwave.alpha -= 0.035;
         }
 
-        // 3. Draw Floating Rotating 3D Character Model
+        // 4. Draw Hero Idle Character (Always facing forward, 2D procedural rendering)
+        // No 360-degree rotation or horizontal flipping - authentic 2D hero showcase
         ctx.save();
         ctx.translate(w / 2, h / 2 - 3 + floatY);
-        ctx.rotate(floatTilt);
-        ctx.scale(scale, scale);
-        this.drawShowcaseCharacter(ctx, skin, this.previewTime, skin.w || 38, skin.h || 52, this.rotAngle, floatY);
+        ctx.scale(scale * breatheX, scale * breatheY);
+        // Keep procedural time flowing: animTime passed into drawRunnerSkin for animated scarves, flames, equalizers
+        this.drawRunnerSkin(ctx, skin, animTime, true, skin.w || 38, skin.h || 50);
         ctx.restore();
 
-        // 4. Update and draw floating ambient motes & particles
+        // 5. Update and draw floating ambient motes & particles
         this.updateShowcaseParticles(ctx, w, h, skin);
         if (this.previewParticles && this.previewParticles.particles.length > 0) {
           this.previewParticles.update();
@@ -11225,9 +11244,9 @@
         ctx.ellipse(pedX, pedY, 25, 6, 0, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Rotating holographic projector nodes along perimeter
+        // Orbiting holographic projector nodes along perimeter
         for (let i = 0; i < 6; i++) {
-          const a = this.rotAngle + (i * Math.PI / 3);
+          const a = (this.previewTime || 0) * 0.8 + (i * Math.PI / 3);
           const px = pedX + Math.cos(a) * 36;
           const py = pedY + Math.sin(a) * 8.5;
           ctx.fillStyle = i % 2 === 0 ? '#FFFFFF' : aura.color;
@@ -11245,41 +11264,143 @@
         const facingZ = Math.cos(rotAngle); // +1 = facing front, -1 = facing back
         const facingX = Math.sin(rotAngle); // +1 = facing right profile, -1 = facing left profile
 
-        // Legs / Feet in 3D rotation
-        const feet = [
+        // 3D Legs & Feet calculation
+        // Hip sockets rotate on the bottom rim of the body cylinder
+        const hipRadius = bw * 0.22;
+        const hipBaseY = bh / 2 - 8;
+
+        const legs = [
           {
             id: 0,
-            x: -8 * Math.cos(rotAngle) - 3 * Math.sin(rotAngle),
-            z: -8 * Math.sin(rotAngle) + 3 * Math.cos(rotAngle),
-            bob: Math.sin(animTime * 2.8) * 2.2
+            localX: -hipRadius,
+            dangle: Math.sin(animTime * 2.2) * 1.5
           },
           {
             id: 1,
-            x: 8 * Math.cos(rotAngle) - 3 * Math.sin(rotAngle),
-            z: 8 * Math.sin(rotAngle) + 3 * Math.cos(rotAngle),
-            bob: -Math.sin(animTime * 2.8) * 2.2
+            localX: hipRadius,
+            dangle: Math.sin(animTime * 2.2 + Math.PI) * 1.5
           }
-        ];
-        feet.sort((a, b) => a.z - b.z);
+        ].map(leg => {
+          // World 3D coordinates of hip
+          const hipX = leg.localX * Math.cos(rotAngle);
+          const hipZ = leg.localX * Math.sin(rotAngle);
+          const hipY = hipBaseY;
 
-        const drawFoot = (foot, isBack) => {
+          // World 3D coordinates of ankle
+          const ankleX = hipX + facingX * 1.2;
+          const ankleZ = hipZ + facingZ * 1.2;
+          const ankleY = hipY + 11 + leg.dangle;
+
+          return {
+            ...leg,
+            hipX, hipZ, hipY,
+            ankleX, ankleZ, ankleY,
+            depth: hipZ
+          };
+        });
+
+        // Sort legs by depth: legs[0] is rear (smaller Z), legs[1] is front (larger Z)
+        legs.sort((a, b) => a.depth - b.depth);
+
+        // Helper to draw a single fully-articulated 3D leg and rotating sneaker
+        const drawLeg = (leg, isBack) => {
+          const pantsColor = skin.shoes || (skin.bodyGrad ? skin.bodyGrad[1] : '#EA580C');
+          const legColor = isBack ? this.darkenHex(pantsColor, 0.45) : pantsColor;
+          const shoeColor = isBack ? this.darkenHex(skin.shoes || '#9A3412', 0.42) : (skin.shoes || '#9A3412');
+
+          // 1. Draw Leg Shaft (Thigh & Calf connecting hip to ankle)
           ctx.save();
-          ctx.translate(foot.x, bh / 2 - 7 + foot.bob);
-          const fScale = 0.85 + (foot.z / 18) * 0.25;
-          ctx.scale(Math.max(0.6, fScale), 1);
-          ctx.fillStyle = skin.shoes || '#9A3412';
-          if (isBack) {
-            ctx.fillStyle = this.darkenHex(skin.shoes || '#9A3412', 0.45);
-          }
+          ctx.strokeStyle = legColor;
+          ctx.lineWidth = 5.2;
+          ctx.lineCap = 'round';
           ctx.beginPath();
-          ctx.roundRect(-4.5, 0, 9, 11, [3, 3, 4, 4]);
-          ctx.fill();
+          ctx.moveTo(leg.hipX, leg.hipY);
+          ctx.lineTo(leg.ankleX, leg.ankleY);
+          ctx.stroke();
+          ctx.restore();
+
+          // 2. Draw 3D Rotating Shoe
+          ctx.save();
+          ctx.fillStyle = shoeColor;
+
+          if (Math.abs(facingX) > 0.3) {
+            // Profile & 3/4 Perspective: Aerodynamic sneaker silhouette pointing in facingX direction
+            const signX = Math.sign(facingX);
+            const profileFactor = Math.abs(facingX);
+            const toeTipX = leg.ankleX + signX * (3.8 + profileFactor * 2.6);
+            const heelTipX = leg.ankleX - signX * (1.6 + profileFactor * 1.2);
+            const shoeBaseY = leg.ankleY + 5.5;
+
+            // Sneaker upper body
+            ctx.beginPath();
+            ctx.moveTo(heelTipX, shoeBaseY);
+            ctx.lineTo(toeTipX, shoeBaseY);
+            ctx.quadraticCurveTo(toeTipX + signX * 1.5, shoeBaseY - 1.5, toeTipX, shoeBaseY - 2.6);
+            ctx.lineTo(leg.ankleX + signX * 1.6, leg.ankleY + 1.2);
+            ctx.lineTo(leg.ankleX - signX * 0.8, leg.ankleY);
+            ctx.quadraticCurveTo(heelTipX - signX * 0.8, leg.ankleY + 2.5, heelTipX, shoeBaseY);
+            ctx.closePath();
+            ctx.fill();
+
+            // Sneaker rubber outsole tread
+            ctx.fillStyle = isBack ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.72)';
+            ctx.beginPath();
+            ctx.moveTo(heelTipX, shoeBaseY - 0.4);
+            ctx.lineTo(toeTipX, shoeBaseY - 0.4);
+            ctx.lineTo(toeTipX, shoeBaseY + 1.2);
+            ctx.lineTo(heelTipX, shoeBaseY + 1.2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Instep laces / tongue detail
+            if (facingZ > -0.1) {
+              ctx.fillStyle = isBack ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.85)';
+              ctx.fillRect(leg.ankleX + signX * 0.4 - 1.2, leg.ankleY + 1.5, 2.4, 1.4);
+            }
+          } else {
+            // Front-on or Back-on Symmetrical Perspective
+            const shoeW = 7.2;
+            const shoeH = 6.8;
+            const shoeX = leg.ankleX - shoeW / 2;
+            const shoeY = leg.ankleY;
+
+            ctx.beginPath();
+            if (facingZ >= 0) {
+              // Facing camera: Rounded sneaker toe cap
+              ctx.roundRect(shoeX, shoeY, shoeW, shoeH, [2, 2, 4, 4]);
+              ctx.fill();
+
+              // Rubber sole bottom trim
+              ctx.fillStyle = isBack ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.72)';
+              ctx.fillRect(shoeX, shoeY + shoeH - 1.5, shoeW, 1.5);
+
+              // Laces knot
+              ctx.fillStyle = isBack ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.85)';
+              ctx.fillRect(leg.ankleX - 1.5, shoeY + 1.2, 3, 1.6);
+            } else {
+              // Facing away: Heel counter
+              ctx.roundRect(shoeX, shoeY, shoeW, shoeH, [3, 3, 2, 2]);
+              ctx.fill();
+
+              // Sole trim
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+              ctx.fillRect(shoeX, shoeY + shoeH - 1.5, shoeW, 1.5);
+
+              // Vertical Achilles tendon seam
+              ctx.strokeStyle = this.darkenHex(shoeColor, 0.35);
+              ctx.lineWidth = 1.2;
+              ctx.beginPath();
+              ctx.moveTo(leg.ankleX, shoeY + 1);
+              ctx.lineTo(leg.ankleX, shoeY + shoeH - 2);
+              ctx.stroke();
+            }
+          }
           ctx.restore();
         };
 
-        // 1. Draw Rear Foot (behind body)
-        if (feet[0].z < 0) {
-          drawFoot(feet[0], true);
+        // 1. Draw Rear Leg (behind body torso)
+        if (legs[0].depth < 0) {
+          drawLeg(legs[0], true);
         }
 
         // 2. Draw Back Details & Rear Accessories (when facing away, facingZ < 0.3)
@@ -11343,15 +11464,16 @@
 
         ctx.restore(); // Restore body context
 
-        // 7. Draw Front Foot (in front of body)
-        if (feet[1].z >= 0) {
-          drawFoot(feet[1], false);
+        // 7. Draw Front Leg(s) (in front of body torso)
+        if (legs[0].depth >= 0) {
+          drawLeg(legs[0], false);
         }
+        drawLeg(legs[1], false);
       }
 
       drawShowcaseBackDetails(ctx, skin, animTime, bw, bh, facingX, facingZ, rotAngle) {
         const acc = skin.accessory;
-        const xKnot = facingX * 8;
+        const xKnot = -facingX * (bw * 0.22);
 
         if (acc === 'headband') {
           // Blaze Runner - fluttering red fabric ribbons tied at back of head
@@ -13740,10 +13862,15 @@
           exitModalConfirmBtn.onclick = (e) => {
             if (e) e.stopPropagation();
             audio.click();
+            if (typeof this.scheduleAppExitReminders === 'function') {
+              this.scheduleAppExitReminders();
+            }
             if (typeof AndroidBridge !== 'undefined' && AndroidBridge.exitApp) {
               AndroidBridge.exitApp();
             } else if (typeof Android !== 'undefined' && Android.exitApp) {
               Android.exitApp();
+            } else {
+              window.close();
             }
           };
         }
@@ -13916,6 +14043,16 @@
             if (e) e.stopPropagation();
             if (this.settingsManager) {
               this.settingsManager.openModal();
+            }
+          };
+        }
+
+        const menuExitBtn = document.getElementById('menuExitBtn');
+        if (menuExitBtn) {
+          menuExitBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            if (typeof this.openExitModal === 'function') {
+              this.openExitModal(e);
             }
           };
         }
@@ -20151,38 +20288,35 @@
           }
         }
 
-        // 4. Subtle hover/idle run bob animation using performance.now()
+        // 4. Premium Hero Idle Animation using continuous time
         const now = (time !== undefined ? time : performance.now()) * 0.001;
-        let bounceY = 0;
-        let legAngle = 0;
 
-        if (skin.modelType === 'hover') {
-          bounceY = Math.sin(now * 3.2) * 5;
-          legAngle = 0;
-        } else if (skin.modelType === 'wheel') {
-          bounceY = Math.sin(now * 6.0) * 1.5;
-          legAngle = now * 7.5;
-        } else {
-          bounceY = Math.sin(now * 5.0) * 3.2;
-          legAngle = now * 6.5;
-        }
+        // Gentle Levitation / Bobbing: smooth buoyant vertical translation
+        const levitateY = Math.sin(now * 3) * 4;
 
-        // 5. Draw soft ground shadow beneath character
+        // Breathing (Squash & Stretch): subtle vertical scaling expanding and contracting
+        const breatheScaleY = 1.0 + Math.sin(now * 2) * 0.03;
+        const breatheScaleX = 1.0 - Math.sin(now * 2) * 0.015; // Natural volume preservation
+
+        // Keep procedural time flowing for animated character accessories (scarves, flames, equalizers)
+        const animTime = now * 2.0;
+
+        // 5. Draw soft ground shadow beneath character (smoothly scaled with levitation & breathing)
         ctx.save();
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
         const shadowW = Math.max(16, (skin.w || 38) * 0.65);
-        const shadowScale = Math.max(0.7, 1 - (bounceY / 24));
+        const shadowScale = Math.max(0.65, 1 - (levitateY / 24));
         ctx.beginPath();
-        ctx.ellipse(w / 2, h / 2 + 32, shadowW * shadowScale, 5 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.ellipse(w / 2, h / 2 + 32, shadowW * shadowScale * breatheScaleX, 5 * shadowScale, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // 6. Draw runner skin using procedural drawing engine
+        // 6. Draw runner skin using procedural drawing engine (Always forward facing, hero idle stance)
         ctx.save();
-        ctx.translate(w / 2, h / 2 + 6 + bounceY);
-        const scale = 1.3;
-        ctx.scale(scale, scale);
-        this.drawRunnerSkin(ctx, skin, legAngle, true, skin.w || 38, skin.h || 50);
+        ctx.translate(w / 2, h / 2 + 6 + levitateY);
+        const baseScale = 1.3;
+        ctx.scale(baseScale * breatheScaleX, baseScale * breatheScaleY);
+        this.drawRunnerSkin(ctx, skin, animTime, true, skin.w || 38, skin.h || 50);
         ctx.restore();
       }
 
@@ -20280,6 +20414,14 @@
       // 4. If exit confirmation modal is already open, close it (cancel exit)
       if (g.isExitModalOpen) {
         g.closeExitModal();
+        return;
+      }
+
+      // 4.5. If Privacy Policy & Terms modal is open, close it
+      if (g.isPrivacyReaderOpen) {
+        g.isPrivacyReaderOpen = false;
+        const pModal = document.getElementById('privacyReaderModal');
+        if (pModal) pModal.classList.remove('active');
         return;
       }
 
