@@ -46,6 +46,7 @@
       max-width: var(--app-width, 100vw);
       max-height: var(--app-height, 100vh);
       overflow: hidden;
+      contain: strict;
       box-sizing: border-box;
     }
     /* Universal touch responsiveness & 300ms tap delay elimination */
@@ -84,7 +85,10 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) translateZ(0);
+      will-change: transform;
+      backface-visibility: hidden;
+      background-color: #0F172A;
       pointer-events: auto;
     }
 
@@ -106,7 +110,7 @@
       align-items: center;
       gap: 10px;
       pointer-events: none;
-      z-index: 10;
+      z-index: 100;
     }
     .hud-spacer {
       width: 44px;
@@ -820,9 +824,16 @@
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
     }
+    .overlay:not(.active) {
+      display: none !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+    }
     .overlay.active {
-      opacity: 1;
-      pointer-events: auto;
+      display: flex !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      visibility: visible !important;
     }
 
     /* Glitchora Splash Screen */
@@ -872,6 +883,21 @@
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.6));
       margin-bottom: 6px;
+      display: inline-block;
+      transform-origin: center center;
+    }
+    #startScreen.active .game-logo {
+      animation: logoBreathe 3.2s ease-in-out infinite;
+    }
+    @keyframes logoBreathe {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.6));
+      }
+      50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 6px 18px rgba(249, 115, 22, 0.85)) drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+      }
     }
     .subtitle {
       font-size: 14px;
@@ -986,7 +1012,7 @@
       max-width: 420px;
       flex-shrink: 1;
     }
-    .gameover-btn-row .btn {
+    .gameover-btn-row .btn:not(.icon-btn) {
       padding: clamp(6px, 1.2vh, 9px) clamp(10px, 1.5vw, 16px);
       font-size: clamp(11px, 2vh, 13px);
       min-width: clamp(88px, 16vw, 116px);
@@ -1574,6 +1600,91 @@
       font-size: 18px;
       padding: 14px 34px;
     }
+
+    /* AAA Polish: The Alive Play Button Heartbeat Pulse */
+    @keyframes heartbeatPulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+      }
+      50% {
+        transform: scale(1.04);
+        box-shadow: 0 6px 26px rgba(16, 185, 129, 0.85), 0 0 18px rgba(52, 211, 153, 0.45);
+      }
+    }
+
+    /* Main Menu Alive Play Button */
+    #startScreen .btn.btn-play,
+    #startPlayBtn {
+      animation: heartbeatPulse 2s infinite ease-in-out;
+    }
+    #startScreen .btn.btn-play:active,
+    #startPlayBtn:active {
+      animation: none;
+      transform: scale(0.96) !important;
+    }
+
+    /* AAA Polish: Bouncy / Spring Modal Animations */
+    @keyframes springPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      45% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      75% {
+        transform: scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1.0);
+      }
+    }
+
+    /* AAA Polish: Staggered List Item Entrance */
+    @keyframes itemSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes streakTodaySlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(16px) scale(1);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1.04);
+      }
+    }
+
+    /* Spring Pop Attached to Modal Containers */
+    .upgrade-container,
+    .settings-container,
+    .info-card,
+    .streak-card,
+    .consent-card,
+    .gameover-container {
+      animation: springPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+      transform-origin: center center;
+    }
+
+    #upgradeModal.active .upgrade-container,
+    #settingsModal.active .settings-container,
+    #infoModal.active .info-card,
+    #streakModal.active .streak-card,
+    #consentModal.active .consent-card,
+    #gameOverScreen.active .gameover-container {
+      animation: springPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
     .btn.btn-reward {
       background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
       box-shadow: 0 4px 16px rgba(217, 119, 6, 0.45);
@@ -1636,6 +1747,55 @@
     .btn.disabled {
       opacity: 0.4;
       pointer-events: none;
+    }
+
+    /* AAA Game Over Screen - Circular Icon-Only Action Buttons */
+    .gameover-icon-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(10px, 2.5vw, 16px);
+      width: 100%;
+      margin-top: 6px;
+      order: 3;
+    }
+    .icon-btn,
+    .gameover-btn-row .icon-btn,
+    .btn.icon-btn {
+      width: 56px !important;
+      height: 56px !important;
+      min-width: 56px !important;
+      min-height: 56px !important;
+      max-width: 56px !important;
+      max-height: 56px !important;
+      border-radius: 50% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex: 0 0 56px !important;
+      box-sizing: border-box !important;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.35) !important;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, filter 0.18s ease;
+      touch-action: manipulation;
+    }
+    .icon-btn:hover {
+      transform: translateY(-3px) scale(1.08) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 1.5px rgba(255, 255, 255, 0.45) !important;
+    }
+    .icon-btn:active {
+      transform: scale(0.92) !important;
+    }
+    .icon-btn .icon-btn-glyph {
+      font-size: 26px !important;
+      line-height: 1 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
     }
 
     .help-hint {
@@ -1865,34 +2025,30 @@
       transition: color 0.2s ease;
     }
     .menu-char-hover-badge {
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-6px) scale(0.92);
+      white-space: nowrap;
+      z-index: 10;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
-      margin-top: 0;
-      max-height: 0;
       opacity: 0;
-      overflow: hidden;
-      transform: translateY(-4px) scale(0.92);
       pointer-events: none;
       background: rgba(15, 23, 42, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 0 5px;
+      padding: 2.5px 6px;
       border-radius: 9999px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
       transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  max-height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  margin-top 0.22s ease,
-                  padding 0.22s ease;
+                  transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .menu-char-widget:hover .menu-char-hover-badge,
     .menu-char-widget:active .menu-char-hover-badge {
       opacity: 1;
-      max-height: 24px;
-      margin-top: 4px;
-      padding: 2.5px 6px;
-      transform: translateY(0) scale(1);
+      transform: translateX(-50%) translateY(0) scale(1);
     }
     .menu-char-equipped-lbl {
       font-size: 8px;
@@ -1938,6 +2094,123 @@
       color: #FCD34D;
       border: 1px solid rgba(245, 158, 11, 0.5);
       box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Main Menu Top Bar (Stats & Circular Action Icons) */
+    .menu-top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: max(8px, env(safe-area-inset-top, 8px)) max(14px, env(safe-area-inset-right, 14px)) 0 max(14px, env(safe-area-inset-left, 14px));
+      box-sizing: border-box;
+    }
+    .menu-top-bar .stats-card {
+      margin: 0 !important;
+      padding: 5px 14px;
+      gap: clamp(8px, 1.8vw, 18px);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+    .menu-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .menu-top-actions .icon-btn {
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      min-height: 40px !important;
+      max-width: 40px !important;
+      max-height: 40px !important;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 50% !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease, background 0.2s ease;
+      touch-action: manipulation;
+    }
+    .menu-top-actions .icon-btn:hover {
+      transform: translateY(-2px) scale(1.08) !important;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+    }
+    .menu-top-actions .icon-btn:active {
+      transform: scale(0.92) !important;
+    }
+    .menu-top-actions .icon-btn.btn-exit {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.45);
+    }
+    .menu-top-actions .icon-btn .icon-btn-glyph {
+      font-size: 18px !important;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    #startScreen .menu-container {
+      padding-top: max(56px, calc(env(safe-area-inset-top, 8px) + 48px));
+    }
+    .daily-missions-card .streak-badge {
+      margin: 0 !important;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .menu-main-col .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+      max-width: 380px;
+      justify-content: center;
+    }
+    .menu-main-col .btn-row .btn.btn-play {
+      flex: 1 1 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: 48px !important;
+      font-size: 17px !important;
+      font-weight: 900 !important;
+      letter-spacing: 1.5px !important;
+      border-radius: 14px !important;
+      order: 1;
+      padding: 12px 24px;
+    }
+    .menu-main-col .btn-row .btn.btn-upgrade {
+      flex: 1 1 calc(50% - 4px) !important;
+      min-width: 0 !important;
+      min-height: 40px !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      border-radius: 11px !important;
+      order: 2;
+      padding: 8px 14px;
+    }
+    .menu-main-col .btn-row .btn.btn-customizer {
+      flex: 1 1 calc(50% - 4px) !important;
+      min-width: 0 !important;
+      min-height: 40px !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      border-radius: 11px !important;
+      order: 3;
+      padding: 8px 14px;
     }
 
     /* Daily Missions System Styles */
@@ -2039,6 +2312,8 @@
       align-items: center;
       gap: 10px;
       transition: all 0.2s ease;
+      animation: itemSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--item-idx, 0) * 0.05s);
     }
     .mission-item.completed:not(.claimed) {
       background: rgba(245, 158, 11, 0.14);
@@ -2491,7 +2766,7 @@
       text-align: center;
       color: #F8FAFC;
       box-sizing: border-box;
-      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: springPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
@@ -2778,6 +3053,8 @@
       gap: 4px;
       position: relative;
       transition: transform 0.15s ease;
+      animation: itemSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--item-idx, 0) * 0.05s);
     }
     .streak-day-box.claimed {
       background: rgba(16, 185, 129, 0.12);
@@ -2788,6 +3065,8 @@
       border: 2px solid #F97316;
       box-shadow: 0 0 14px rgba(249, 115, 22, 0.45);
       transform: scale(1.04);
+      animation: streakTodaySlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--item-idx, 0) * 0.05s);
     }
     .streak-day-box.locked {
       opacity: 0.65;
@@ -2843,7 +3122,7 @@
     /* Ad Banner Modal / Toast */
     #adToast {
       position: absolute;
-      top: 65px;
+      top: max(65px, calc(65px + env(safe-area-inset-top, 0px)));
       left: 50%;
       transform: translateX(-50%) translateY(-20px);
       background: rgba(16, 185, 129, 0.95);
@@ -2852,6 +3131,8 @@
       border-radius: 20px;
       font-size: 13px;
       font-weight: 700;
+      white-space: nowrap;
+      text-align: center;
       box-shadow: 0 4px 14px rgba(0,0,0,0.3);
       opacity: 0;
       pointer-events: none;
@@ -2883,20 +3164,44 @@
       pointer-events: auto;
     }
     .ad-card {
+      position: relative;
       background: #1E293B;
       border-radius: 20px;
-      padding: 24px;
+      padding: 26px 20px;
       max-width: 360px;
       width: 90%;
       border: 1px solid rgba(255,255,255,0.15);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.7);
       text-align: center;
     }
+    .ad-top-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #E2E8F0;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .ad-top-close-btn:active {
+      background: rgba(239, 68, 68, 0.5);
+      transform: scale(0.92);
+    }
     .ad-timer-ring {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 900;
       color: #F59E0B;
-      margin: 14px 0;
+      margin: 12px 0 6px 0;
+      text-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
     }
 
     /* Info / Controls Tutorial Modal */
@@ -3612,314 +3917,262 @@
       transform: scale(0.97);
     }
 
-    /* Character Customizer Screen Styles */
+    /* Character Customizer Screen Styles (Full-Screen Hero Showcase) */
     #customizerScreen {
       position: absolute;
       inset: 0;
-      background: rgba(10, 15, 29, 0.88);
-      backdrop-filter: blur(14px);
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 36%, #1e293b 0%, #090d16 65%, #030712 100%);
       z-index: 45;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: clamp(6px, 1.5vh, 12px) clamp(8px, 1.5vw, 14px);
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: stretch;
+      padding: 0;
+      margin: 0;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
-      max-height: 100dvh;
       box-sizing: border-box;
+      touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
     }
     #customizerScreen.active {
-      opacity: 1;
-      pointer-events: auto;
+      display: flex !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      visibility: visible !important;
     }
-    .customizer-container {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1.5px solid rgba(255, 255, 255, 0.16);
-      border-radius: 20px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-      width: 100%;
-      max-width: clamp(320px, 94vw, 500px);
-      max-height: 100%;
-      height: 100%;
-      padding: clamp(8px, 1.4vh, 14px) clamp(10px, 2vw, 18px);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      box-sizing: border-box;
-      margin: auto;
-      min-height: 0;
-      flex-shrink: 1;
-    }
-    .customizer-header {
+
+    /* Floating Top Header Bar */
+    /* .customizer-top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: clamp(4px, 1vh, 8px);
-      margin-bottom: clamp(4px, 1vh, 8px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      flex-shrink: 0;
-    }
-    .customizer-header-left {
+      padding: max(10px, env(safe-area-inset-top, 10px)) max(14px, env(safe-area-inset-right, 14px)) 10px max(14px, env(safe-area-inset-left, 14px));
+      z-index: 50;
+      pointer-events: auto;
+      background: linear-gradient(180deg, rgba(3, 7, 18, 0.82) 0%, rgba(3, 7, 18, 0) 100%);
+      box-sizing: border-box;
+    } */
+
+    /* Floating Top Header Bar */
+    .customizer-top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      text-align: left;
+      padding: max(10px, env(safe-area-inset-top, 10px)) max(14px, env(safe-area-inset-right, 14px)) 10px max(14px, env(safe-area-inset-left, 14px));
+      z-index: 50;
+      background: linear-gradient(180deg, rgba(3, 7, 18, 0.82) 0%, rgba(3, 7, 18, 0) 100%);
+      box-sizing: border-box;
+      /* FIX: Removed pointer-events: auto; from here */
     }
+
     .btn-icon-back {
-      background: rgba(51, 65, 85, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(30, 41, 59, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: #F1F5F9;
-      border-radius: 10px;
-      padding: clamp(4px, 0.8vh, 6px) clamp(8px, 1vw, 12px);
-      font-weight: 800;
-      font-size: clamp(9.5px, 1.6vh, 11px);
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .btn-icon-back:hover {
-      background: rgba(71, 85, 105, 0.95);
-      transform: scale(1.02);
-    }
-    .btn-icon-back:active {
-      transform: scale(0.96);
-    }
-    .customizer-title {
-      font-size: clamp(16px, 3.2vh, 20px);
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: #FFFFFF;
-      background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 50%, #CBD5E1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin: 0;
-    }
-    .customizer-subtitle {
-      font-size: clamp(9px, 1.6vh, 11px);
-      color: #94A3B8;
-      font-weight: 500;
-      margin: 1px 0 0 0;
-    }
-    .customizer-coins-badge {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.12) 100%);
-      border: 1.5px solid rgba(245, 158, 11, 0.5);
       border-radius: 12px;
-      padding: clamp(4px, 0.8vh, 6px) clamp(8px, 1.2vw, 14px);
+      padding: clamp(6px, 1.2vh, 8px) clamp(10px, 1.6vw, 14px);
+      font-weight: 800;
+      font-size: clamp(10px, 1.8vh, 12px);
+      letter-spacing: 0.6px;
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #FBBF24;
-      font-size: clamp(13px, 2.4vh, 17px);
-      font-weight: 900;
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      transition: all 0.15s ease;
+      touch-action: manipulation;
     }
-    .coins-label {
-      font-size: clamp(8px, 1.4vh, 10px);
-      color: #F59E0B;
+    .btn-icon-back:hover {
+      background: rgba(51, 65, 85, 0.95);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: scale(1.02);
+    }
+    .btn-icon-back:active {
+      transform: scale(0.95);
+    }
+
+    .customizer-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .customizer-title {
+      font-size: clamp(14px, 2.8vh, 18px);
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      color: #FFFFFF;
+      background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 60%, #94A3B8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    .carousel-counter-badge {
+      font-size: clamp(9.5px, 1.6vh, 11px);
       font-weight: 800;
+      color: #94A3B8;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 9999px;
+      padding: 2px 8px;
       letter-spacing: 0.5px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .customizer-currency-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .customizer-diamonds-badge,
+    .customizer-coins-badge {
+      background: rgba(15, 23, 42, 0.75);
+      border-radius: 12px;
+      padding: clamp(5px, 1vh, 7px) clamp(8px, 1.4vw, 12px);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: clamp(12px, 2.2vh, 15px);
+      font-weight: 900;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .customizer-coins-badge {
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      color: #FBBF24;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+    }
+    .customizer-diamonds-badge {
+      border: 1.5px solid rgba(6, 182, 212, 0.45);
+      color: #38BDF8;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.15);
     }
     .coin-icon-pulse {
       display: inline-block;
       animation: coinPulse 2s infinite ease-in-out;
+    }
+    .diamond-icon-pulse {
+      display: inline-block;
+      animation: coinPulse 2.3s infinite ease-in-out;
     }
     @keyframes coinPulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.15); }
     }
 
-    /* ==========================================================================
-       CHARACTER CUSTOMIZER: MOBILE-FIRST SINGLE-ITEM SWIPE CAROUSEL
-       ========================================================================== */
-    .customizer-carousel-view {
+    /* Center Hero Showcase Stage Area */
+    /* .customizer-stage-area {
+      position: absolute;
+      inset: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      gap: clamp(8px, 1.6vh, 16px);
-      flex: 1 1 auto;
-      width: 100%;
-      max-width: 440px;
-      margin: 0 auto;
-      min-height: 0;
-      box-sizing: border-box;
+      justify-content: center;
+      z-index: 20;
+      overflow: hidden;
+      pointer-events: auto;
       touch-action: pan-y;
-    }
+    } */
 
-    /* Carousel Stage: Left Arrow, Character Card, Right Arrow */
-    .carousel-stage-row {
+    /* Center Hero Showcase Stage Area */
+    .customizer-stage-area {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: clamp(10px, 3vw, 20px);
-      width: 100%;
-      flex-shrink: 0;
+      z-index: 20;
+      overflow: hidden;
+      touch-action: pan-y;
+      /* FIX: Removed pointer-events: auto; from here */
     }
 
-    .carousel-nav-btn {
-      background: rgba(30, 41, 59, 0.65);
-      border: 1.5px solid rgba(255, 255, 255, 0.18);
-      color: #F8FAFC;
-      width: clamp(42px, 8.5vw, 50px);
-      height: clamp(42px, 8.5vw, 50px);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-      flex-shrink: 0;
-      touch-action: manipulation;
-    }
-    .carousel-nav-btn:hover {
-      background: rgba(51, 65, 85, 0.9);
-      border-color: rgba(255, 255, 255, 0.4);
-      transform: scale(1.08);
-    }
-    .carousel-nav-btn:active {
-      transform: scale(0.92);
-      background: rgba(71, 85, 105, 0.95);
-    }
-
-    /* Central Character Spotlight Card */
-    .carousel-showcase-card {
-      background: radial-gradient(circle at 50% 35%, rgba(56, 189, 248, 0.18) 0%, rgba(15, 23, 42, 0.75) 80%);
-      border: 1.5px solid rgba(255, 255, 255, 0.16);
-      border-radius: 20px;
-      padding: clamp(8px, 1.4vh, 12px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-      width: clamp(170px, 38vw, 240px);
-      flex-shrink: 0;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .carousel-top-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 4px;
-      padding: 0 4px;
-    }
-    .carousel-counter-badge {
-      font-size: 11px;
-      font-weight: 800;
-      color: #94A3B8;
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 9999px;
-      padding: 2px 8px;
-      letter-spacing: 0.5px;
-    }
-    .carousel-status-badge {
-      font-size: 9.5px;
-      font-weight: 900;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-    }
-    .carousel-status-badge.status-equipped {
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid rgba(16, 185, 129, 0.6);
-      color: #34D399;
-    }
-    .carousel-status-badge.status-owned {
-      background: rgba(6, 182, 212, 0.2);
-      border: 1px solid rgba(6, 182, 212, 0.6);
-      color: #38BDF8;
-    }
-    .carousel-status-badge.status-locked {
-      background: rgba(148, 163, 184, 0.15);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      color: #94A3B8;
-    }
-
-    .preview-canvas-wrapper {
-      width: clamp(120px, 22vh, 160px);
-      height: clamp(110px, 20vh, 150px);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
     #customizerPreviewCanvas {
       width: 100%;
       height: 100%;
       object-fit: contain;
       image-rendering: pixelated;
+      pointer-events: none;
     }
 
-    @keyframes unlockGlowPulse {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 28px rgba(245, 158, 11, 0.95), inset 0 0 18px rgba(254, 240, 138, 0.7);
-        border-color: #F59E0B;
-      }
-      45% {
-        transform: scale(1.05);
-        box-shadow: 0 0 36px rgba(56, 189, 248, 0.9), inset 0 0 22px rgba(56, 189, 248, 0.6);
-        border-color: #38BDF8;
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        border-color: rgba(255, 255, 255, 0.16);
-      }
-    }
-    .preview-canvas-wrapper.unlock-pulse {
-      animation: unlockGlowPulse 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    .preview-360-badge {
+    /* Flanking Semi-Transparent Navigation Arrows (Thumb-Friendly Touch Targets) */
+    .carousel-nav-btn {
       position: absolute;
-      bottom: 6px;
-      right: 6px;
-      font-size: 8.5px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #38BDF8;
+      top: 42%;
+      transform: translateY(-50%);
+      background: rgba(15, 23, 42, 0.55);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      color: #F8FAFC;
+      width: clamp(52px, 10vw, 64px);
+      height: clamp(52px, 10vw, 64px);
+      border-radius: 50%;
       display: flex;
       align-items: center;
-      gap: 3px;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 35;
+      touch-action: manipulation;
+    }
+    .carousel-nav-btn.prev {
+      left: clamp(12px, 2.5vw, 24px);
+    }
+    .carousel-nav-btn.next {
+      right: clamp(12px, 2.5vw, 24px);
+    }
+    .carousel-nav-btn:hover {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .carousel-nav-btn:active {
+      transform: translateY(-50%) scale(0.92);
+      background: rgba(51, 65, 85, 0.95);
+    }
+
+    /* Seamless Gradient Bottom Sheet Showcase */
+    .customizer-bottom-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 600px;
+      background: linear-gradient(to top, rgba(3, 7, 18, 0.98) 0%, rgba(9, 13, 22, 0.85) 45%, rgba(15, 23, 42, 0.4) 75%, transparent 100%);
+      border: none;
+      border-radius: 0;
+      padding: 60px clamp(16px, 3.5vw, 28px) max(16px, env(safe-area-inset-bottom, 16px));
+      box-shadow: none;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      box-sizing: border-box;
       pointer-events: none;
-      user-select: none;
-      text-transform: uppercase;
-      opacity: 0.9;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
     }
-    .preview-360-icon {
-      font-size: 10px;
-      line-height: 1;
-      display: inline-block;
-      animation: rotateIcon 4s linear infinite;
-    }
-    @keyframes rotateIcon {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+
+    .sheet-drag-handle {
+      display: none;
     }
 
     /* Details Showcase Box */
@@ -3929,121 +4182,157 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 0 6px;
+      gap: 5px;
+      padding: 0 4px;
       box-sizing: border-box;
       flex-shrink: 0;
+      pointer-events: auto;
     }
 
     .preview-title-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 2px;
       flex-wrap: wrap;
     }
     .preview-skin-name {
-      font-size: clamp(16px, 3vh, 22px);
+      font-size: clamp(22px, 4vh, 28px);
       font-weight: 900;
       color: #FFFFFF;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.85), 0 0 20px rgba(56, 189, 248, 0.35);
     }
     .rarity-chip {
-      font-size: 9.5px;
-      font-weight: 800;
-      padding: 2.5px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 3px 9px;
       border-radius: 9999px;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     .rarity-chip.common {
-      background: rgba(148, 163, 184, 0.2);
-      color: #CBD5E1;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(148, 163, 184, 0.22);
+      color: #E2E8F0;
+      border: 1px solid rgba(148, 163, 184, 0.45);
     }
     .rarity-chip.rare {
-      background: rgba(6, 182, 212, 0.2);
+      background: rgba(6, 182, 212, 0.25);
       color: #38BDF8;
-      border: 1px solid rgba(6, 182, 212, 0.4);
+      border: 1px solid rgba(6, 182, 212, 0.55);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
     }
     .rarity-chip.epic {
-      background: rgba(168, 85, 247, 0.2);
+      background: rgba(168, 85, 247, 0.25);
       color: #C084FC;
-      border: 1px solid rgba(168, 85, 247, 0.4);
+      border: 1px solid rgba(168, 85, 247, 0.55);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
     }
     .rarity-chip.legendary {
-      background: rgba(245, 158, 11, 0.2);
+      background: rgba(245, 158, 11, 0.25);
       color: #FCD34D;
-      border: 1px solid rgba(245, 158, 11, 0.4);
+      border: 1px solid rgba(245, 158, 11, 0.55);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+    }
+
+    .carousel-status-badge {
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2.5px 9px;
+      border-radius: 9999px;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+    .carousel-status-badge.status-equipped {
+      background: rgba(16, 185, 129, 0.22);
+      border: 1px solid rgba(16, 185, 129, 0.65);
+      color: #34D399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+    .carousel-status-badge.status-owned {
+      background: rgba(6, 182, 212, 0.22);
+      border: 1px solid rgba(6, 182, 212, 0.65);
+      color: #38BDF8;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+    }
+    .carousel-status-badge.status-locked {
+      background: rgba(148, 163, 184, 0.16);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #94A3B8;
     }
 
     .preview-stat-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.12));
-      border: 1px solid rgba(245, 158, 11, 0.45);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.15));
+      border: 1.5px solid rgba(245, 158, 11, 0.5);
       border-radius: 9999px;
-      padding: 3.5px 12px;
-      font-size: clamp(10.5px, 1.8vh, 12px);
+      padding: 4px 14px;
+      font-size: clamp(11px, 2vh, 13px);
       font-weight: 800;
       color: #FDE047;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25);
     }
 
     .preview-tagline {
-      font-size: clamp(10px, 1.7vh, 11.5px);
-      color: #94A3B8;
+      font-size: clamp(10.5px, 1.8vh, 12.5px);
+      color: #CBD5E1;
       line-height: 1.4;
       margin: 2px 0 0 0;
-      max-width: 400px;
+      max-width: 480px;
+      font-weight: 500;
     }
 
     /* Bottom Action Button */
     .carousel-action-row {
       width: 100%;
-      max-width: 360px;
-      margin: 0 auto;
+      max-width: 420px;
+      margin: 2px auto 0;
       flex-shrink: 0;
+      pointer-events: auto;
     }
     .btn-customizer-action {
       width: 100%;
+      min-height: 52px;
       border: none;
-      border-radius: 14px;
-      padding: clamp(10px, 1.8vh, 14px);
-      font-size: clamp(13px, 2.2vh, 15.5px);
+      border-radius: 9999px;
+      padding: clamp(12px, 2vh, 16px) clamp(20px, 3vw, 28px);
+      font-size: clamp(15px, 2.4vh, 17px);
       font-weight: 900;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
       cursor: pointer;
+      touch-action: manipulation;
     }
     .btn-customizer-action:active {
       transform: scale(0.97);
     }
     .btn-customizer-action.equipped {
-      background: rgba(16, 185, 129, 0.16);
-      border: 1.5px solid rgba(16, 185, 129, 0.55);
+      background: rgba(16, 185, 129, 0.18);
+      border: 1.5px solid rgba(16, 185, 129, 0.6);
       color: #34D399;
       cursor: default;
     }
     .btn-customizer-action.equip {
       background: linear-gradient(180deg, #10B981 0%, #059669 100%);
       color: white;
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.5);
     }
     .btn-customizer-action.buy {
       background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
       color: white;
-      box-shadow: 0 4px 16px rgba(217, 119, 6, 0.45);
+      box-shadow: 0 4px 18px rgba(217, 119, 6, 0.5);
     }
     .btn-customizer-action.cannot-buy {
-      background: rgba(245, 158, 11, 0.2);
+      background: rgba(245, 158, 11, 0.18);
       border: 1.5px dashed rgba(245, 158, 11, 0.45);
       color: #FDE68A;
       cursor: pointer;
@@ -4053,7 +4342,7 @@
     @keyframes skinSlideInNext {
       0% {
         opacity: 0;
-        transform: translateX(28px) scale(0.96);
+        transform: translateX(35px) scale(0.95);
       }
       100% {
         opacity: 1;
@@ -4063,7 +4352,7 @@
     @keyframes skinSlideInPrev {
       0% {
         opacity: 0;
-        transform: translateX(-28px) scale(0.96);
+        transform: translateX(-35px) scale(0.95);
       }
       100% {
         opacity: 1;
@@ -4292,6 +4581,8 @@
       gap: 12px;
       transition: all 0.2s ease;
       box-sizing: border-box;
+      animation: itemSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--item-idx, 0) * 0.05s);
     }
     .upgrade-card:hover {
       border-color: rgba(56, 189, 248, 0.4);
@@ -4518,6 +4809,27 @@
       }
 
       /* 1. Main Menu Screen */
+      .menu-top-bar {
+        padding: max(4px, env(safe-area-inset-top, 4px)) max(10px, env(safe-area-inset-right, 10px)) 0 max(10px, env(safe-area-inset-left, 10px)) !important;
+      }
+      .menu-top-bar .stats-card {
+        padding: 3px 8px !important;
+        gap: clamp(6px, 1.4vw, 12px) !important;
+      }
+      .menu-top-actions .icon-btn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        max-width: 36px !important;
+        max-height: 36px !important;
+      }
+      .menu-top-actions .icon-btn .icon-btn-glyph {
+        font-size: 16px !important;
+      }
+      #startScreen .menu-container {
+        padding-top: max(46px, calc(env(safe-area-inset-top, 4px) + 38px)) !important;
+      }
       .menu-container {
         padding: max(4px, env(safe-area-inset-top, 4px)) max(10px, env(safe-area-inset-right, 10px)) max(4px, env(safe-area-inset-bottom, 4px)) max(10px, env(safe-area-inset-left, 10px)) !important;
         gap: clamp(8px, 1.8vw, 16px) !important;
@@ -4633,25 +4945,26 @@
         flex-wrap: wrap !important;
         justify-content: center !important;
       }
-      .btn-row .btn.btn-play {
+      .menu-main-col .btn-row .btn.btn-play {
         min-height: 46px !important;
         height: 46px !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 900 !important;
         padding: 8px 24px !important;
         flex: 1 1 100% !important;
-        max-width: 280px !important;
+        max-width: 100% !important;
         border-radius: 12px !important;
         box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
       }
-      .btn-row .btn:not(.btn-play) {
+      .menu-main-col .btn-row .btn:not(.btn-play) {
         min-height: 38px !important;
         height: 38px !important;
-        font-size: 11.5px !important;
+        font-size: 12px !important;
         font-weight: 700 !important;
         padding: 4px 10px !important;
-        flex: 1 1 calc(25% - 6px) !important;
-        min-width: 68px !important;
+        flex: 1 1 calc(50% - 4px) !important;
+        max-width: calc(50% - 4px) !important;
+        min-width: 0 !important;
         border-radius: 10px !important;
       }
 
@@ -4751,7 +5064,7 @@
         border-radius: 10px !important;
         order: 2 !important;
       }
-      .gameover-btn-row .btn:not(.btn-play):not(.btn-reward) {
+      .gameover-btn-row .btn:not(.btn-play):not(.btn-reward):not(.icon-btn) {
         min-height: 36px !important;
         height: 36px !important;
         font-size: 11px !important;
@@ -4793,79 +5106,55 @@
         max-height: 52px !important;
       }
 
-      /* 3. Character Customizer Mobile Carousel */
-      .customizer-container {
-        padding: max(4px, env(safe-area-inset-top, 4px)) max(10px, env(safe-area-inset-right, 10px)) max(4px, env(safe-area-inset-bottom, 4px)) max(10px, env(safe-area-inset-left, 10px)) !important;
-        max-height: 100% !important;
-        height: 100% !important;
-      }
-      .customizer-header {
-        padding-bottom: 4px !important;
-        margin-bottom: 4px !important;
+      /* 3. Character Customizer Full-Screen Hero Showcase on Mobile */
+      .customizer-top-bar {
+        padding: max(6px, env(safe-area-inset-top, 6px)) max(10px, env(safe-area-inset-right, 10px)) 6px max(10px, env(safe-area-inset-left, 10px)) !important;
       }
       .customizer-title {
-        font-size: 15px !important;
+        font-size: 14px !important;
       }
       .customizer-diamonds-badge,
       .customizer-coins-badge {
         padding: 3px 8px !important;
         font-size: 12px !important;
       }
-      .customizer-carousel-view {
-        gap: 5px !important;
-        max-width: 440px !important;
-      }
-      .carousel-stage-row {
-        gap: 12px !important;
-      }
       .carousel-nav-btn {
-        width: 46px !important;
-        height: 46px !important;
-        min-width: 46px !important;
-        min-height: 46px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
         border-radius: 50% !important;
       }
-      .carousel-showcase-card {
-        width: 150px !important;
-        padding: 6px 8px !important;
-        border-radius: 14px !important;
-      }
-      .preview-canvas-wrapper {
-        width: 110px !important;
-        height: 90px !important;
-      }
-      #customizerPreviewCanvas {
-        width: 110px !important;
-        height: 90px !important;
-      }
-      .carousel-top-meta {
-        margin-bottom: 2px !important;
-      }
-      .carousel-counter-badge,
-      .carousel-status-badge {
-        font-size: 8px !important;
-        padding: 1.5px 5px !important;
+      .customizer-bottom-sheet {
+        max-width: 100% !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 50px 14px max(12px, env(safe-area-inset-bottom, 12px)) !important;
+        gap: 6px !important;
+        box-shadow: none !important;
       }
       .carousel-details-box {
-        padding: 5px 12px !important;
         gap: 3px !important;
-        max-width: 380px !important;
       }
       .preview-skin-name {
-        font-size: 13.5px !important;
+        font-size: clamp(20px, 3.8vh, 24px) !important;
       }
       .preview-stat-pill {
-        padding: 2px 8px !important;
+        padding: 2.5px 10px !important;
+        font-size: 11px !important;
+      }
+      .preview-tagline {
         font-size: 10px !important;
+        max-width: 360px !important;
       }
       .btn-customizer-action {
-        min-height: 46px !important;
-        height: 46px !important;
+        min-height: 52px !important;
+        height: 52px !important;
         padding: 8px 20px !important;
-        font-size: 13px !important;
+        font-size: 14.5px !important;
         font-weight: 900 !important;
-        border-radius: 12px !important;
-        max-width: 320px !important;
+        border-radius: 9999px !important;
+        max-width: 360px !important;
       }
 
       /* 4. Upgrade Workshop on Mobile */
@@ -5520,6 +5809,33 @@
       border: 1px solid rgba(16, 185, 129, 0.45);
       box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
     }
+    .toggle-status-badge.perf-auto {
+      background: rgba(168, 85, 247, 0.2);
+      color: #C084FC;
+      border: 1px solid rgba(192, 132, 252, 0.45);
+      box-shadow: 0 0 10px rgba(192, 132, 252, 0.25);
+    }
+    .btn-auto-detect {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(56, 189, 248, 0.25) 100%);
+      border: 1px solid rgba(192, 132, 252, 0.5);
+      border-radius: 9999px;
+      color: #E2E8F0;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .btn-auto-detect:hover, .btn-auto-detect:active {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.45) 0%, rgba(56, 189, 248, 0.45) 100%);
+      border-color: rgba(192, 132, 252, 0.85);
+      transform: scale(0.96);
+    }
 
     /* Orientation Support: Precise Landscape auto-rotation on portrait mobile screens */
     @media (orientation: portrait) {
@@ -5627,20 +5943,22 @@
         min-height: 32px !important;
       }
 
-      .btn-row .btn.btn-play {
+      .menu-main-col .btn-row .btn.btn-play {
         min-height: 46px !important;
         height: 46px !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 900 !important;
         flex: 1 1 100% !important;
-        max-width: 280px !important;
+        max-width: 100% !important;
       }
 
-      .btn-row .btn:not(.btn-play) {
+      .menu-main-col .btn-row .btn:not(.btn-play) {
         min-height: 38px !important;
         height: 38px !important;
-        font-size: 11.5px !important;
-        flex: 1 1 calc(25% - 6px) !important;
+        font-size: 12px !important;
+        flex: 1 1 calc(50% - 4px) !important;
+        max-width: calc(50% - 4px) !important;
+        min-width: 0 !important;
       }
 
       .gameover-btn-row .btn.btn-play {
@@ -5659,7 +5977,7 @@
         flex: 1 1 calc(50% - 4px) !important;
       }
 
-      .gameover-btn-row .btn:not(.btn-play):not(.btn-reward) {
+      .gameover-btn-row .btn:not(.btn-play):not(.btn-reward):not(.icon-btn) {
         min-height: 36px !important;
         height: 36px !important;
         font-size: 11px !important;
@@ -5674,9 +5992,10 @@
       }
 
       .btn-customizer-action {
-        min-height: 46px !important;
-        height: 46px !important;
-        font-size: 13px !important;
+        min-height: 50px !important;
+        height: 50px !important;
+        border-radius: 9999px !important;
+        font-size: 13.5px !important;
         font-weight: 900 !important;
       }
     }
@@ -5828,45 +6147,44 @@
 
     <!-- 2. Main Menu / Start Screen -->
     <div id="startScreen" class="overlay">
+      <!-- Top Bar: Stats & Quick Action Icons -->
+      <div class="menu-top-bar">
+        <div class="stats-card">
+          <div class="stat-item">
+            <span class="stat-label">Best Distance</span>
+            <span class="stat-val" id="menuHighDist">0 m</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">High Score</span>
+            <span class="stat-val" id="menuHighScore">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Total Coins</span>
+            <span class="stat-val" id="menuTotalCoins">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Diamonds</span>
+            <span class="stat-val" id="menuDiamonds" style="color: #38BDF8;">0 💎</span>
+          </div>
+        </div>
+
+        <div class="menu-top-actions">
+          <button class="icon-btn" id="infoBtn" title="How to Play / Controls Guide">
+            <span class="icon-btn-glyph">ℹ️</span>
+          </button>
+          <button class="icon-btn" id="menuSettingsBtn" title="Advanced Settings & Accessibility">
+            <span class="icon-btn-glyph">⚙️</span>
+          </button>
+          <button class="icon-btn btn-exit" id="menuExitBtn" title="Exit Dashbound App">
+            <span class="icon-btn-glyph">🚪</span>
+          </button>
+        </div>
+      </div>
+
       <div class="menu-container">
-        <!-- Left Section: Main Controls & Stats -->
+        <!-- Center Section: Main Controls & Hero Showcase -->
         <div class="menu-main-col">
           <div class="game-logo">DASHBOUND</div>
-          <div class="subtitle">ENDLESS RUNNER ADVENTURE</div>
-
-          <!-- Daily Streak Badge -->
-          <div class="streak-badge" id="streakBadgeBtn" title="View Daily Login Streak Rewards">
-            <div class="streak-badge-left">
-              <span class="streak-flame-icon">🔥</span>
-              <div class="streak-text-group">
-                <div class="streak-title-row">
-                  <span class="streak-count-text" id="streakCountText">1 DAY STREAK</span>
-                  <span class="streak-status-tag claimable" id="streakStatusTag">READY!</span>
-                </div>
-                <div class="streak-desc-line" id="streakDescLine">Claim today's +50 🪙 bonus</div>
-              </div>
-            </div>
-            <button class="streak-action-btn" id="streakActionBtn">CLAIM +50🪙</button>
-          </div>
-
-          <div class="stats-card">
-            <div class="stat-item">
-              <span class="stat-label">Best Distance</span>
-              <span class="stat-val" id="menuHighDist">0 m</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">High Score</span>
-              <span class="stat-val" id="menuHighScore">0</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Total Coins</span>
-              <span class="stat-val" id="menuTotalCoins">0</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Diamonds</span>
-              <span class="stat-val" id="menuDiamonds" style="color: #38BDF8;">0 💎</span>
-            </div>
-          </div>
 
           <!-- Current Equipped Runner Showcase Widget -->
           <div class="menu-char-widget" id="menuCharWidget" title="Customize Runner Skins">
@@ -5915,6 +6233,7 @@
               </button>
             </div>
           </div>
+
           <div class="btn-row">
             <button class="btn btn-play" id="startPlayBtn">
               <span>RUN!</span>
@@ -5928,18 +6247,6 @@
             <button class="btn btn-customizer" id="menuCustomizerBtn" title="Customize Runner Skins">
               <span>🎨</span> <span>Skins</span>
             </button>
-            <button class="btn btn-secondary" id="infoBtn">
-              <span>ℹ️</span> <span>How to Play</span>
-            </button>
-            <button class="btn btn-secondary" id="menuSettingsBtn" title="Advanced Settings & Accessibility">
-              <span>⚙️</span> <span>Settings</span>
-            </button>
-            <button class="btn btn-exit" id="menuExitBtn" title="Exit Dashbound App">
-              <span>🚪</span> <span>Exit</span>
-            </button>
-          </div>
-          <div class="help-hint" id="helpHintBtn" style="cursor: pointer;" title="Open Controls Guide">
-            💡 Tap to Jump • Double Tap in air for Double Jump <span style="text-decoration: underline; margin-left: 4px; color: #FBBF24;">(Guide)</span>
           </div>
         </div>
 
@@ -5954,6 +6261,21 @@
               </div>
             </div>
             <div class="missions-summary-badge" id="missionsSummaryBadge">0/3 DONE</div>
+          </div>
+
+          <!-- Daily Streak Badge placed right above the Daily Missions list -->
+          <div class="streak-badge" id="streakBadgeBtn" title="View Daily Login Streak Rewards">
+            <div class="streak-badge-left">
+              <span class="streak-flame-icon">🔥</span>
+              <div class="streak-text-group">
+                <div class="streak-title-row">
+                  <span class="streak-count-text" id="streakCountText">1 DAY STREAK</span>
+                  <span class="streak-status-tag claimable" id="streakStatusTag">READY!</span>
+                </div>
+                <div class="streak-desc-line" id="streakDescLine">Claim today's +50 🪙 bonus</div>
+              </div>
+            </div>
+            <button class="streak-action-btn" id="streakActionBtn">CLAIM +50🪙</button>
           </div>
 
           <div class="missions-list" id="missionsList">
@@ -6020,17 +6342,24 @@
             <button class="btn btn-reward" id="adDoubleCoinsBtn">
               <span>🎬 2x Coins</span>
             </button>
-            <button class="btn btn-share" id="goShareBtn" title="Share your run with stylized score card">
-              <span>📤 Share Run</span>
+            <button class="btn btn-play" id="goRestartBtn">
+              <span>Play Again</span>
             </button>
-            <button class="btn btn-play" id="goRestartBtn">Play Again</button>
-            <button class="btn btn-upgrade" id="goUpgradeBtn" title="Upgrade Abilities & Meta-Progression">
-              <span>⚡</span> <span>Upgrades</span>
-            </button>
-            <button class="btn btn-customizer" id="goCustomizerBtn" title="Customize Runner Skins">
-              <span>🎨</span> <span>Skins</span>
-            </button>
-            <button class="btn btn-secondary" id="goMenuBtn">Main Menu</button>
+            <!-- Secondary Actions: Circular Icon-Only Buttons -->
+            <div class="gameover-icon-row">
+              <button class="btn btn-share icon-btn" id="goShareBtn" title="Share Run" aria-label="Share Run">
+                <span class="icon-btn-glyph">📤</span>
+              </button>
+              <button class="btn btn-upgrade icon-btn" id="goUpgradeBtn" title="Upgrade Abilities" aria-label="Upgrades">
+                <span class="icon-btn-glyph">⚡</span>
+              </button>
+              <button class="btn btn-customizer icon-btn" id="goCustomizerBtn" title="Runner Skins" aria-label="Runner Skins">
+                <span class="icon-btn-glyph">🎨</span>
+              </button>
+              <button class="btn btn-secondary icon-btn" id="goMenuBtn" title="Main Menu" aria-label="Main Menu">
+                <span class="icon-btn-glyph">🏠</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -6152,82 +6481,65 @@
       </div>
     </div>
 
-    <!-- 5. Character Customizer Screen -->
+    <!-- 5. Character Customizer Screen (Full-Screen Hero Showcase) -->
     <div id="customizerScreen" class="overlay">
-      <div class="customizer-container">
-        <!-- Header -->
-        <div class="customizer-header">
-          <div class="customizer-header-left">
-            <button class="btn-icon-back" id="customizerBackBtn" title="Back to Menu">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-              <span>BACK</span>
-            </button>
-            <div>
-              <h2 class="customizer-title">CHARACTER CUSTOMIZER</h2>
-              <p class="customizer-subtitle">Swipe or tap arrows to view, unlock & equip skins</p>
-            </div>
+      <!-- Top Floating Navigation & Currencies Header -->
+      <header class="customizer-top-bar">
+        <button class="btn-icon-back" id="customizerBackBtn" title="Back to Menu" aria-label="Back to Main Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span>BACK</span>
+        </button>
+        <div class="customizer-title-group">
+          <h2 class="customizer-title">HERO SHOWCASE</h2>
+          <span class="carousel-counter-badge" id="carouselCounterBadge">1 / 23</span>
+        </div>
+        <div class="customizer-currency-pills">
+          <div class="customizer-diamonds-badge" id="customizerDiamondsBadge">
+            <span class="diamond-icon-pulse">💎</span>
+            <span id="customizerDiamondsVal">0</span>
           </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="customizer-diamonds-badge" id="customizerDiamondsBadge">
-              <span class="diamond-icon-pulse">💎</span>
-              <span id="customizerDiamondsVal">0</span>
-              <span class="diamonds-label">DIAMONDS</span>
-            </div>
-            <div class="customizer-coins-badge" id="customizerCoinsBadge">
-              <span class="coin-icon-pulse">🪙</span>
-              <span id="customizerCoinsVal">0</span>
-              <span class="coins-label">COINS</span>
-            </div>
+          <div class="customizer-coins-badge" id="customizerCoinsBadge">
+            <span class="coin-icon-pulse">🪙</span>
+            <span id="customizerCoinsVal">0</span>
           </div>
         </div>
+      </header>
 
-        <!-- Unified Showcase Carousel View -->
-        <div class="customizer-carousel-view" id="customizerCarouselView">
-          <!-- Central Spotlight Row with Flanking Arrow Buttons -->
-          <div class="carousel-stage-row">
-            <button class="carousel-nav-btn prev" id="customizerPrevBtn" aria-label="Previous Skin" title="Previous Skin">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
+      <!-- Center Stage: Massive Hero Canvas with Flanking Semi-Transparent Navigation Arrows -->
+      <div class="customizer-stage-area" id="customizerStageArea">
+        <canvas id="customizerPreviewCanvas"></canvas>
 
-            <div class="carousel-showcase-card" id="carouselShowcaseCard">
-              <div class="carousel-top-meta">
-                <span class="carousel-counter-badge" id="carouselCounterBadge">1 / 23</span>
-                <span class="carousel-status-badge status-equipped" id="carouselStatusBadge">EQUIPPED</span>
-              </div>
-              <div class="preview-canvas-wrapper" id="previewCanvasWrapper">
-                <canvas id="customizerPreviewCanvas" width="150" height="140"></canvas>
-                <div class="preview-360-badge" id="preview360Badge" title="Drag to rotate 360°">
-                  <span class="preview-360-icon">↺</span> 360°
-                </div>
-              </div>
-            </div>
+        <button class="carousel-nav-btn prev" id="customizerPrevBtn" aria-label="Previous Skin" title="Previous Skin">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
 
-            <button class="carousel-nav-btn next" id="customizerNextBtn" aria-label="Next Skin" title="Next Skin">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
-          </div>
-
-          <!-- Skin Info Details -->
-          <div class="carousel-details-box" id="carouselDetailsBox">
-            <div class="preview-title-row">
-              <span class="preview-skin-name" id="previewSkinName">Classic Blaze</span>
-              <span class="rarity-chip common" id="previewRarityChip">COMMON</span>
-            </div>
-            <div class="preview-stat-pill" id="previewStatPill">
-              <span id="previewStatIcon">🪙</span>
-              <span id="previewStatLabel">+5% Coin Collection</span>
-            </div>
-            <p class="preview-tagline" id="previewTagline">The signature fiery runner with iconic red headband</p>
-          </div>
-
-          <!-- Large Action Button -->
-          <div class="carousel-action-row">
-            <button class="btn-customizer-action equipped" id="customizerActionBtn">
-              ✔ EQUIPPED
-            </button>
-          </div>
-        </div>
+        <button class="carousel-nav-btn next" id="customizerNextBtn" aria-label="Next Skin" title="Next Skin">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
       </div>
+
+      <!-- Glassmorphic Bottom Sheet Panel -->
+      <section class="customizer-bottom-sheet" id="customizerBottomSheet">
+        <div class="sheet-drag-handle" aria-hidden="true"></div>
+        <div class="carousel-details-box" id="carouselDetailsBox">
+          <div class="preview-title-row">
+            <span class="preview-skin-name" id="previewSkinName">Classic Blaze</span>
+            <span class="rarity-chip common" id="previewRarityChip">COMMON</span>
+            <span class="carousel-status-badge status-equipped" id="carouselStatusBadge">EQUIPPED</span>
+          </div>
+          <div class="preview-stat-pill" id="previewStatPill">
+            <span id="previewStatIcon">🪙</span>
+            <span id="previewStatLabel">+5% Coin Collection</span>
+          </div>
+          <p class="preview-tagline" id="previewTagline">The signature fiery runner with iconic red headband</p>
+        </div>
+
+        <div class="carousel-action-row">
+          <button class="btn-customizer-action equipped" id="customizerActionBtn">
+            ✔ EQUIPPED
+          </button>
+        </div>
+      </section>
 
       <!-- Character Unlock Two-Step Confirmation Modal Overlay -->
       <div id="skinConfirmOverlay" class="skin-confirm-overlay" style="display: none;">
@@ -6382,13 +6694,16 @@
               <div class="settings-card-header">
                 <span class="settings-icon">🚀</span>
                 <div class="settings-card-title-group">
-                  <span class="settings-name">Performance Mode</span>
-                  <span class="settings-desc">Tap badge to cycle: HIGH (60 FPS), LOW (GPU boost), or ULTRA-LOW (Battery Saver: 1x DPR &amp; flat shading).</span>
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span class="settings-name">Performance Mode</span>
+                    <button type="button" class="btn-auto-detect" id="btnAutoDetectPerf" title="Run hardware benchmark &amp; Auto-Detect">✨ AUTO-DETECT</button>
+                  </div>
+                  <span class="settings-desc" id="settingsPerfDesc">Dynamically switches between HIGH, LOW, and ULTRA-LOW based on device RAM and GPU detection.</span>
                 </div>
               </div>
             </div>
             <div class="settings-control-col">
-              <span class="toggle-status-badge perf-high" id="statusPerformanceMode">HIGH</span>
+              <span class="toggle-status-badge perf-auto" id="statusPerformanceMode">AUTO</span>
               <label class="toggle-switch" for="togglePerformanceMode" aria-label="Toggle Performance Mode">
                 <input type="checkbox" id="togglePerformanceMode" class="toggle-input" checked>
                 <span class="toggle-track">
@@ -6721,16 +7036,24 @@
     <!-- 5. Ad Fallback / Player Modal -->
     <div id="adModal">
       <div class="ad-card">
-        <div style="font-size: 12px; color: #94A3B8; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Sponsored AdMob Reward</div>
-        <h3 id="adTitle" style="font-size: 20px; margin: 8px 0; color: #FBBF24;">Reviving Character...</h3>
-        <p style="font-size: 13px; color: #CBD5E1;">Watching short video ad to claim reward...</p>
-        <div class="ad-timer-ring" id="adCountdown">5s</div>
-        <button class="btn btn-secondary" id="adCancelBtn" style="font-size: 12px; padding: 8px 16px; margin: 0 auto;">Close</button>
+        <button id="adModalCloseTopBtn" class="ad-top-close-btn" aria-label="Close">✕</button>
+        <div id="adBadge" style="font-size: 11px; color: #F59E0B; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 999px; padding: 4px 12px; display: inline-block; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 10px;">⚡ Instant Reward Fallback</div>
+        <h3 id="adTitle" style="font-size: 20px; margin: 4px 0 6px; color: #FFFFFF; font-weight: 800;">Reviving Character...</h3>
+        <p id="adSub" style="font-size: 13px; color: #94A3B8; margin-bottom: 10px; line-height: 1.4;">Claiming free revive bonus in seconds...</p>
+        <div class="ad-timer-ring" id="adCountdown">3s</div>
+        <div style="display: flex; justify-content: center; margin-top: 14px;">
+          <button class="btn btn-secondary" id="adCancelBtn" style="font-size: 13px; padding: 10px 22px; background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); color: #FCA5A5; border-radius: 12px; font-weight: 700; cursor: pointer;">
+            ✕ Cancel & Close
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Notification Toast -->
     <div id="adToast">Reward Applied!</div>
+
+    <!-- Resume Countdown Overlay -->
+    <div id="resumeCountdownOverlay" class="overlay" style="z-index: 900; background: rgba(10, 15, 29, 0.7); display: none; font-size: 80px; font-weight: 900; color: #FDE047; text-shadow: 0 4px 20px rgba(245, 158, 11, 0.8);">3</div>
 
     <!-- Exit Confirmation Modal (Triggered on Android Back in Main Menu) -->
     <div id="exitModal">
@@ -6759,11 +7082,55 @@
        Dashbound Engine - Canvas 2D + Native Android Bridge + AudioEngine
        ========================================================================== */
 
+    // Canvas roundRect Polyfill for consistent rendering across all Android WebViews and engines
+    if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+        if (!radii) radii = 0;
+        let r = 0, rTopLeft = 0, rTopRight = 0, rBottomRight = 0, rBottomLeft = 0;
+        if (typeof radii === 'number') {
+          rTopLeft = rTopRight = rBottomRight = rBottomLeft = radii;
+        } else if (Array.isArray(radii)) {
+          if (radii.length === 1) {
+            rTopLeft = rTopRight = rBottomRight = rBottomLeft = radii[0];
+          } else if (radii.length === 2) {
+            rTopLeft = rBottomRight = radii[0];
+            rTopRight = rBottomLeft = radii[1];
+          } else if (radii.length === 4) {
+            rTopLeft = radii[0];
+            rTopRight = radii[1];
+            rBottomRight = radii[2];
+            rBottomLeft = radii[3];
+          }
+        }
+        const minSide = Math.min(Math.abs(w), Math.abs(h));
+        const maxR = minSide / 2;
+        rTopLeft = Math.min(Math.max(0, rTopLeft), maxR);
+        rTopRight = Math.min(Math.max(0, rTopRight), maxR);
+        rBottomRight = Math.min(Math.max(0, rBottomRight), maxR);
+        rBottomLeft = Math.min(Math.max(0, rBottomLeft), maxR);
+
+        this.moveTo(x + rTopLeft, y);
+        this.lineTo(x + w - rTopRight, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + rTopRight);
+        this.lineTo(x + w, y + h - rBottomRight);
+        this.quadraticCurveTo(x + w, y + h, x + w - rBottomRight, y + h);
+        this.lineTo(x + rBottomLeft, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - rBottomLeft);
+        this.lineTo(x, y + rTopLeft);
+        this.quadraticCurveTo(x, y, x + rTopLeft, y);
+        this.closePath();
+        return this;
+      };
+    }
+
     // 1. Audio Engine (Web Audio API Synthesizer - Zero External Assets)
     class AudioEngine {
       constructor() {
         this.ctx = null;
         this.muted = false;
+        this.lastCoinTime = 0;
+        this.lastHurtTime = 0;
+        this.lastJumpTime = 0;
 
         // Ambient Weather Sound Loop State
         this.weatherLoopsInitialized = false;
@@ -6836,6 +7203,9 @@
         } catch (e) {}
       }
       jump() {
+        const now = performance.now();
+        if (now - this.lastJumpTime < 45) return;
+        this.lastJumpTime = now;
         this.init();
         this.playTone(220, 580, 'square', 0.12, 0.15);
       }
@@ -6904,10 +7274,16 @@
         }
       }
       coin() {
+        const now = performance.now();
+        if (now - this.lastCoinTime < 45) return; // Prevent speaker crackle by debouncing simultaneous coin sounds
+        this.lastCoinTime = now;
         this.init();
         this.playTone(980, 1320, 'sine', 0.14, 0.22);
       }
       hurt() {
+        const now = performance.now();
+        if (now - this.lastHurtTime < 80) return;
+        this.lastHurtTime = now;
         this.init();
         this.duckMusic(0.45, 0.25);
         this.playTone(200, 60, 'sawtooth', 0.22, 0.25);
@@ -8148,11 +8524,44 @@
           console.log('[Notification Sim] Cancelled all pending notifications');
         }
       },
+      getTotalRamMb: function() {
+        try {
+          if (typeof Android !== 'undefined' && Android.getTotalRamMb) {
+            return Android.getTotalRamMb();
+          }
+        } catch (e) {}
+        return -1;
+      },
+      isLowRamDevice: function() {
+        try {
+          if (typeof Android !== 'undefined' && Android.isLowRamDevice) {
+            return Android.isLowRamDevice();
+          }
+        } catch (e) {}
+        return false;
+      },
       onAdReward: function(type) {
-        game.handleAdReward(type);
+        if (window.game && window.game.handleAdReward) {
+          window.game.handleAdReward(type);
+        }
+      },
+      onAdDismissed: function(type) {
+        if (window.game && window.game.showToast) {
+          window.game.showToast('Ad closed early. Watch full ad to revive!');
+        }
+      },
+      onAdFallback: function(type) {
+        if (window.game && window.game.runSimulatedAd) {
+          window.game.runSimulatedAd(type, true);
+        }
       },
       onAdFailed: function(type) {
-        game.handleAdFailed(type);
+        // Rather than failing and blocking the user, trigger fallback so they can revive!
+        if (window.game && window.game.runSimulatedAd) {
+          window.game.runSimulatedAd(type, true);
+        } else if (window.game && window.game.handleAdFailed) {
+          window.game.handleAdFailed(type);
+        }
       }
     };
     window.AndroidBridge = AndroidBridge;
@@ -8178,7 +8587,6 @@
         ENEMIES_KILLED: 'dashbound_enemies_killed',
         TUTORIAL_SHOWN: 'dashbound_tutorial_shown',
         DIFFICULTY: 'dashbound_difficulty',
-        GHOST_TRAJECTORY: 'dashbound_ghost_trajectory',
         SETTINGS: 'dashbound_settings'
       },
       getInt: function(key, defaultVal = 0) {
@@ -8265,6 +8673,16 @@
         this.currentWeather = 'clear';
         this.weatherIntensity = 0;
         this.activeBiome = null;
+      }
+
+      // Reset and clear all active particles from the pool
+      clear() {
+        for (let i = 0; i < this.poolSize; i++) {
+          if (this.pool[i]) {
+            this.pool[i].active = false;
+            this.pool[i].life = 0;
+          }
+        }
       }
 
       // Fast recycling from pre-allocated object pool
@@ -9728,7 +10146,7 @@
         this.save();
 
         this.game.totalCoins += m.reward;
-        localStorage.setItem('dashbound_total_coins', this.game.totalCoins.toString());
+        Storage.setInt(Storage.KEYS.TOTAL_COINS, this.game.totalCoins);
 
         audio.missionClaim();
         AndroidBridge.hapticSuccess();
@@ -9765,12 +10183,13 @@
         let claimedCount = 0;
         listEl.innerHTML = '';
 
-        this.missions.forEach((m) => {
+        this.missions.forEach((m, idx) => {
           if (m.completed) completedCount++;
           if (m.claimed) claimedCount++;
 
           const itemEl = document.createElement('div');
           itemEl.className = `mission-item ${m.completed ? 'completed' : ''} ${m.claimed ? 'claimed' : ''}`;
+          itemEl.style.setProperty('--item-idx', idx);
 
           const pct = Math.max(0, Math.min(100, Math.floor((m.current / m.target) * 100)));
           const progText = m.type === 'survive_without_damage_for_duration'
@@ -9901,7 +10320,7 @@
         localStorage.setItem('dashbound_streak_claimed_date', this.todayStr);
 
         this.game.totalCoins += reward;
-        localStorage.setItem('dashbound_total_coins', this.game.totalCoins.toString());
+        Storage.setInt(Storage.KEYS.TOTAL_COINS, this.game.totalCoins);
 
         audio.reward();
         AndroidBridge.hapticSuccess();
@@ -9928,6 +10347,11 @@
           this.todayStr = currentToday;
           this.initStreak();
         }
+      }
+
+      renderUI() {
+        this.renderBadge();
+        this.renderModal();
       }
 
       renderBadge() {
@@ -10025,6 +10449,7 @@
             stateClass = 'locked';
           }
           box.className = `streak-day-box ${stateClass}`;
+          box.style.setProperty('--item-idx', i);
 
           let badgeHtml = '';
           if (isToday) {
@@ -10631,6 +11056,10 @@
         audio.equip();
         AndroidBridge.vibrate(35);
         this.renderCustomizer();
+        if (this.game) {
+          this.game._lastRenderedMenuSkinId = null;
+          this.game.drawMenuCharacter(performance.now());
+        }
       }
 
       buySkin(skinId, confirmed = false, useDiamonds = false) {
@@ -10723,7 +11152,7 @@
 
         this.spawnUnlockParticles(charX, charY, skin);
 
-        const previewWrapper = document.getElementById('previewCanvasWrapper');
+        const previewWrapper = document.getElementById('customizerStageArea') || document.getElementById('previewCanvasWrapper');
         if (previewWrapper) {
           previewWrapper.classList.remove('unlock-pulse');
           void previewWrapper.offsetWidth;
@@ -10920,11 +11349,11 @@
       }
 
       triggerSkinChangeAnimation(dir) {
-        const card = document.getElementById('carouselShowcaseCard');
+        const stage = document.getElementById('customizerStageArea');
         const details = document.getElementById('carouselDetailsBox');
         const animClass = dir === 'next' ? 'skin-slide-next' : 'skin-slide-prev';
 
-        [card, details].forEach(el => {
+        [stage, details].forEach(el => {
           if (el) {
             el.classList.remove('skin-slide-next', 'skin-slide-prev');
             void el.offsetWidth;
@@ -10985,18 +11414,32 @@
         // Flanking arrow navigation buttons
         const prevBtn = document.getElementById('customizerPrevBtn');
         if (prevBtn) {
-          prevBtn.onclick = (e) => {
-            if (e) e.stopPropagation();
+          const doPrev = (e) => {
+            if (e) {
+              if (e.cancelable) e.preventDefault();
+              if (e.stopPropagation) e.stopPropagation();
+            }
+            audio.click();
+            AndroidBridge.vibrate(15);
             this.prevSkin();
           };
+          prevBtn.onclick = doPrev;
+          prevBtn.addEventListener('pointerdown', doPrev, { passive: false });
         }
 
         const nextBtn = document.getElementById('customizerNextBtn');
         if (nextBtn) {
-          nextBtn.onclick = (e) => {
-            if (e) e.stopPropagation();
+          const doNext = (e) => {
+            if (e) {
+              if (e.cancelable) e.preventDefault();
+              if (e.stopPropagation) e.stopPropagation();
+            }
+            audio.click();
+            AndroidBridge.vibrate(15);
             this.nextSkin();
           };
+          nextBtn.onclick = doNext;
+          nextBtn.addEventListener('pointerdown', doNext, { passive: false });
         }
 
         // Keyboard arrow key navigation when customizer screen is active
@@ -11025,6 +11468,7 @@
         this.showcaseParticles = [];
         this.unlockShockwave = null;
         this.unlockScalePulse = 1.0;
+        this.resizeCustomizerCanvas();
         this.renderCustomizer();
         this.startPreviewAnim();
       }
@@ -11038,11 +11482,35 @@
         this.unlockScalePulse = 1.0;
       }
 
+      resizeCustomizerCanvas() {
+        const canvas = document.getElementById('customizerPreviewCanvas');
+        if (!canvas) return;
+        const stage = document.getElementById('customizerStageArea') || document.getElementById('customizerScreen');
+        const rect = stage ? stage.getBoundingClientRect() : canvas.parentElement.getBoundingClientRect();
+        const w = Math.max(320, Math.round(rect.width || window.innerWidth));
+        const h = Math.max(320, Math.round(rect.height || window.innerHeight));
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+
+        const targetW = Math.round(w * dpr);
+        const targetH = Math.round(h * dpr);
+
+        if (canvas.width !== targetW || canvas.height !== targetH) {
+          canvas.width = targetW;
+          canvas.height = targetH;
+          if (this.previewCtx) {
+            this.previewCtx.imageSmoothingEnabled = false;
+            if ('webkitImageSmoothingEnabled' in this.previewCtx) this.previewCtx.webkitImageSmoothingEnabled = false;
+            if ('mozImageSmoothingEnabled' in this.previewCtx) this.previewCtx.mozImageSmoothingEnabled = false;
+          }
+        }
+      }
+
       startPreviewAnim() {
         if (this.previewAnimId) return;
         this.previewCanvas = document.getElementById('customizerPreviewCanvas');
         if (!this.previewCanvas) return;
         this.previewCtx = this.previewCanvas.getContext('2d');
+        this.resizeCustomizerCanvas();
         this.initPreviewInteractions();
 
         const step = (t) => {
@@ -11143,115 +11611,130 @@
         const animTime = this.previewTime;
 
         // 1. Premium Hero Idle Animation:
-        // Gentle Levitation / Bobbing: smooth vertical translation
-        const floatY = Math.sin(nowSec * 3) * 4;
+        // Bobbing & Floating translation (scaled proportionally with canvas dimensions)
+        const floatY = Math.sin(nowSec * 3) * Math.max(4, h * 0.015);
 
-        // Breathing (Squash & Stretch): subtle vertical scaling that slowly expands and contracts
-        const breatheY = 1.0 + Math.sin(nowSec * 2) * 0.03;
-        const breatheX = 1.0 - Math.sin(nowSec * 2) * 0.015; // Natural volume preservation
+        // Breathing (Squash & Stretch): subtle breathing that naturally preserves volume
+        const breatheY = 1.0 + Math.sin(nowSec * 2) * 0.028;
+        const breatheX = 1.0 - Math.sin(nowSec * 2) * 0.014;
 
         // Smoothly ease down unlock scale pulse if active
         if (this.unlockScalePulse > 1.0) {
           this.unlockScalePulse = Math.max(1.0, this.unlockScalePulse - 0.02);
         }
-        const scale = 1.32 * (this.unlockScalePulse || 1.0);
 
-        // 2. Draw Holographic Turntable Pedestal with glowing ring
-        this.drawTurntablePedestal(ctx, w, h, skin, floatY);
+        // 2. Responsive Massive Hero Scale Calculation (Target: 3.0 to 4.5 factor)
+        // Computes base scale from canvas height and clamps strictly between 3.0 and 4.5
+        const baseScale = Math.min(4.5, Math.max(3.0, (h / 140) * 0.95));
+        const finalScale = baseScale * (this.unlockScalePulse || 1.0);
 
-        // 3. Draw expanding shockwave if active
+        // Center stage positioning: upper-middle half of screen, floating above bottom sheet
+        const centerX = w / 2;
+        const centerY = h * 0.42 + floatY;
+
+        // 3. Draw Holographic Turntable Pedestal with glowing ring
+        this.drawTurntablePedestal(ctx, w, h, skin, floatY, centerX, centerY, finalScale);
+
+        // 4. Draw expanding shockwave if active
         if (this.unlockShockwave && this.unlockShockwave.alpha > 0.01) {
           ctx.save();
           ctx.beginPath();
           ctx.arc(this.unlockShockwave.x, this.unlockShockwave.y, this.unlockShockwave.radius, 0, Math.PI * 2);
           ctx.strokeStyle = this.unlockShockwave.color;
-          ctx.lineWidth = 3 * this.unlockShockwave.alpha;
+          ctx.lineWidth = 4 * this.unlockShockwave.alpha;
           ctx.globalAlpha = this.unlockShockwave.alpha;
           ctx.shadowColor = this.unlockShockwave.color;
-          ctx.shadowBlur = 12;
+          ctx.shadowBlur = 18;
           ctx.stroke();
           ctx.restore();
 
-          this.unlockShockwave.radius += 2.2;
+          this.unlockShockwave.radius += 3.5;
           this.unlockShockwave.alpha -= 0.035;
         }
 
-        // 4. Draw Hero Idle Character (Always facing forward, 2D procedural rendering)
-        // No 360-degree rotation or horizontal flipping - authentic 2D hero showcase
+        // 5. Draw Massive Hero Character (Always facing forward, 2D procedural rendering)
         ctx.save();
-        ctx.translate(w / 2, h / 2 - 3 + floatY);
-        ctx.scale(scale * breatheX, scale * breatheY);
+        ctx.translate(centerX, centerY);
+        ctx.scale(finalScale * breatheX, finalScale * breatheY);
         // Keep procedural time flowing: animTime passed into drawRunnerSkin for animated scarves, flames, equalizers
         this.drawRunnerSkin(ctx, skin, animTime, true, skin.w || 38, skin.h || 50);
         ctx.restore();
 
-        // 5. Update and draw floating ambient motes & particles
-        this.updateShowcaseParticles(ctx, w, h, skin);
+        // 6. Update and draw floating ambient motes & particles around hero stage
+        this.updateShowcaseParticles(ctx, w, h, skin, centerX, centerY, finalScale);
         if (this.previewParticles && this.previewParticles.particles.length > 0) {
           this.previewParticles.update();
           this.previewParticles.draw(ctx);
         }
       }
 
-      drawTurntablePedestal(ctx, w, h, skin, floatY) {
-        const pedX = w / 2;
-        const pedY = h - 18;
+      drawTurntablePedestal(ctx, w, h, skin, floatY, centerX, centerY, scale) {
+        const pedX = centerX !== undefined ? centerX : w / 2;
+        const charHalfH = ((skin && skin.h ? skin.h : 50) / 2) * (scale || 3.5);
+        const pedY = centerY !== undefined ? (centerY - floatY + charHalfH + 6) : (h * 0.68);
+
         const rarity = skin ? (skin.rarity || 'common') : 'common';
         const auras = {
-          legendary: { color: '#F59E0B', glow: '#FBBF24', beam: 'rgba(245, 158, 11, 0.16)' },
-          epic: { color: '#A855F7', glow: '#C084FC', beam: 'rgba(168, 85, 247, 0.16)' },
-          rare: { color: '#06B6D4', glow: '#22D3EE', beam: 'rgba(6, 182, 212, 0.16)' },
-          common: { color: '#38BDF8', glow: '#38BDF8', beam: 'rgba(56, 189, 248, 0.16)' }
+          legendary: { color: '#F59E0B', glow: '#FBBF24', beam: 'rgba(245, 158, 11, 0.22)' },
+          epic: { color: '#A855F7', glow: '#C084FC', beam: 'rgba(168, 85, 247, 0.22)' },
+          rare: { color: '#06B6D4', glow: '#22D3EE', beam: 'rgba(6, 182, 212, 0.22)' },
+          common: { color: '#38BDF8', glow: '#38BDF8', beam: 'rgba(56, 189, 248, 0.18)' }
         };
         const aura = auras[rarity] || auras.common;
 
+        // Adaptive pedestal dimensions matching hero scale
+        const baseR = Math.max(50, 24 * (scale || 3.5));
+        const shadowScale = Math.max(0.65, 1 - (floatY / 30));
+        const shadowAlpha = Math.max(0.15, 0.42 - (floatY / 26));
+
         // Soft Dynamic Contact Floor Shadow beneath floating runner
-        const shadowScale = Math.max(0.6, 1 - (floatY / 28));
-        const shadowAlpha = Math.max(0.12, 0.34 - (floatY / 26));
         ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
         ctx.beginPath();
-        ctx.ellipse(pedX, pedY, 26 * shadowScale, 5.2 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.ellipse(pedX, pedY, (baseR * 0.75) * shadowScale, (baseR * 0.18) * shadowScale, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Upward Holographic Showcase Light Column
-        const beamGrad = ctx.createLinearGradient(pedX, pedY, pedX, pedY - 65);
+        const beamH = Math.max(90, baseR * 1.8);
+        const beamGrad = ctx.createLinearGradient(pedX, pedY, pedX, pedY - beamH);
         beamGrad.addColorStop(0, aura.beam);
-        beamGrad.addColorStop(0.7, aura.beam.replace('0.16', '0.05'));
+        beamGrad.addColorStop(0.7, aura.beam.replace('0.22', '0.06').replace('0.18', '0.05'));
         beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = beamGrad;
         ctx.beginPath();
-        ctx.moveTo(pedX - 30, pedY);
-        ctx.lineTo(pedX - 18, pedY - 65);
-        ctx.lineTo(pedX + 18, pedY - 65);
-        ctx.lineTo(pedX + 30, pedY);
+        ctx.moveTo(pedX - baseR * 0.85, pedY);
+        ctx.lineTo(pedX - baseR * 0.5, pedY - beamH);
+        ctx.lineTo(pedX + baseR * 0.5, pedY - beamH);
+        ctx.lineTo(pedX + baseR * 0.85, pedY);
         ctx.closePath();
         ctx.fill();
 
         // Concentric Metallic Turntable Ring with Neon Edge
         ctx.save();
         ctx.strokeStyle = aura.color;
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 2.4;
         ctx.shadowColor = aura.glow;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 12;
         ctx.beginPath();
-        ctx.ellipse(pedX, pedY, 36, 8.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(pedX, pedY, baseR, baseR * 0.24, 0, 0, Math.PI * 2);
         ctx.stroke();
 
         // Inner glowing turntable disc
-        ctx.lineWidth = 1.0;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
         ctx.beginPath();
-        ctx.ellipse(pedX, pedY, 25, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse(pedX, pedY, baseR * 0.7, baseR * 0.17, 0, 0, Math.PI * 2);
         ctx.stroke();
 
         // Orbiting holographic projector nodes along perimeter
-        for (let i = 0; i < 6; i++) {
-          const a = (this.previewTime || 0) * 0.8 + (i * Math.PI / 3);
-          const px = pedX + Math.cos(a) * 36;
-          const py = pedY + Math.sin(a) * 8.5;
+        for (let i = 0; i < 8; i++) {
+          const a = (this.previewTime || 0) * 0.75 + (i * Math.PI / 4);
+          const px = pedX + Math.cos(a) * baseR;
+          const py = pedY + Math.sin(a) * (baseR * 0.24);
           ctx.fillStyle = i % 2 === 0 ? '#FFFFFF' : aura.color;
+          ctx.shadowColor = aura.glow;
+          ctx.shadowBlur = 6;
           ctx.beginPath();
-          ctx.arc(px, py, i % 2 === 0 ? 1.6 : 1.1, 0, Math.PI * 2);
+          ctx.arc(px, py, i % 2 === 0 ? 2.5 : 1.8, 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.restore();
@@ -11931,10 +12414,13 @@
         }
       }
 
-      updateShowcaseParticles(ctx, w, h, skin) {
+      updateShowcaseParticles(ctx, w, h, skin, centerX, centerY, scale) {
         if (!this.showcaseParticles) this.showcaseParticles = [];
-        const pedX = w / 2;
-        const pedY = h - 20;
+        const pedX = centerX !== undefined ? centerX : w / 2;
+        const charHalfH = ((skin && skin.h ? skin.h : 50) / 2) * (scale || 3.5);
+        const pedY = centerY !== undefined ? (centerY + charHalfH + 6) : (h * 0.68);
+        const baseR = Math.max(50, 24 * (scale || 3.5));
+
         const rarity = skin ? (skin.rarity || 'common') : 'common';
         const colors = {
           legendary: ['#F59E0B', '#FDE047', '#FEF08A'],
@@ -11944,17 +12430,17 @@
         }[rarity] || ['#38BDF8', '#FFFFFF'];
 
         // Spawn new floating mote from the turntable
-        if (this.showcaseParticles.length < 14 && Math.random() < 0.28) {
+        if (this.showcaseParticles.length < 18 && Math.random() < 0.35) {
           const a = Math.random() * Math.PI * 2;
-          const r = Math.random() * 32;
+          const r = Math.random() * (baseR * 0.85);
           this.showcaseParticles.push({
             x: pedX + Math.cos(a) * r,
-            y: pedY + Math.sin(a) * (r * 0.25),
-            vy: -0.45 - Math.random() * 0.65,
-            vx: (Math.random() - 0.5) * 0.25,
-            size: 1.0 + Math.random() * 1.6,
-            alpha: 0.85,
-            decay: 0.012 + Math.random() * 0.015,
+            y: pedY + Math.sin(a) * (r * 0.24),
+            vy: -0.7 - Math.random() * 0.9,
+            vx: (Math.random() - 0.5) * 0.4,
+            size: 1.2 + Math.random() * 2.2,
+            alpha: 0.9,
+            decay: 0.010 + Math.random() * 0.012,
             color: colors[Math.floor(Math.random() * colors.length)]
           });
         }
@@ -12217,6 +12703,7 @@
 
       openModal() {
         audio.click();
+        this.isOpen = true;
         this.renderUI();
         const modal = document.getElementById('upgradeModal');
         if (modal) {
@@ -12228,6 +12715,7 @@
 
       closeModal() {
         audio.click();
+        this.isOpen = false;
         const modal = document.getElementById('upgradeModal');
         if (modal) {
           modal.classList.remove('active');
@@ -12249,7 +12737,7 @@
         if (!listEl) return;
         listEl.innerHTML = '';
 
-        Object.values(this.upgrades).forEach(u => {
+        Object.values(this.upgrades).forEach((u, idx) => {
           const lvl = this.getLevel(u.id);
           const isMax = lvl >= u.maxLevel;
           const nextCost = !isMax ? u.costs[lvl] : null;
@@ -12281,6 +12769,7 @@
 
           const card = document.createElement('div');
           card.className = 'upgrade-card';
+          card.style.setProperty('--item-idx', idx);
 
           let actionBtnHtml = '';
           if (isMax) {
@@ -12572,8 +13061,138 @@
       constructor(game) {
         this.game = game;
         this.isOpen = false;
+        this.detectedHardware = null;
+        this.detectedMode = 'HIGH';
+        this.detectHardware();
         this.settings = this.load();
         this.initDOM();
+      }
+
+      detectHardware() {
+        let ramGb = null;
+        let isLowRam = false;
+        let sourceRam = 'default';
+
+        // 1. Device RAM Detection (Native Android ActivityManager or Browser APIs)
+        try {
+          const nativeRamMb = (typeof AndroidBridge !== 'undefined' && AndroidBridge.getTotalRamMb) ? AndroidBridge.getTotalRamMb() : -1;
+          const nativeIsLow = (typeof AndroidBridge !== 'undefined' && AndroidBridge.isLowRamDevice) ? AndroidBridge.isLowRamDevice() : false;
+          if (nativeRamMb > 0) {
+            ramGb = Math.round((nativeRamMb / 1024) * 10) / 10;
+            isLowRam = nativeIsLow || ramGb <= 2.0;
+            sourceRam = 'Android System';
+          } else if (typeof navigator !== 'undefined' && navigator.deviceMemory) {
+            ramGb = navigator.deviceMemory;
+            isLowRam = ramGb <= 2.0;
+            sourceRam = 'Device Memory';
+          } else {
+            const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
+            if (cores <= 2) {
+              ramGb = 1.5;
+              isLowRam = true;
+            } else if (cores <= 4) {
+              ramGb = 3.0;
+              isLowRam = false;
+            } else {
+              ramGb = 6.0;
+              isLowRam = false;
+            }
+            sourceRam = 'CPU Cores Heuristic';
+          }
+        } catch (e) {
+          ramGb = 4.0;
+          sourceRam = 'Fallback';
+        }
+
+        // 2. GPU Renderer & Vendor Detection (WebGL Unmasked Parameters)
+        let gpuRenderer = '';
+        let gpuVendor = '';
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl', { powerPreference: 'high-performance' }) ||
+                     canvas.getContext('experimental-webgl');
+          if (gl) {
+            const ext = gl.getExtension('WEBGL_debug_renderer_info');
+            if (ext) {
+              gpuVendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) || '';
+              gpuRenderer = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '';
+            }
+            if (!gpuRenderer) {
+              gpuRenderer = gl.getParameter(gl.RENDERER) || '';
+            }
+            if (!gpuVendor) {
+              gpuVendor = gl.getParameter(gl.VENDOR) || '';
+            }
+            const loseExt = gl.getExtension('WEBGL_lose_context');
+            if (loseExt) loseExt.loseContext();
+          }
+        } catch (e) {
+          console.warn('[SettingsManager] WebGL GPU query error:', e);
+        }
+
+        const gpuFull = `${gpuRenderer} ${gpuVendor}`.trim();
+        const gpuLower = gpuFull.toLowerCase();
+
+        // 3. Dynamic Mode Classification
+        let recommendedMode = 'HIGH';
+        let reason = '';
+
+        // Software rasterizers or virtual/headless environments
+        const isSoftwareGpu = /swiftshader|llvmpipe|software|softpipe|basic render/i.test(gpuLower);
+
+        // Ultra-low mobile GPUs:
+        // Mali-400/450, Mali-Txxx, Mali-G31
+        // Adreno 2xx, 3xx, 4xx, 504, 505, 506
+        // PowerVR SGX, GE8100, GE8300, GE8320
+        // Vivante, VideoCore
+        const isUltraLowGpu = /mali-(?:400|450|t6\d\d|t7\d\d|t8\d\d|g31)|adreno\s*(?:2\d\d|3\d\d|4\d\d|504|505|506)|powervr\s*(?:sgx|ge81\d\d|ge83\d\d|ge8320|rogue)|vivante|videocore/i.test(gpuLower);
+
+        // Mid-low mobile GPUs:
+        // Mali-G51, G52, G57, G71, G72
+        // Adreno 508, 509, 510, 512, 610, 612, 615, 616, 618
+        // PowerVR GM9446, Series8/9
+        // Intel HD/UHD graphics
+        const isLowGpu = /mali-(?:g51|g52|g57|g71|g72)|adreno\s*(?:51\d|610|612|615|616|618)|powervr\s*gm\d+|intel(?:\(r\))?\s*(?:hd|uhd)\s*graphics/i.test(gpuLower);
+
+        // Flagship/High-End GPUs:
+        const isHighEndGpu = /adreno\s*(?:6[2-9]\d|7\d\d|8\d\d)|mali-(?:g7[6-9]|g68|g71\d|g72\d|immortalis)|apple|geforce|rtx|gtx|radeon/i.test(gpuLower);
+
+        if (isSoftwareGpu || isUltraLowGpu || (ramGb !== null && ramGb <= 1.5) || (isLowRam && ramGb <= 2.0 && isLowGpu)) {
+          recommendedMode = 'ULTRA-LOW';
+          if (isSoftwareGpu) reason = 'Software Rasterizer';
+          else if (isUltraLowGpu) reason = 'Entry GPU Profile';
+          else reason = 'Ultra-low Memory (<=1.5GB)';
+        } else if (isLowGpu || (ramGb !== null && ramGb <= 3.2) || isLowRam) {
+          recommendedMode = 'LOW';
+          if (isLowGpu) reason = 'Mid-tier GPU Profile';
+          else if (ramGb <= 3.2) reason = `${ramGb}GB RAM (Budget)`;
+          else reason = 'Low RAM Device Profile';
+        } else {
+          recommendedMode = 'HIGH';
+          if (isHighEndGpu) reason = 'High-Performance GPU Profile';
+          else if (ramGb >= 4) reason = `${ramGb}GB RAM High-End`;
+          else reason = 'Standard Performance';
+        }
+
+        // Clean user-facing GPU name for display
+        let displayGpu = gpuRenderer || 'Standard WebGL';
+        if (displayGpu.length > 28) {
+          displayGpu = displayGpu.replace(/angle\s*\(([^,]+).*?\)/i, '$1').trim();
+          if (displayGpu.length > 28) displayGpu = displayGpu.slice(0, 26) + '…';
+        }
+
+        this.detectedHardware = {
+          ramGb,
+          sourceRam,
+          isLowRam,
+          gpuRenderer: displayGpu,
+          gpuVendor,
+          recommendedMode,
+          reason
+        };
+        this.detectedMode = recommendedMode;
+        console.log('[Dashbound Auto-Detect Hardware Result]', this.detectedHardware);
+        return recommendedMode;
       }
 
       load() {
@@ -12581,14 +13200,14 @@
           masterAudio: true,
           screenShake: true,
           flashingEffects: true,
-          performanceMode: 'HIGH'
+          performanceMode: 'AUTO'
         };
         const saved = Storage.getJSON(Storage.KEYS.SETTINGS, null);
         if (!saved || typeof saved !== 'object') {
           return defaults;
         }
-        let perf = 'HIGH';
-        if (saved.performanceMode === 'LOW' || saved.performanceMode === 'ULTRA-LOW') {
+        let perf = 'AUTO';
+        if (saved.performanceMode === 'HIGH' || saved.performanceMode === 'LOW' || saved.performanceMode === 'ULTRA-LOW' || saved.performanceMode === 'AUTO') {
           perf = saved.performanceMode;
         }
         return {
@@ -12604,7 +13223,18 @@
       }
 
       get(key) {
+        if (key === 'performanceMode') {
+          const mode = this.settings.performanceMode || 'AUTO';
+          if (mode === 'AUTO') {
+            return this.detectedMode || 'HIGH';
+          }
+          return mode;
+        }
         return this.settings[key];
+      }
+
+      getRawMode() {
+        return this.settings.performanceMode || 'AUTO';
       }
 
       set(key, value) {
@@ -12618,11 +13248,12 @@
         if (key === 'masterAudio') {
           audio.setMuted(!value);
         } else if (key === 'performanceMode') {
+          const effectiveMode = (value === 'AUTO') ? (this.detectedMode || this.detectHardware()) : value;
           if (this.game && this.game.particles) {
-            this.game.particles.setPerformanceMode(value);
+            this.game.particles.setPerformanceMode(effectiveMode);
           }
           if (this.game && typeof this.game.resize === 'function') {
-            if (value === 'ULTRA-LOW') {
+            if (effectiveMode === 'ULTRA-LOW') {
               this.game.forceLowDpr = true;
               this.game.integerScale = 1;
               this.game.dpr = 1;
@@ -12655,6 +13286,7 @@
 
         this.togglePerformanceMode = document.getElementById('togglePerformanceMode');
         this.statusPerformanceMode = document.getElementById('statusPerformanceMode');
+        this.btnAutoDetectPerf = document.getElementById('btnAutoDetectPerf');
 
         if (this.backBtn) {
           this.backBtn.onclick = (e) => {
@@ -12692,16 +13324,36 @@
           };
         }
 
+        if (this.btnAutoDetectPerf) {
+          this.btnAutoDetectPerf.onclick = (e) => {
+            if (e) e.stopPropagation();
+            audio.click();
+            if (typeof AndroidBridge !== 'undefined' && AndroidBridge.hapticMedium) {
+              AndroidBridge.hapticMedium();
+            }
+            const detected = this.detectHardware();
+            this.set('performanceMode', 'AUTO');
+            const hw = this.detectedHardware;
+            const ramStr = hw && hw.ramGb ? `${hw.ramGb}GB RAM` : '';
+            const gpuStr = hw && hw.gpuRenderer ? hw.gpuRenderer : '';
+            const infoParts = [detected, gpuStr, ramStr].filter(Boolean).join(' • ');
+            if (typeof AndroidBridge !== 'undefined' && AndroidBridge.showToast) {
+              AndroidBridge.showToast(`⚡ Auto-Detected: ${infoParts}`);
+            }
+          };
+        }
+
         if (this.statusPerformanceMode) {
           this.statusPerformanceMode.style.cursor = 'pointer';
           this.statusPerformanceMode.onclick = (e) => {
             if (e) e.stopPropagation();
             audio.click();
-            const current = this.settings.performanceMode;
-            let next = 'HIGH';
-            if (current === 'HIGH') next = 'LOW';
+            const current = this.settings.performanceMode || 'AUTO';
+            let next = 'AUTO';
+            if (current === 'AUTO') next = 'HIGH';
+            else if (current === 'HIGH') next = 'LOW';
             else if (current === 'LOW') next = 'ULTRA-LOW';
-            else next = 'HIGH';
+            else next = 'AUTO';
             this.set('performanceMode', next);
           };
         }
@@ -12709,9 +13361,9 @@
         if (this.togglePerformanceMode) {
           this.togglePerformanceMode.onchange = (e) => {
             audio.click();
-            const current = this.settings.performanceMode;
+            const current = this.settings.performanceMode || 'AUTO';
             if (e.target.checked) {
-              this.set('performanceMode', 'HIGH');
+              this.set('performanceMode', 'AUTO');
             } else {
               this.set('performanceMode', current === 'ULTRA-LOW' ? 'ULTRA-LOW' : 'LOW');
             }
@@ -12744,20 +13396,43 @@
         }
 
         if (this.togglePerformanceMode && this.statusPerformanceMode) {
-          const mode = this.settings.performanceMode || 'HIGH';
-          this.togglePerformanceMode.checked = (mode === 'HIGH');
-          if (mode === 'ULTRA-LOW') {
+          const rawMode = this.settings.performanceMode || 'AUTO';
+          const effectiveMode = (rawMode === 'AUTO') ? (this.detectedMode || 'HIGH') : rawMode;
+          this.togglePerformanceMode.checked = (rawMode === 'AUTO' || rawMode === 'HIGH');
+
+          const descEl = document.getElementById('settingsPerfDesc');
+
+          if (rawMode === 'AUTO') {
+            this.statusPerformanceMode.textContent = `AUTO (${effectiveMode})`;
+            this.statusPerformanceMode.className = 'toggle-status-badge perf-auto';
+            const hw = this.detectedHardware;
+            const hwStr = hw ? `${hw.gpuRenderer} • ${hw.ramGb ? hw.ramGb + 'GB' : 'RAM'} • ${hw.reason}` : '';
+            this.statusPerformanceMode.title = `Auto-Detect: Running ${effectiveMode} based on ${hwStr}. Tap to cycle.`;
+            if (descEl) {
+              const spec = hw ? `${effectiveMode} (${hw.gpuRenderer} • ${hw.ramGb ? hw.ramGb + 'GB RAM' : ''})` : effectiveMode;
+              descEl.textContent = `⚡ Auto-Detect active: Dynamically running ${spec}. Tap badge to cycle.`;
+            }
+          } else if (rawMode === 'ULTRA-LOW') {
             this.statusPerformanceMode.textContent = 'ULTRA-LOW';
             this.statusPerformanceMode.className = 'toggle-status-badge perf-ultralow';
             this.statusPerformanceMode.title = 'Battery Saver: Flat Shading & 1x DPR (Tap to cycle)';
-          } else if (mode === 'LOW') {
+            if (descEl) {
+              descEl.textContent = 'Manual: ULTRA-LOW (Battery Saver: 1x DPR & flat shading). Tap badge to cycle.';
+            }
+          } else if (rawMode === 'LOW') {
             this.statusPerformanceMode.textContent = 'LOW';
             this.statusPerformanceMode.className = 'toggle-status-badge perf-low';
             this.statusPerformanceMode.title = 'Reduced particles & shadows (Tap to cycle)';
+            if (descEl) {
+              descEl.textContent = 'Manual: LOW (Reduced particles & shadows). Tap badge to cycle.';
+            }
           } else {
             this.statusPerformanceMode.textContent = 'HIGH';
             this.statusPerformanceMode.className = 'toggle-status-badge perf-high';
             this.statusPerformanceMode.title = 'Full fidelity 60 FPS (Tap to cycle)';
+            if (descEl) {
+              descEl.textContent = 'Manual: HIGH (Full fidelity 60 FPS, all dynamic effects). Tap badge to cycle.';
+            }
           }
         }
       }
@@ -13239,7 +13914,7 @@
     class DashboundGame {
       constructor() {
         this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas.getContext('2d', { alpha: false });
         this.state = 'SPLASH'; // SPLASH, MENU, PLAYING, PAUSED, GAMEOVER
 
         // Initialize Off-Screen Sprite Cacher during SPLASH screen state
@@ -13297,14 +13972,6 @@
 
         // 3rd Deep Parallax Background Layer
         this.distantSkylineX = 0;
-
-        // Personal Best Ghost Runner state
-        this.currentTrajectory = [];
-        this.savedGhostTrajectory = null;
-        this.runFrameCount = 0;
-        this.ghostPlaybackIndex = 0;
-        this.ghostActive = false;
-        this.ghostAlpha = 0.35;
 
         // Physics & World
         this.baseSpeed = 6.0;
@@ -13459,6 +14126,7 @@
         }, 1800);
 
         this.lastTime = performance.now();
+        this.lastFrameTime = 0;
         requestAnimationFrame((t) => this.loop(t));
       }
 
@@ -13485,7 +14153,6 @@
         this.totalCoins = Storage.getInt(Storage.KEYS.TOTAL_COINS, 0);
         this.diamonds = Storage.getInt(Storage.KEYS.DIAMONDS, 0);
         this.totalEnemiesKilled = Storage.getInt(Storage.KEYS.ENEMIES_KILLED, 0);
-        this.savedGhostTrajectory = Storage.getJSON(`${Storage.KEYS.GHOST_TRAJECTORY}_${diff}`, null) || Storage.getJSON(Storage.KEYS.GHOST_TRAJECTORY, null);
       }
 
       saveStats() {
@@ -13841,20 +14508,28 @@
         this.openExitModal = (e) => {
           if (e) e.stopPropagation();
           audio.click();
-          this.isExitModalOpen = true;
-          if (this.exitModal) this.exitModal.classList.add('active');
+          this.showConfirmModal(
+            'Leave Dashbound?',
+            'Are you sure you want to exit the game? Your progress is saved.',
+            'Exit Game',
+            () => {
+              AndroidBridge.exitApp();
+            }
+          );
         };
 
         this.closeExitModal = (e) => {
-          if (e) e.stopPropagation();
-          audio.click();
+          if (e && e.stopPropagation) e.stopPropagation();
           this.isExitModalOpen = false;
           if (this.exitModal) this.exitModal.classList.remove('active');
         };
 
         const exitModalCancelBtn = document.getElementById('exitModalCancelBtn');
         if (exitModalCancelBtn) {
-          exitModalCancelBtn.onclick = (e) => this.closeExitModal(e);
+          exitModalCancelBtn.onclick = (e) => {
+            audio.click();
+            this.closeExitModal(e);
+          };
         }
 
         const exitModalConfirmBtn = document.getElementById('exitModalConfirmBtn');
@@ -13862,16 +14537,8 @@
           exitModalConfirmBtn.onclick = (e) => {
             if (e) e.stopPropagation();
             audio.click();
-            if (typeof this.scheduleAppExitReminders === 'function') {
-              this.scheduleAppExitReminders();
-            }
-            if (typeof AndroidBridge !== 'undefined' && AndroidBridge.exitApp) {
-              AndroidBridge.exitApp();
-            } else if (typeof Android !== 'undefined' && Android.exitApp) {
-              Android.exitApp();
-            } else {
-              window.close();
-            }
+            this.closeExitModal();
+            AndroidBridge.exitApp();
           };
         }
 
@@ -13890,8 +14557,8 @@
         // Helper to convert screen pointer/click coordinates into canvas game space
         const getCanvasCoords = (e) => {
           const rect = this.canvas.getBoundingClientRect();
-          const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-          const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+          const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0));
+          const clientY = e.clientY !== undefined ? e.clientY : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0));
           const isPortrait = this.isPortrait !== undefined ? this.isPortrait : (window.innerHeight > window.innerWidth);
           let x, y;
           if (isPortrait) {
@@ -13940,6 +14607,7 @@
         }, { passive: true });
 
         this.canvas.addEventListener('touchmove', (e) => {
+          if (e.cancelable) e.preventDefault();
           if (this.state !== 'PLAYING') return;
           const touch = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : null);
           if (touch && (touchStartY !== 0 || touchStartX !== 0)) {
@@ -13957,7 +14625,7 @@
               this.playerStomp();
             }
           }
-        }, { passive: true });
+        }, { passive: false });
 
         this.canvas.addEventListener('pointerdown', (e) => {
           if (e.pointerType === 'touch') return; // Handled with ultra-low latency by passive touchstart
@@ -13992,6 +14660,12 @@
           } else if (e.code === 'Escape' || e.code === 'KeyP') {
             if (this.isExitModalOpen) {
               this.closeExitModal();
+            } else if (this.upgradeManager && this.upgradeManager.isOpen) {
+              this.upgradeManager.closeModal();
+            } else if (this.isPrivacyReaderOpen) {
+              this.isPrivacyReaderOpen = false;
+              const pModal = document.getElementById('privacyReaderModal');
+              if (pModal) pModal.classList.remove('active');
             } else if (this.settingsManager && this.settingsManager.isOpen) {
               this.settingsManager.closeModal();
             } else if (this.isTutorialOpen) {
@@ -14010,12 +14684,19 @@
           }
         });
 
-        // UI Buttons
-        document.getElementById('startPlayBtn').onclick = () => {
-          if (this.isConsentModalOpen || !this.checkConsentState()) return;
-          audio.click();
-          this.startGame();
-        };
+        // UI Buttons - Zero-Latency Immediate Click
+        const startPlayBtn = document.getElementById('startPlayBtn');
+        if (startPlayBtn) {
+          startPlayBtn.addEventListener('pointerdown', () => {
+            if (this.isConsentModalOpen || !this.checkConsentState()) return;
+            startPlayBtn.style.transform = 'scale(0.92)';
+            setTimeout(() => {
+              startPlayBtn.style.transform = '';
+            }, 150);
+            audio.click();
+            this.startGame();
+          }, { passive: true });
+        }
 
         // Difficulty Selection Event Listeners
         if (this.diffEasyBtn) {
@@ -14051,9 +14732,15 @@
         if (menuExitBtn) {
           menuExitBtn.onclick = (e) => {
             if (e) e.stopPropagation();
-            if (typeof this.openExitModal === 'function') {
-              this.openExitModal(e);
-            }
+            audio.click();
+            this.showConfirmModal(
+              'Leave Dashbound?',
+              'Are you sure you want to exit the game? Your progress is saved.',
+              'Exit Game',
+              () => {
+                AndroidBridge.exitApp();
+              }
+            );
           };
         }
 
@@ -14067,11 +14754,23 @@
           };
         }
 
-        this.pauseBtn.onclick = (e) => {
-          e.stopPropagation();
-          audio.click();
-          this.pauseGame();
-        };
+        if (this.pauseBtn) {
+          const handlePause = (e) => {
+            if (e) {
+              if (e.cancelable) e.preventDefault();
+              if (e.stopPropagation) e.stopPropagation();
+            }
+            this.pauseBtn.style.transform = 'scale(0.85)';
+            setTimeout(() => {
+              if (this.pauseBtn) this.pauseBtn.style.transform = '';
+            }, 150);
+            audio.click();
+            AndroidBridge.vibrate(20);
+            this.pauseGame();
+          };
+          this.pauseBtn.onclick = handlePause;
+          this.pauseBtn.addEventListener('touchstart', handlePause, { passive: false });
+        }
 
         const resumeBtn = document.getElementById('resumeBtn');
         const pauseRestartBtn = document.getElementById('pauseRestartBtn');
@@ -14085,65 +14784,34 @@
 
         pauseRestartBtn.onclick = () => {
           audio.click();
-          this.resetPauseConfirmations();
           this.startGame();
         };
 
-        // Return to Menu: two-tap confirmation
-        // 1st click: 'Are you sure? (Forfeit Run)'
-        // 2nd click: Halt loop, save accumulated coins, reset game state & powerups, transition to Menu
         pauseMenuBtn.onclick = (e) => {
-          e.stopPropagation();
+          if (e) e.stopPropagation();
           audio.click();
-
-          // Reset exit button confirmation if active
-          if (this.pauseExitPending) {
-            pauseExitBtn.textContent = 'Exit App';
-            pauseExitBtn.classList.remove('confirm-state');
-            this.pauseExitPending = false;
-          }
-
-          if (!this.pauseMenuPending) {
-            this.pauseMenuPending = true;
-            pauseMenuBtn.textContent = 'Are you sure? (Forfeit Run)';
-            pauseMenuBtn.classList.add('confirm-state');
-            AndroidBridge.vibrate(40);
-          } else {
-            this.returnToMenu();
-          }
+          this.showConfirmModal(
+            'Forfeit Run?',
+            'Are you sure you want to return to the main menu? This run will end.',
+            'Return to Menu',
+            () => {
+              this.returnToMenu();
+              this.closeExitModal();
+            }
+          );
         };
 
-        // Exit App: two-tap confirmation
-        // 1st click: 'Are you sure? (Quit App)'
-        // 2nd click: Android.exitApp()
         pauseExitBtn.onclick = (e) => {
-          e.stopPropagation();
+          if (e) e.stopPropagation();
           audio.click();
-
-          // Reset return-to-menu button confirmation if active
-          if (this.pauseMenuPending) {
-            pauseMenuBtn.textContent = 'Return to Menu';
-            pauseMenuBtn.classList.remove('confirm-state');
-            this.pauseMenuPending = false;
-          }
-
-          if (!this.pauseExitPending) {
-            this.pauseExitPending = true;
-            pauseExitBtn.textContent = 'Are you sure? (Quit App)';
-            pauseExitBtn.classList.add('confirm-state');
-            AndroidBridge.vibrate(40);
-          } else {
-            this.resetPauseConfirmations();
-            this.scheduleAppExitReminders();
-            AndroidBridge.exitApp();
-          }
-        };
-
-        // Clicking away within the Pause Screen resets any active confirmation states
-        this.pauseScreen.onclick = (e) => {
-          if (e.target === this.pauseScreen) {
-            this.resetPauseConfirmations();
-          }
+          this.showConfirmModal(
+            'Exit Game?',
+            'Are you sure you want to quit Dashbound?',
+            'Exit App',
+            () => {
+              AndroidBridge.exitApp();
+            }
+          );
         };
 
         // Game Over Rewarded Ad Actions
@@ -14179,25 +14847,33 @@
         };
 
         const openCustomizer = (e) => {
-          if (e) e.stopPropagation();
+          if (e && e.stopPropagation) e.stopPropagation();
           audio.click();
+          AndroidBridge.vibrate(15);
           this.setScreen('CUSTOMIZER');
         };
 
         const menuCustomizerBtn = document.getElementById('menuCustomizerBtn');
-        if (menuCustomizerBtn) menuCustomizerBtn.onclick = openCustomizer;
+        if (menuCustomizerBtn) {
+          menuCustomizerBtn.onclick = openCustomizer;
+        }
 
         const menuCharWidget = document.getElementById('menuCharWidget');
-        if (menuCharWidget) menuCharWidget.onclick = openCustomizer;
+        if (menuCharWidget) {
+          menuCharWidget.onclick = openCustomizer;
+        }
 
         const goCustomizerBtn = document.getElementById('goCustomizerBtn');
-        if (goCustomizerBtn) goCustomizerBtn.onclick = openCustomizer;
+        if (goCustomizerBtn) {
+          goCustomizerBtn.onclick = openCustomizer;
+        }
 
         const customizerBackBtn = document.getElementById('customizerBackBtn');
         if (customizerBackBtn) {
           customizerBackBtn.onclick = (e) => {
-            if (e) e.stopPropagation();
+            if (e && e.stopPropagation) e.stopPropagation();
             audio.click();
+            AndroidBridge.vibrate(15);
             this.setScreen('MENU');
           };
         }
@@ -14235,9 +14911,14 @@
           };
         }
 
-        document.getElementById('adCancelBtn').onclick = () => {
-          this.cancelSimulatedAd();
-        };
+        const adCancelBtn = document.getElementById('adCancelBtn');
+        if (adCancelBtn) {
+          adCancelBtn.onclick = () => this.cancelSimulatedAd();
+        }
+        const adModalCloseTopBtn = document.getElementById('adModalCloseTopBtn');
+        if (adModalCloseTopBtn) {
+          adModalCloseTopBtn.onclick = () => this.cancelSimulatedAd();
+        }
 
         // High Score Benchmark Toggle (Global vs Local)
         this.hsToggleMode = localStorage.getItem('dashbound_hs_toggle_mode') || 'local';
@@ -14282,6 +14963,10 @@
             this.scheduleAppExitReminders();
           } else if (document.visibilityState === 'visible') {
             AndroidBridge.cancelAllNotifications();
+            if (audio.ctx && audio.ctx.state === 'suspended') {
+              audio.ctx.resume();
+            }
+            audio.init();
           }
         });
 
@@ -14440,6 +15125,11 @@
         const sizeDelta = Math.abs(oldWidth - this.width) + Math.abs(oldHeight - this.height);
         if (oldWidth === 0 || sizeDelta > 12) {
           this.initBackgroundDecor();
+        }
+
+        // Resize customizer preview canvas to match full-screen stage viewport
+        if (this.skinManager && typeof this.skinManager.resizeCustomizerCanvas === 'function') {
+          this.skinManager.resizeCustomizerCanvas();
         }
       }
 
@@ -14712,6 +15402,18 @@
         } else if (this.weatherManager) {
           audio.setWeatherAmbience(this.weatherManager.currentWeather, this.weatherManager.intensity);
         }
+        if (screen !== 'PAUSED') {
+          if (this.resumeCountdownTimer) {
+            clearInterval(this.resumeCountdownTimer);
+            this.resumeCountdownTimer = null;
+          }
+          this.isResumeCountingDown = false;
+          const countdownOverlay = document.getElementById('resumeCountdownOverlay');
+          if (countdownOverlay) {
+            countdownOverlay.style.display = 'none';
+          }
+        }
+
         this.splashScreen.classList.toggle('active', screen === 'SPLASH');
         this.startScreen.classList.toggle('active', screen === 'MENU');
         this.pauseScreen.classList.toggle('active', screen === 'PAUSED');
@@ -14721,8 +15423,6 @@
           AndroidBridge.cancelAllNotifications();
         }
 
-        // Always reset two-tap confirmation states whenever navigating screens
-        this.resetPauseConfirmations();
         if (this.customizerScreen) {
           this.customizerScreen.classList.toggle('active', screen === 'CUSTOMIZER');
         }
@@ -14733,11 +15433,19 @@
 
         if (screen === 'CUSTOMIZER') {
           if (this.skinManager) {
-            this.skinManager.openCustomizer();
+            try {
+              this.skinManager.openCustomizer();
+            } catch (err) {
+              console.error('[Dashbound] openCustomizer error:', err);
+            }
           }
         } else {
           if (this.skinManager) {
-            this.skinManager.closeCustomizer();
+            try {
+              this.skinManager.closeCustomizer();
+            } catch (err) {
+              console.error('[Dashbound] closeCustomizer error:', err);
+            }
           }
         }
 
@@ -14761,6 +15469,8 @@
           if (this.upgradeManager) {
             this.upgradeManager.renderUI();
           }
+          this._lastRenderedMenuSkinId = null;
+          this.drawMenuCharacter(performance.now());
         }
       }
 
@@ -14917,12 +15627,7 @@
           this.shieldHud.classList.toggle('active', this.hasShield);
         }
 
-        // Reset Ghost Runner, Camera Framing, and Deep Parallax Skyline
-        this.runFrameCount = 0;
-        this.currentTrajectory = [];
-        this.ghostPlaybackIndex = 0;
-        this.ghostActive = !!(this.savedGhostTrajectory && this.savedGhostTrajectory.length > 0);
-        this.ghostAlpha = 0.35;
+        // Reset Camera Framing and Deep Parallax Skyline
         this.cameraZoom = 1.0;
         this.cameraOffsetY = 0.0;
         this.distantSkylineX = 0;
@@ -14973,36 +15678,91 @@
       pauseGame() {
         if (this.state !== 'PLAYING') return;
         audio.pauseBGM();
-        this.resetPauseConfirmations();
         this.setScreen('PAUSED');
       }
 
       resumeGame() {
         if (this.state !== 'PAUSED') return;
-        audio.resumeBGM();
-        this.resetPauseConfirmations();
-        this.setScreen('PLAYING');
+        if (this.isResumeCountingDown) return;
+        this.isResumeCountingDown = true;
+
+        // 1. Manually hide the #pauseScreen overlay while keeping this.state = 'PAUSED'
+        if (this.pauseScreen) {
+          this.pauseScreen.classList.remove('active');
+        }
+
+        // 2. Display the #resumeCountdownOverlay
+        const countdownOverlay = document.getElementById('resumeCountdownOverlay');
+        if (!countdownOverlay) {
+          this.isResumeCountingDown = false;
+          this.setScreen('PLAYING');
+          audio.resumeBGM();
+          return;
+        }
+
+        let count = 3;
+        countdownOverlay.textContent = count;
+        countdownOverlay.style.display = 'flex';
+        audio.click();
+
+        if (this.resumeCountdownTimer) {
+          clearInterval(this.resumeCountdownTimer);
+        }
+
+        // 3. Run a countdown interval from 3 to 1, then GO!
+        this.resumeCountdownTimer = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countdownOverlay.textContent = count;
+            audio.click();
+          } else if (count === 0) {
+            countdownOverlay.textContent = 'GO!';
+            audio.reward();
+          } else {
+            clearInterval(this.resumeCountdownTimer);
+            this.resumeCountdownTimer = null;
+            this.isResumeCountingDown = false;
+            countdownOverlay.style.display = 'none';
+            countdownOverlay.textContent = '3';
+            if (this.state === 'PAUSED') {
+              this.setScreen('PLAYING');
+              audio.resumeBGM();
+            }
+          }
+        }, 700);
       }
 
-      resetPauseConfirmations() {
-        const menuBtn = document.getElementById('pauseMenuBtn');
-        if (menuBtn) {
-          menuBtn.textContent = 'Return to Menu';
-          menuBtn.classList.remove('confirm-state');
+      showConfirmModal(title, description, confirmBtnText, onConfirmCallback) {
+        const titleEl = document.querySelector('.exit-modal-title');
+        const descEl = document.querySelector('.exit-modal-desc');
+        const confirmBtn = document.getElementById('exitModalConfirmBtn');
+        if (titleEl && title) titleEl.textContent = title;
+        if (descEl && description) descEl.textContent = description;
+        if (confirmBtn) {
+          const span = confirmBtn.querySelector('span');
+          if (span && confirmBtnText) {
+            span.textContent = confirmBtnText;
+          } else if (confirmBtnText) {
+            confirmBtn.textContent = confirmBtnText;
+          }
+          confirmBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
+            audio.click();
+            this.closeExitModal();
+            if (typeof onConfirmCallback === 'function') {
+              onConfirmCallback();
+            }
+          };
         }
-        const exitBtn = document.getElementById('pauseExitBtn');
-        if (exitBtn) {
-          exitBtn.textContent = 'Exit App';
-          exitBtn.classList.remove('confirm-state');
+        this.isExitModalOpen = true;
+        if (this.exitModal) {
+          this.exitModal.classList.add('active');
         }
-        this.pauseMenuPending = false;
-        this.pauseExitPending = false;
       }
 
       returnToMenu() {
         // Gracefully halt the game loop, save accumulated coin balance to localStorage, reset game state, and transition to Menu
         audio.stopBGM();
-        this.resetPauseConfirmations();
 
         // Accumulate and persist current run coins
         if (this.runCoins > 0) {
@@ -15189,6 +15949,8 @@
           this.shake(10, 16);
           const invulBonus = this.playerStatsEngine ? this.playerStatsEngine.getInvulnerableBonus() : 0;
           this.player.invulnerableTimer = 60 + Math.round(invulBonus * 30);
+          this.player.scaleX = 1.0;
+          this.player.scaleY = 1.0;
           this.player.vy = -6;
           this.particles.createHurtBurst(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
 
@@ -15215,6 +15977,8 @@
         this.shake(10, 16);
         const invulBonus = this.playerStatsEngine ? this.playerStatsEngine.getInvulnerableBonus() : 0;
         this.player.invulnerableTimer = 90 + Math.round(invulBonus * 60); // 1.5s base + skin bonus
+        this.player.scaleX = 1.0;
+        this.player.scaleY = 1.0;
         this.player.vy = -7;
         this.particles.createHurtBurst(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2);
 
@@ -15223,6 +15987,48 @@
         if (this.lives <= 0) {
           this.triggerGameOver();
         }
+      }
+
+      animateValue(elementId, start, end, duration, prefix = '', suffix = '') {
+        return new Promise((resolve) => {
+          const el = typeof elementId === 'string' ? document.getElementById(elementId) : elementId;
+          if (!el) {
+            resolve();
+            return;
+          }
+          const startTime = performance.now();
+          const startNum = Number(start) || 0;
+          const endNum = Number(end) || 0;
+          const diff = endNum - startNum;
+
+          if (duration <= 0 || diff === 0) {
+            el.textContent = `${prefix}${Math.floor(endNum)}${suffix}`;
+            resolve();
+            return;
+          }
+
+          const step = (currentTime) => {
+            if (this.state !== 'GAMEOVER') {
+              resolve();
+              return;
+            }
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1.0);
+            // Ease-out cubic curve: 1 - (1 - t)^3 for juicy deceleration
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            const currentVal = Math.floor(startNum + diff * easeProgress);
+            el.textContent = `${prefix}${currentVal}${suffix}`;
+
+            if (progress < 1.0) {
+              requestAnimationFrame(step);
+            } else {
+              el.textContent = `${prefix}${Math.floor(endNum)}${suffix}`;
+              resolve();
+            }
+          };
+
+          requestAnimationFrame(step);
+        });
       }
 
       triggerGameOver(caughtByPursuer = false) {
@@ -15235,34 +16041,24 @@
         if (this.distance > this.highDistance) {
           this.highDistance = Math.floor(this.distance);
           isNewRecord = true;
-
-          // If the run sets a new High Distance, compress and save this trajectory array to localStorage (capped at max 1,500 data points)
-          if (this.currentTrajectory && this.currentTrajectory.length > 0) {
-            const cappedTrajectory = this.currentTrajectory.slice(0, 1500);
-            const diff = this.selectedDifficulty || Storage.getString(Storage.KEYS.DIFFICULTY, 'MEDIUM');
-            Storage.setJSON(`${Storage.KEYS.GHOST_TRAJECTORY}_${diff}`, cappedTrajectory);
-            Storage.setJSON(Storage.KEYS.GHOST_TRAJECTORY, cappedTrajectory);
-            this.savedGhostTrajectory = cappedTrajectory;
-          }
         }
         if (this.score > this.highScore) {
           this.highScore = Math.floor(this.score);
           isNewRecord = true;
         }
 
-        if (isNewRecord) {
-          AndroidBridge.hapticSuccess();
-        } else {
+        if (!isNewRecord) {
           AndroidBridge.hapticHeavy();
         }
 
         this.totalCoins += this.runCoins;
         this.saveStats();
 
-        document.getElementById('goDist').textContent = `${Math.floor(this.distance)} m`;
-        document.getElementById('goScore').textContent = Math.floor(this.score);
-        document.getElementById('goCoins').textContent = `+${this.runCoins}`;
-        document.getElementById('newRecordBadge').style.display = isNewRecord ? 'inline-block' : 'none';
+        // Initially hide new record badge while numbers animate
+        const newRecordBadge = document.getElementById('newRecordBadge');
+        if (newRecordBadge) {
+          newRecordBadge.style.display = 'none';
+        }
         if (this.pursuerCaughtBadge) {
           this.pursuerCaughtBadge.style.display = caughtByPursuer ? 'inline-block' : 'none';
         }
@@ -15276,11 +16072,25 @@
         // Render Local vs Global High Score Comparison Benchmark
         this.renderHighScoreBenchmark(this.distance, prevHighDist, isNewRecord);
 
-        if (isNewRecord) {
-          this.particles.createConfetti(this.width, this.height);
-        }
-
+        // Transition to Game Over screen so numbers are visible counting up
         this.setScreen('GAMEOVER');
+
+        // Smooth animated number tally over 1200ms
+        const tallyDuration = 1200;
+        this.animateValue('goDist', 0, Math.floor(this.distance), tallyDuration, '', ' m');
+        this.animateValue('goCoins', 0, this.runCoins, tallyDuration, '+', '');
+        this.animateValue('goScore', 0, Math.floor(this.score), tallyDuration, '', '').then(() => {
+          // Wait to display #newRecordBadge and play hapticSuccess until score finishes counting
+          if (isNewRecord) {
+            if (newRecordBadge) {
+              newRecordBadge.style.display = 'inline-block';
+            }
+            AndroidBridge.hapticSuccess();
+            if (this.particles && typeof this.particles.createConfetti === 'function') {
+              this.particles.createConfetti(this.width, this.height);
+            }
+          }
+        });
       }
 
       // Generate stylized score card offscreen canvas and convert to Base64 image
@@ -15749,23 +16559,37 @@
       }
 
       handleAdFailed(type) {
-        this.showToast('Ad was dismissed or unavailable');
+        // Fall back gracefully to in-game reward modal so the player is never blocked from reviving
+        this.runSimulatedAd(type, true);
       }
 
-      runSimulatedAd(type) {
+      runSimulatedAd(type, isFallback = false) {
         this.adModal.classList.add('active');
         const titleEl = document.getElementById('adTitle');
+        const subEl = document.getElementById('adSub');
+        const badgeEl = document.getElementById('adBadge');
         const timerEl = document.getElementById('adCountdown');
-        titleEl.textContent = type === 'continue' ? 'Reviving Character (+1 Life)...' : 'Doubling Run Coins...';
 
-        let count = 4;
-        timerEl.textContent = `${count}s`;
+        if (titleEl) {
+          titleEl.textContent = type === 'continue' ? 'Reviving Character (+1 Life)...' : 'Doubling Run Coins...';
+        }
+        if (subEl) {
+          subEl.textContent = isFallback
+            ? 'Ad sponsor offline — claiming free bonus!'
+            : 'Watching short reward video to claim bonus...';
+        }
+        if (badgeEl) {
+          badgeEl.textContent = isFallback ? '⚡ Instant Reward Fallback' : '🎬 Rewarded Sponsor';
+        }
+
+        let count = isFallback ? 3 : 4;
+        if (timerEl) timerEl.textContent = `${count}s`;
 
         if (this.activeAdTimer) clearInterval(this.activeAdTimer);
         this.activeAdTimer = setInterval(() => {
           count--;
           if (count > 0) {
-            timerEl.textContent = `${count}s`;
+            if (timerEl) timerEl.textContent = `${count}s`;
           } else {
             clearInterval(this.activeAdTimer);
             this.activeAdTimer = null;
@@ -15781,7 +16605,7 @@
           this.activeAdTimer = null;
         }
         this.adModal.classList.remove('active');
-        this.handleAdFailed('');
+        this.showToast('Reward cancelled. You can revive anytime!');
       }
 
       showToast(msg) {
@@ -15889,12 +16713,14 @@
         }
 
         // Update heart icons
-        const hearts = this.heartsBox.children;
-        for (let i = 0; i < hearts.length; i++) {
-          if (i < this.lives) {
-            hearts[i].classList.remove('lost');
-          } else {
-            hearts[i].classList.add('lost');
+        if (this.heartsBox && this.heartsBox.children) {
+          const hearts = this.heartsBox.children;
+          for (let i = 0; i < hearts.length; i++) {
+            if (i < this.lives) {
+              hearts[i].classList.remove('lost');
+            } else {
+              hearts[i].classList.add('lost');
+            }
           }
         }
 
@@ -16173,7 +16999,7 @@
           const dist = this.distance;
           const postDist = Math.max(0, dist - 50);
           const obstacleSpacingFactor = Math.pow(0.92, postDist / 150);
-          const currentMinObstacleDist = Math.max(100, this.baseMinObstacleDist * obstacleSpacingFactor);
+          const currentMinObstacleDist = Math.max(160, this.baseMinObstacleDist * obstacleSpacingFactor);
           const diffCfg = this.difficultyConfigs[this.selectedDifficulty] || this.difficultyConfigs.MEDIUM;
           const enemyChanceMult = diffCfg.enemyChanceMult || 1.0;
           const spikeChanceMult = diffCfg.spikeChanceMult || 1.0;
@@ -16317,6 +17143,9 @@
         if (isFastStart) {
           if (!this.runnerTrails) this.runnerTrails = [];
           if (Math.random() < 0.85) {
+            if (this.runnerTrails.length >= 15) {
+              this.runnerTrails.shift();
+            }
             this.runnerTrails.push({
               x: this.player.x,
               y: this.player.y,
@@ -16583,7 +17412,7 @@
             if (dist < magnetRadius) {
               const pullSpeed = Math.min(30, Math.max(12, (1 - dist / magnetRadius) * 26 + 10));
               const angle = Math.atan2(dy, dx);
-              c.x += Math.cos(angle) * pullSpeed;
+              c.x += (Math.cos(angle) * pullSpeed) + (dx > 0 ? scrollAmount : 0);
               c.y += Math.sin(angle) * pullSpeed;
 
               if (Math.random() < 0.2) {
@@ -16771,9 +17600,9 @@
           // Collision with spike
           if (this.player.invulnerableTimer === 0 && !this.isFastStartActive()) {
             if (
-              this.player.x + this.player.w > s.x + 4 &&
-              this.player.x < s.x + s.w - 4 &&
-              playerBottom > s.y - s.h + 4 &&
+              this.player.x + this.player.w > s.x + 8 &&
+              this.player.x < s.x + s.w - 8 &&
+              playerBottom > s.y - s.h + 10 &&
               this.player.y < s.y
             ) {
               this.takeDamage(s.x);
@@ -16962,51 +17791,6 @@
         this.cameraOffsetY += (targetCamY - this.cameraOffsetY) * camEase;
         this.effectiveCoordScale = this.coordScale * this.cameraZoom;
 
-        // ----------------------------------------------------
-        // Personal Best Ghost Runner Recording & Replay Logic
-        // ----------------------------------------------------
-        this.runFrameCount = (this.runFrameCount || 0) + 1;
-
-        // 1. Record player position every 3 frames during a run (capped at max 1,500 data points)
-        if (this.runFrameCount % 3 === 0) {
-          if (this.currentTrajectory.length < 1500) {
-            this.currentTrajectory.push({
-              d: Math.round(this.distance * 10) / 10,
-              x: Math.round(this.player.x * 10) / 10,
-              y: Math.round(this.player.y * 10) / 10,
-              sx: Math.round(this.player.scaleX * 100) / 100,
-              sy: Math.round(this.player.scaleY * 100) / 100,
-              la: Math.round(this.player.legAngle * 100) / 100,
-              og: this.player.onGround ? 1 : 0
-            });
-          }
-        }
-
-        // 2. Replay saved Ghost Runner alongside player
-        if (this.ghostActive && this.savedGhostTrajectory && this.savedGhostTrajectory.length > 0) {
-          const targetIndex = Math.floor(this.runFrameCount / 3);
-          if (targetIndex < this.savedGhostTrajectory.length) {
-            this.ghostPlaybackIndex = targetIndex;
-            const pt = this.savedGhostTrajectory[this.ghostPlaybackIndex];
-
-            // If the current run overtakes the ghost (by distance), disappear gracefully
-            if (this.distance > pt.d + 1.2) {
-              this.ghostAlpha = Math.max(0, this.ghostAlpha - dt * 0.7);
-              if (this.ghostAlpha <= 0) {
-                this.ghostActive = false;
-              }
-            } else {
-              this.ghostAlpha = 0.35;
-            }
-          } else {
-            // Trajectory finished -> fade out gracefully
-            this.ghostAlpha = Math.max(0, this.ghostAlpha - dt * 0.7);
-            if (this.ghostAlpha <= 0) {
-              this.ghostActive = false;
-            }
-          }
-        }
-
         // Biome Progression milestone check
         if (this.lastBiomeId !== currentBiome.id) {
           const prevBiome = this.lastBiomeId;
@@ -17164,11 +17948,6 @@
         // 11. Power-ups (Magnet & Shield)
         for (const p of this.powerups) {
           this.drawPowerup(ctx, p);
-        }
-
-        // 11.5 Replay Personal Best Ghost Runner (Translucent Cyan-Glowing Hologram)
-        if (this.ghostActive) {
-          this.drawGhostRunner(ctx);
         }
 
         // 12. Particles
@@ -20152,176 +20931,151 @@
         ctx.restore();
       }
 
-      drawGhostRunner(ctx) {
-        if (!this.ghostActive || !this.savedGhostTrajectory || this.savedGhostTrajectory.length === 0) return;
-        if (this.ghostAlpha <= 0.01) return;
-
-        const idx = Math.min(this.ghostPlaybackIndex, this.savedGhostTrajectory.length - 1);
-        const pt = this.savedGhostTrajectory[idx];
-        if (!pt) return;
-
-        // In Dashbound: 1 meter = 1 / 0.06 = 16.6667 px
-        const screenX = pt.x + (pt.d - this.distance) / 0.06;
-        const screenY = pt.y;
-
-        // Cull if outside visible horizontal frame
-        if (screenX < -120 || screenX > this.width + 120) return;
-
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, Math.min(1, this.ghostAlpha));
-
-        // Cyan holographic glow
-        ctx.shadowColor = '#06B6D4';
-        ctx.shadowBlur = 14;
-
-        const currentSkin = this.skinManager ? this.skinManager.getSelectedSkin() : null;
-        if (!currentSkin) {
-          ctx.restore();
-          return;
-        }
-
-        const bw = this.player.w;
-        const bh = this.player.h - 8;
-        const cx = screenX + bw / 2;
-        const cy = screenY + this.player.h / 2;
-
-        ctx.translate(cx, cy);
-        ctx.scale(pt.sx || 1, pt.sy || 1);
-
-        const time = performance.now();
-        const pulse = (Math.sin(time * 0.009) + 1) * 0.5;
-
-        // Cyan holographic projection emitter ring at ghost feet
-        ctx.strokeStyle = `rgba(34, 211, 238, ${0.45 + pulse * 0.35})`;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.ellipse(0, bh / 2 + 2, bw * 0.65, 4.5, 0, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Draw runner skin as hologram
-        this.drawRunnerSkin(ctx, currentSkin, pt.la || 0, pt.og === 1, bw, bh);
-
-        // Cyber holographic horizontal scanlines
-        ctx.save();
-        ctx.strokeStyle = 'rgba(103, 232, 249, 0.45)';
-        ctx.lineWidth = 1.2;
-        for (let sy = -bh / 2; sy <= bh / 2; sy += 5.5) {
-          ctx.beginPath();
-          ctx.moveTo(-bw / 2 - 2, sy);
-          ctx.lineTo(bw / 2 + 2, sy);
-          ctx.stroke();
-        }
-        ctx.restore();
-
-        // Cyber outline glow
-        ctx.strokeStyle = '#22D3EE';
-        ctx.lineWidth = 1.6;
-        ctx.strokeRect(-bw * 0.45, -bh * 0.45, bw * 0.9, bh * 0.9);
-
-        // Floating "PB GHOST" holographic badge
-        ctx.font = 'bold 10px monospace';
-        ctx.fillStyle = '#67E8F9';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowBlur = 6;
-        ctx.fillText('PB GHOST', 0, -bh / 2 - 14 - pulse * 3);
-
-        ctx.restore();
-      }
-
       drawMenuCharacter(time) {
         if (!this.menuCharCanvas) {
           this.menuCharCanvas = document.getElementById('menuCharCanvas');
-          if (this.menuCharCanvas) {
-            this.menuCharCtx = this.menuCharCanvas.getContext('2d');
-          }
+        }
+        if (this.menuCharCanvas && !this.menuCharCtx) {
+          this.menuCharCtx = this.menuCharCanvas.getContext('2d');
         }
         if (!this.menuCharNameEl) {
           this.menuCharNameEl = document.getElementById('menuCharName');
         }
-        if (!this.menuCharCanvas || !this.menuCharCtx || !this.skinManager) return;
+        if (!this.menuCharCanvas || !this.menuCharCtx) return;
 
         const canvas = this.menuCharCanvas;
         const ctx = this.menuCharCtx;
+
+        // Ensure canvas internal coordinate resolution matches high DPR/display size
+        if (!canvas.width || canvas.width < 10) {
+          canvas.width = 120;
+          canvas.height = 96;
+        }
+
         const w = canvas.width;
         const h = canvas.height;
 
-        // 1. Clear preview canvas
+        // 1. Clear preview canvas completely
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, w, h);
+        ctx.restore();
 
-        // 2. Fetch active skin
-        const skin = this.skinManager.getSelectedSkin();
-        if (!skin) return;
+        // 2. Fetch active skin with foolproof fallback to classic starter skin
+        let skin = this.skinManager ? this.skinManager.getSelectedSkin() : null;
+        if (!skin && this.skinManager && this.skinManager.skins && this.skinManager.skins.length > 0) {
+          skin = this.skinManager.skins[0];
+        }
+        if (!skin) {
+          skin = {
+            id: 'classic',
+            name: 'Blaze Runner',
+            modelType: 'biped',
+            w: 38,
+            h: 52,
+            rarity: 'common',
+            accessory: 'headband',
+            headband: '#EF4444',
+            ribbon: '#DC2626',
+            bodyGrad: ['#FF8A3D', '#EA580C'],
+            belly: 'rgba(255, 237, 213, 0.45)',
+            shoes: '#9A3412',
+            eyeGlow: '#00F0FF',
+            glowColor: '#F97316'
+          };
+        }
 
         // 3. Update character name & tint by rarity color
-        if (this._lastRenderedMenuSkinId !== skin.id) {
-          this._lastRenderedMenuSkinId = skin.id;
-          if (this.menuCharNameEl) {
-            this.menuCharNameEl.textContent = skin.name;
-            const rarityColors = {
-              common: '#CBD5E1',
-              rare: '#38BDF8',
-              epic: '#C084FC',
-              legendary: '#FCD34D'
-            };
-            this.menuCharNameEl.style.color = rarityColors[skin.rarity] || '#FFFFFF';
-          }
-          if (!this.menuCharRarityEl) {
-            this.menuCharRarityEl = document.getElementById('menuCharRarityBadge');
-          }
-          if (this.menuCharRarityEl && skin.rarity) {
-            const r = skin.rarity.toLowerCase();
-            this.menuCharRarityEl.textContent = r.toUpperCase();
-            this.menuCharRarityEl.className = `menu-char-rarity-pill ${r}`;
-          }
-          const bonusPill = document.getElementById('menuCharBonusPill');
-          const bonusIcon = document.getElementById('menuCharBonusIcon');
-          const bonusLabel = document.getElementById('menuCharBonusLabel');
-          if (bonusPill && bonusLabel && bonusIcon) {
-            if (skin.statBonus) {
-              bonusIcon.textContent = skin.statBonus.icon;
-              bonusLabel.textContent = skin.statBonus.label;
-              bonusPill.style.display = 'inline-flex';
-            } else {
-              bonusPill.style.display = 'none';
+        try {
+          if (this._lastRenderedMenuSkinId !== skin.id) {
+            this._lastRenderedMenuSkinId = skin.id;
+            if (this.menuCharNameEl) {
+              this.menuCharNameEl.textContent = skin.name;
+              const rarityColors = {
+                common: '#CBD5E1',
+                rare: '#38BDF8',
+                epic: '#C084FC',
+                legendary: '#FCD34D'
+              };
+              this.menuCharNameEl.style.color = rarityColors[skin.rarity] || '#FFFFFF';
+            }
+            if (!this.menuCharRarityEl) {
+              this.menuCharRarityEl = document.getElementById('menuCharRarityBadge');
+            }
+            if (this.menuCharRarityEl && skin.rarity) {
+              const r = String(skin.rarity).toLowerCase();
+              this.menuCharRarityEl.textContent = r.toUpperCase();
+              this.menuCharRarityEl.className = `menu-char-rarity-pill ${r}`;
+            }
+            const bonusPill = document.getElementById('menuCharBonusPill');
+            const bonusIcon = document.getElementById('menuCharBonusIcon');
+            const bonusLabel = document.getElementById('menuCharBonusLabel');
+            if (bonusPill && bonusLabel && bonusIcon) {
+              if (skin.statBonus) {
+                bonusIcon.textContent = skin.statBonus.icon;
+                bonusLabel.textContent = skin.statBonus.label;
+                bonusPill.style.display = 'inline-flex';
+              } else {
+                bonusPill.style.display = 'none';
+              }
             }
           }
+        } catch (e) {
+          console.warn('[Dashbound UI] Error updating menu char labels:', e);
         }
 
         // 4. Premium Hero Idle Animation using continuous time
-        const now = (time !== undefined ? time : performance.now()) * 0.001;
+        const now = (time !== undefined && !isNaN(time) ? time : performance.now()) * 0.001;
 
         // Gentle Levitation / Bobbing: smooth buoyant vertical translation
         const levitateY = Math.sin(now * 3) * 4;
 
         // Breathing (Squash & Stretch): subtle vertical scaling expanding and contracting
         const breatheScaleY = 1.0 + Math.sin(now * 2) * 0.03;
-        const breatheScaleX = 1.0 - Math.sin(now * 2) * 0.015; // Natural volume preservation
+        const breatheScaleX = 1.0 - Math.sin(now * 2) * 0.015;
 
-        // Keep procedural time flowing for animated character accessories (scarves, flames, equalizers)
+        // Keep procedural time flowing for animated character accessories
         const animTime = now * 2.0;
 
-        // 5. Draw soft ground shadow beneath character (smoothly scaled with levitation & breathing)
+        // 5. Draw soft ground shadow beneath character
         ctx.save();
         ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
         const shadowW = Math.max(16, (skin.w || 38) * 0.65);
         const shadowScale = Math.max(0.65, 1 - (levitateY / 24));
         ctx.beginPath();
-        ctx.ellipse(w / 2, h / 2 + 32, shadowW * shadowScale * breatheScaleX, 5 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.ellipse(w / 2, h / 2 + 30, shadowW * shadowScale * breatheScaleX, 5 * shadowScale, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // 6. Draw runner skin using procedural drawing engine (Always forward facing, hero idle stance)
+        // 6. Draw runner skin using procedural drawing engine
         ctx.save();
-        ctx.translate(w / 2, h / 2 + 6 + levitateY);
-        const baseScale = 1.3;
+        ctx.translate(w / 2, h / 2 + 4 + levitateY);
+        const baseScale = 1.25;
         ctx.scale(baseScale * breatheScaleX, baseScale * breatheScaleY);
-        this.drawRunnerSkin(ctx, skin, animTime, true, skin.w || 38, skin.h || 50);
+        try {
+          this.drawRunnerSkin(ctx, skin, animTime, true, skin.w || 38, skin.h || 50);
+        } catch (err) {
+          console.warn('[Dashbound] Error in drawRunnerSkin on menu:', err);
+        }
         ctx.restore();
       }
 
       loop(time) {
-        const dt = Math.min((time - this.lastTime) / 1000, 0.1);
+        // BUG FIX: Handle falsy 0 value on the first frame to prevent infinite skipping
+        if (!this.lastFrameTime) {
+          this.lastFrameTime = time;
+        }
+
+        const elapsed = time - this.lastFrameTime;
+
+        // Throttle to strictly 60 FPS (1000ms / 60 = ~16.6ms) to prevent 2x speed on 120Hz displays
+        if (elapsed < 15) {
+          requestAnimationFrame((t) => this.loop(t));
+          return;
+        }
+
+        this.lastFrameTime = time - (elapsed % 16.66);
+        const dt = Math.min(elapsed / 1000, 0.1);
         this.lastTime = time;
 
         // Dynamically monitor frame rate for particle throttling & thermal auto-throttling
@@ -20332,7 +21086,6 @@
           }
 
           // Dynamic Resolution Scaling: Thermal auto-throttling logic
-          // If FPS < 45 for > 3 seconds, force Performance Mode to LOW, set integerScale = 1, and trigger resize()
           if (fps < 45) {
             this.lowFpsDuration = (this.lowFpsDuration || 0) + dt;
             if (this.lowFpsDuration >= 3.0 && !this.isThermalThrottled) {
@@ -20374,13 +21127,7 @@
         this.dpr = 1;
         this.resize();
 
-        if (this.adToast) {
-          this.adToast.textContent = '⚡ Battery Saver: Low Performance Mode Activated';
-          this.adToast.classList.add('active');
-          setTimeout(() => {
-            if (this.adToast) this.adToast.classList.remove('active');
-          }, 3500);
-        }
+        this.showToast('⚡ Battery Saver: Low Performance Mode Activated');
       }
     }
 
@@ -20422,6 +21169,12 @@
         g.isPrivacyReaderOpen = false;
         const pModal = document.getElementById('privacyReaderModal');
         if (pModal) pModal.classList.remove('active');
+        return;
+      }
+
+      // 4.6. If UPGRADE modal is open, close it
+      if (g.upgradeManager && g.upgradeManager.isOpen) {
+        g.upgradeManager.closeModal();
         return;
       }
 
